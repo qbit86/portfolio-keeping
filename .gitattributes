@@ -1,0 +1,12 @@
+*   text=auto
+
+.editorconfig   text
+.gitattributes  text
+.gitignore  text
+*.cs    text diff=csharp
+*.csproj    text
+*.DotSettings   text
+*.md    text
+*.props text
+*.sln   text
+*.txt   text
