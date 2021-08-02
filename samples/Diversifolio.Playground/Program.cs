@@ -13,10 +13,7 @@ namespace Diversifolio
     {
         private static CultureInfo F => CultureInfo.InvariantCulture;
 
-        private static async Task Main()
-        {
-            await RunSandboxCheck().ConfigureAwait(false);
-        }
+        private static async Task Main() => await RunSandboxCheck().ConfigureAwait(false);
 
         private static async Task RunSandboxCheck()
         {
@@ -32,6 +29,7 @@ namespace Diversifolio
             SandboxAccount account = await context.RegisterAsync(BrokerAccountType.Tinkoff).ConfigureAwait(false);
             Console.WriteLine($"BrokerAccountId: {account.BrokerAccountId}");
 
+            // https://github.com/TinkoffCreditSystems/invest-openapi-csharp-sdk/blob/master/samples/TradingBot/SandboxBot.cs
             PortfolioCurrencies portfolioCurrencies = await context.PortfolioCurrenciesAsync().ConfigureAwait(false);
             Console.WriteLine("PortfolioCurrencies:");
             foreach (PortfolioCurrencies.PortfolioCurrency currency in portfolioCurrencies.Currencies)
@@ -44,6 +42,14 @@ namespace Diversifolio
                 MoneyAmount price = position.AveragePositionPrice;
                 Console.WriteLine(
                     $"    - {position.Ticker}, {position.Balance.ToString(F)}, {price.Value.ToString(F)} {price.Currency}");
+            }
+
+            MarketInstrumentList instrumentList = await context.MarketStocksAsync().ConfigureAwait(false);
+            Console.WriteLine("Instruments (EUR):");
+            foreach (MarketInstrument instrument in instrumentList.Instruments)
+            {
+                if (instrument.Currency == Currency.Eur)
+                    Console.WriteLine($"    - {instrument}");
             }
         }
     }
