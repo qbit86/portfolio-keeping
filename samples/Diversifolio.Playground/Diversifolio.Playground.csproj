@@ -9,4 +9,10 @@
     <PackageReference Include="Tinkoff.Trading.OpenApi" Version="1.7.4" />
   </ItemGroup>
 
+  <ItemGroup Condition="Exists('token-tinkoff-sandbox.txt')">
+    <None Update="token-tinkoff-sandbox.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
