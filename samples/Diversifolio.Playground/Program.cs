@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
 using Tinkoff.Trading.OpenApi.Models;
@@ -10,6 +11,8 @@ namespace Diversifolio
 {
     internal static class Program
     {
+        private static CultureInfo F => CultureInfo.InvariantCulture;
+
         private static async Task Main()
         {
             using var reader = new StreamReader("token-tinkoff-sandbox.txt");
@@ -21,10 +24,22 @@ namespace Diversifolio
             SandboxContext context = connection.Context;
 
             // https://github.com/TinkoffCreditSystems/invest-openapi-csharp-sdk/issues/25
-            SandboxAccount _ = await context.RegisterAsync(BrokerAccountType.Tinkoff).ConfigureAwait(false);
+            SandboxAccount account = await context.RegisterAsync(BrokerAccountType.Tinkoff).ConfigureAwait(false);
+            Console.WriteLine($"BrokerAccountId: {account.BrokerAccountId}");
+
+            PortfolioCurrencies portfolioCurrencies = await context.PortfolioCurrenciesAsync().ConfigureAwait(false);
+            Console.WriteLine("PortfolioCurrencies:");
+            foreach (PortfolioCurrencies.PortfolioCurrency currency in portfolioCurrencies.Currencies)
+                Console.WriteLine($"    - {currency.Currency}, {currency.Balance.ToString(F)}");
 
             Portfolio portfolio = await context.PortfolioAsync().ConfigureAwait(false);
-            Console.WriteLine(portfolio);
+            Console.WriteLine("Portfolio:");
+            foreach (Portfolio.Position position in portfolio.Positions)
+            {
+                MoneyAmount price = position.AveragePositionPrice;
+                Console.WriteLine(
+                    $"    - {position.Ticker}, {position.Balance.ToString(F)}, {price.Value.ToString(F)} {price.Currency}");
+            }
         }
     }
 }
