@@ -15,6 +15,11 @@ namespace Diversifolio
 
         private static async Task Main()
         {
+            await RunSandboxCheck().ConfigureAwait(false);
+        }
+
+        private static async Task RunSandboxCheck()
+        {
             using var reader = new StreamReader("token-tinkoff-sandbox.txt");
             string? token = await reader.ReadLineAsync().ConfigureAwait(false);
             Console.WriteLine($"{nameof(token)}: {token}");
