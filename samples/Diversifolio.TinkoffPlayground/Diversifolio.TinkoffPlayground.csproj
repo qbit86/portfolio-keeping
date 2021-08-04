@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Tinkoff.Trading.OpenApi" Version="1.7.4" />
+    <PackageReference Include="Tinkoff.Trading.OpenApi" Version="1.7.4"/>
   </ItemGroup>
 
   <ItemGroup Condition="Exists('token-tinkoff-sandbox.txt')">

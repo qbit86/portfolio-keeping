@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
@@ -64,19 +65,29 @@ namespace Diversifolio
             using Connection connection = ConnectionFactory.GetConnection(token);
             Context context = connection.Context;
 
-            // https://github.com/TinkoffCreditSystems/invest-openapi-csharp-sdk/blob/master/samples/TradingBot/SandboxBot.cs
-            PortfolioCurrencies portfolioCurrencies = await context.PortfolioCurrenciesAsync().ConfigureAwait(false);
-            Console.WriteLine("PortfolioCurrencies:");
-            foreach (PortfolioCurrencies.PortfolioCurrency currency in portfolioCurrencies.Currencies)
-                Console.WriteLine($"    - {currency.Currency}, {currency.Balance.ToString(F)}");
-
-            Portfolio portfolio = await context.PortfolioAsync().ConfigureAwait(false);
-            Console.WriteLine("Portfolio:");
-            foreach (Portfolio.Position position in portfolio.Positions)
+            IReadOnlyCollection<Account> accounts = await context.AccountsAsync().ConfigureAwait(false);
+            Console.WriteLine("Accounts:");
+            foreach (Account account in accounts)
             {
-                MoneyAmount price = position.AveragePositionPrice;
-                Console.WriteLine(
-                    $"    - {position.Ticker}, {position.Balance.ToString(F)}, {price.Value.ToString(F)} {price.Currency}");
+                BrokerAccountType brokerAccountType = account.BrokerAccountType;
+                string brokerAccountId = account.BrokerAccountId;
+                Console.WriteLine($"\t- {brokerAccountType},\t{brokerAccountId}");
+
+                // https://github.com/TinkoffCreditSystems/invest-openapi-csharp-sdk/blob/master/samples/TradingBot/SandboxBot.cs
+                PortfolioCurrencies portfolioCurrencies =
+                    await context.PortfolioCurrenciesAsync(brokerAccountId).ConfigureAwait(false);
+                Console.WriteLine($"\t\t- PortfolioCurrencies ({brokerAccountType}):");
+                foreach (PortfolioCurrencies.PortfolioCurrency currency in portfolioCurrencies.Currencies)
+                    Console.WriteLine($"\t\t\t- {currency.Currency},\t{currency.Balance.ToString(F)}");
+
+                Portfolio portfolio = await context.PortfolioAsync(brokerAccountId).ConfigureAwait(false);
+                Console.WriteLine($"\t\t- Portfolio ({brokerAccountType}):");
+                foreach (Portfolio.Position position in portfolio.Positions)
+                {
+                    MoneyAmount price = position.AveragePositionPrice;
+                    Console.WriteLine(
+                        $"\t\t\t- {position.Ticker},\t{position.Balance.ToString(F)},\t{price.Value.ToString(F)}\t{price.Currency}");
+                }
             }
         }
     }
