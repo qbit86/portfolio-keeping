@@ -15,4 +15,10 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup Condition="Exists('token-tinkoff.txt')">
+    <None Update="token-tinkoff.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
