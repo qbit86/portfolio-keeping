@@ -13,7 +13,7 @@ EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{7837B1D9-A524-4F16-BA15-390FFDFD1F7D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diversifolio.TinkoffPlayground", "samples\Diversifolio.TinkoffPlayground\Diversifolio.TinkoffPlayground.csproj", "{5A2AD999-ED2A-48A1-9A29-941C6672E4B2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TinkoffPlayground", "samples\TinkoffPlayground\TinkoffPlayground.csproj", "{5A2AD999-ED2A-48A1-9A29-941C6672E4B2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlitePlayground", "samples\SqlitePlayground\SqlitePlayground.csproj", "{678B765C-61E6-46AE-9CC2-2D1E7C635008}"
 EndProject
