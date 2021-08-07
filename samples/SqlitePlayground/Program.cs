@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Globalization;
 using System.IO;
+using System.Reflection;
+using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
 
 [assembly: CLSCompliant(true)]
@@ -11,7 +13,7 @@ namespace Diversifolio
     {
         private static CultureInfo F => CultureInfo.InvariantCulture;
 
-        private static void Main()
+        private static async Task Main()
         {
             string dateString = DateTime.Now.ToString("yyyy-MM-dd", F);
             string dirName = Path.Join(
@@ -27,8 +29,18 @@ namespace Diversifolio
                 Mode = SqliteOpenMode.ReadWriteCreate
             };
             string connectionString = connectionStringBuilder.ToString();
-            using SqliteConnection connection = new(connectionString);
+            await using SqliteConnection connection = new(connectionString);
             connection.Open();
+
+            var assembly = Assembly.GetExecutingAssembly();
+            string[] resourceNames = assembly.GetManifestResourceNames();
+            Console.WriteLine($"{nameof(resourceNames)}: {string.Join(", ", resourceNames)}");
+
+            await using Stream stream = assembly.GetManifestResourceStream(typeof(Program), "CreatePosition.sql")!;
+            using StreamReader reader = new(stream);
+            string commandText = await reader.ReadToEndAsync().ConfigureAwait(false);
+            await using SqliteCommand command = new(commandText, connection);
+            command.ExecuteReader();
         }
     }
 }
