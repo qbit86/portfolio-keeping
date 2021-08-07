@@ -47,61 +47,65 @@ namespace Diversifolio
         internal const string Vtby = "VTBY";
         internal const string Yndx = "YNDX";
 
-        private static (string, AssetClass, string)[]? s_securities;
+        private static (string, AssetClass, string, string)[]? s_securities;
         private static IDictionary<string, AssetClass>? s_assetClassByTicker;
+        private static IDictionary<string, string>? s_marketByTicker;
         private static IDictionary<string, string>? s_boardByTicker;
 
-        private static (string, AssetClass, string)[] Securities => s_securities ??= CreateSecurities();
+        private static (string, AssetClass, string, string)[] Securities => s_securities ??= CreateSecurities();
 
         internal static IDictionary<string, AssetClass> AssetClassByTicker =>
             s_assetClassByTicker ??= Securities.ToDictionary(it => it.Item1, it => it.Item2);
 
-        internal static IDictionary<string, string> BoardByTicker =>
-            s_boardByTicker ??= Securities.ToDictionary(it => it.Item1, it => it.Item3);
+        internal static IDictionary<string, string> MarketByTicker =>
+            s_marketByTicker ??= Securities.ToDictionary(it => it.Item1, it => it.Item3);
 
-        private static (string, AssetClass, string)[] CreateSecurities() => new[]
+        internal static IDictionary<string, string> BoardByTicker =>
+            s_boardByTicker ??= Securities.ToDictionary(it => it.Item1, it => it.Item4);
+
+        private static (string, AssetClass, string, string)[] CreateSecurities() => new[]
         {
-            (Dsky, AssetClass.Stock, Boards.Tqbr),
-            (Fxcn, AssetClass.Stock, Boards.Tqtf),
-            (Fxde, AssetClass.Stock, Boards.Tqtf),
-            (Fxdm, AssetClass.Stock, Boards.Tqtf),
-            (Fxes, AssetClass.Stock, Boards.Tqtf),
-            (Fxgd, AssetClass.Stock, Boards.Tqtf),
-            (Fxim, AssetClass.Stock, Boards.Tqtd),
-            (Fxip, AssetClass.Stock, Boards.Tqtf),
-            (Fxit, AssetClass.Stock, Boards.Tqtf),
-            (Fxmm, AssetClass.Stock, Boards.Tqtf),
-            (Fxrb, AssetClass.Stock, Boards.Tqtf),
-            (Fxrl, AssetClass.Stock, Boards.Tqtf),
-            (Fxru, AssetClass.Stock, Boards.Tqtf),
-            (Fxrw, AssetClass.Stock, Boards.Tqtf),
-            (Fxtb, AssetClass.Stock, Boards.Tqtf),
-            (Fxtp, AssetClass.Stock, Boards.Tqtf),
-            (Fxus, AssetClass.Stock, Boards.Tqtf),
-            (Fxwo, AssetClass.Stock, Boards.Tqtf),
-            (Mgnt, AssetClass.Stock, Boards.Tqbr),
-            (Mvid, AssetClass.Stock, Boards.Tqbr),
-            (Rtkm, AssetClass.Stock, Boards.Tqbr),
-            (Sbcb, AssetClass.Stock, Boards.Tqtf),
-            (Sbgb, AssetClass.Stock, Boards.Tqtf),
-            (Sbmx, AssetClass.Stock, Boards.Tqtf),
-            (Sbrb, AssetClass.Stock, Boards.Tqtf),
-            (Sbsp, AssetClass.Stock, Boards.Tqtf),
-            (Tbio, AssetClass.Stock, Boards.Tqtd),
-            (Tech, AssetClass.Stock, Boards.Tqtd),
-            (Tmos, AssetClass.Stock, Boards.Tqtf),
-            (Tspx, AssetClass.Stock, Boards.Tqtd),
-            (Vtba, AssetClass.Stock, Boards.Tqtf),
-            (Vtbb, AssetClass.Stock, Boards.Tqtf),
-            (Vtbe, AssetClass.Stock, Boards.Tqtf),
-            (Vtbh, AssetClass.Stock, Boards.Tqtf),
-            (Vtbu, AssetClass.Stock, Boards.Tqtf),
-            (Vtbx, AssetClass.Stock, Boards.Tqtf),
-            (Vtby, AssetClass.Stock, Boards.Tqtf),
-            (Yndx, AssetClass.Stock, Boards.Tqbr),
-            (Su25083, AssetClass.Bond, Boards.Tqob),
-            (Su26214, AssetClass.Bond, Boards.Tqob),
-            (Su29012, AssetClass.Bond, Boards.Tqob)
+            (Dsky, AssetClass.Stock, Markets.Shares, Boards.Tqbr),
+            (Fxcn, AssetClass.Stock, Markets.Shares, Boards.Tqtf),
+            (Fxde, AssetClass.Stock, Markets.Shares, Boards.Tqtf),
+            (Fxdm, AssetClass.Stock, Markets.Shares, Boards.Tqtf),
+            (Fxes, AssetClass.Stock, Markets.Shares, Boards.Tqtf),
+            (Fxgd, AssetClass.Commodity, Markets.Shares, Boards.Tqtf),
+            (Fxim, AssetClass.Stock, Markets.Shares, Boards.Tqtd),
+            (Fxip, AssetClass.Bond, Markets.Shares, Boards.Tqtf),
+            (Fxit, AssetClass.Stock, Markets.Shares, Boards.Tqtf),
+            (Fxmm, AssetClass.Bond, Markets.Shares, Boards.Tqtf),
+            (Fxrb, AssetClass.Bond, Markets.Shares, Boards.Tqtf),
+            (Fxrl, AssetClass.Stock, Markets.Shares, Boards.Tqtf),
+            (Fxru, AssetClass.Bond, Markets.Shares, Boards.Tqtf),
+            (Fxrw, AssetClass.Stock, Markets.Shares, Boards.Tqtf),
+            (Fxtb, AssetClass.Bond, Markets.Shares, Boards.Tqtf),
+            (Fxtp, AssetClass.Bond, Markets.Shares, Boards.Tqtf),
+            (Fxus, AssetClass.Stock, Markets.Shares, Boards.Tqtf),
+            (Fxwo, AssetClass.Stock, Markets.Shares, Boards.Tqtf),
+            (Mgnt, AssetClass.Stock, Markets.Shares, Boards.Tqbr),
+            (Mvid, AssetClass.Stock, Markets.Shares, Boards.Tqbr),
+            (Rtkm, AssetClass.Stock, Markets.Shares, Boards.Tqbr),
+            (Sbcb, AssetClass.Bond, Markets.Shares, Boards.Tqtf),
+            (Sbgb, AssetClass.Bond, Markets.Shares, Boards.Tqtf),
+            (Sbmx, AssetClass.Stock, Markets.Shares, Boards.Tqtf),
+            (Sbrb, AssetClass.Bond, Markets.Shares, Boards.Tqtf),
+            (Sbsp, AssetClass.Stock, Markets.Shares, Boards.Tqtf),
+            (Su25083, AssetClass.Bond, Markets.Bonds, Boards.Tqob),
+            (Su26214, AssetClass.Bond, Markets.Bonds, Boards.Tqob),
+            (Su29012, AssetClass.Bond, Markets.Bonds, Boards.Tqob),
+            (Tbio, AssetClass.Stock, Markets.Shares, Boards.Tqtd),
+            (Tech, AssetClass.Stock, Markets.Shares, Boards.Tqtd),
+            (Tmos, AssetClass.Stock, Markets.Shares, Boards.Tqtf),
+            (Tspx, AssetClass.Stock, Markets.Shares, Boards.Tqtd),
+            (Vtba, AssetClass.Stock, Markets.Shares, Boards.Tqtf),
+            (Vtbb, AssetClass.Bond, Markets.Shares, Boards.Tqtf),
+            (Vtbe, AssetClass.Stock, Markets.Shares, Boards.Tqtf),
+            (Vtbh, AssetClass.Bond, Markets.Shares, Boards.Tqtf),
+            (Vtbu, AssetClass.Bond, Markets.Shares, Boards.Tqtf),
+            (Vtbx, AssetClass.Stock, Markets.Shares, Boards.Tqtf),
+            (Vtby, AssetClass.Bond, Markets.Shares, Boards.Tqtf),
+            (Yndx, AssetClass.Stock, Markets.Shares, Boards.Tqbr)
         };
     }
 }
