@@ -10,4 +10,9 @@
     <PackageReference Include="Microsoft.Data.Sqlite" Version="5.0.8"/>
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="CreatePosition.sql"/>
+    <EmbeddedResource Include="CreatePosition.sql"/>
+  </ItemGroup>
+
 </Project>
