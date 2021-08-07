@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Diversifolio
 {
-    internal static class Tickers
+    public static class Tickers
     {
         public const string Dsky = "DSKY";
         public const string Fxcn = "FXCN";
@@ -54,6 +54,7 @@ namespace Diversifolio
         private static IDictionary<string, string>? s_boardByTicker;
         private static ILookup<AssetClass, string>? s_tickersByAssetClass;
         private static ILookup<string, string>? s_tickersByMarket;
+        private static ILookup<string, string>? s_tickersByBoard;
 
         private static (string, AssetClass, string, string)[] Securities => s_securities ??= CreateSecurities();
 
@@ -71,6 +72,9 @@ namespace Diversifolio
 
         public static ILookup<string, string> TickersByMarket => s_tickersByMarket ??=
             Securities.ToLookup(it => it.Item3, it => it.Item1, StringComparer.Ordinal);
+
+        public static ILookup<string, string> TickersByBoard => s_tickersByBoard ??=
+            Securities.ToLookup(it => it.Item4, it => it.Item1, StringComparer.Ordinal);
 
         private static (string, AssetClass, string, string)[] CreateSecurities() => new[]
         {
