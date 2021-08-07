@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -5,63 +6,71 @@ namespace Diversifolio
 {
     internal static class Tickers
     {
-        internal const string Dsky = "DSKY";
-        internal const string Fxcn = "FXCN";
-        internal const string Fxde = "FXDE";
-        internal const string Fxdm = "FXDM";
-        internal const string Fxes = "FXES";
-        internal const string Fxgd = "FXGD";
-        internal const string Fxim = "FXIM";
-        internal const string Fxip = "FXIP";
-        internal const string Fxit = "FXIT";
-        internal const string Fxmm = "FXMM";
-        internal const string Fxrb = "FXRB";
-        internal const string Fxrl = "FXRL";
-        internal const string Fxru = "FXRU";
-        internal const string Fxrw = "FXRW";
-        internal const string Fxtb = "FXTB";
-        internal const string Fxtp = "FXTP";
-        internal const string Fxus = "FXUS";
-        internal const string Fxwo = "FXWO";
-        internal const string Mgnt = "MGNT";
-        internal const string Mvid = "MVID";
-        internal const string Rtkm = "RTKM";
-        internal const string Sbcb = "SBCB";
-        internal const string Sbgb = "SBGB";
-        internal const string Sbmx = "SBMX";
-        internal const string Sbrb = "SBRB";
-        internal const string Sbsp = "SBSP";
-        internal const string Su25083 = "SU25083RMFS5";
-        internal const string Su26214 = "SU26214RMFS5";
-        internal const string Su29012 = "SU29012RMFS0";
-        internal const string Tbio = "TBIO";
-        internal const string Tech = "TECH";
-        internal const string Tmos = "TMOS";
-        internal const string Tspx = "TSPX";
-        internal const string Vtba = "VTBA";
-        internal const string Vtbb = "VTBB";
-        internal const string Vtbe = "VTBE";
-        internal const string Vtbh = "VTBH";
-        internal const string Vtbu = "VTBU";
-        internal const string Vtbx = "VTBX";
-        internal const string Vtby = "VTBY";
-        internal const string Yndx = "YNDX";
+        public const string Dsky = "DSKY";
+        public const string Fxcn = "FXCN";
+        public const string Fxde = "FXDE";
+        public const string Fxdm = "FXDM";
+        public const string Fxes = "FXES";
+        public const string Fxgd = "FXGD";
+        public const string Fxim = "FXIM";
+        public const string Fxip = "FXIP";
+        public const string Fxit = "FXIT";
+        public const string Fxmm = "FXMM";
+        public const string Fxrb = "FXRB";
+        public const string Fxrl = "FXRL";
+        public const string Fxru = "FXRU";
+        public const string Fxrw = "FXRW";
+        public const string Fxtb = "FXTB";
+        public const string Fxtp = "FXTP";
+        public const string Fxus = "FXUS";
+        public const string Fxwo = "FXWO";
+        public const string Mgnt = "MGNT";
+        public const string Mvid = "MVID";
+        public const string Rtkm = "RTKM";
+        public const string Sbcb = "SBCB";
+        public const string Sbgb = "SBGB";
+        public const string Sbmx = "SBMX";
+        public const string Sbrb = "SBRB";
+        public const string Sbsp = "SBSP";
+        public const string Su25083 = "SU25083RMFS5";
+        public const string Su26214 = "SU26214RMFS5";
+        public const string Su29012 = "SU29012RMFS0";
+        public const string Tbio = "TBIO";
+        public const string Tech = "TECH";
+        public const string Tmos = "TMOS";
+        public const string Tspx = "TSPX";
+        public const string Vtba = "VTBA";
+        public const string Vtbb = "VTBB";
+        public const string Vtbe = "VTBE";
+        public const string Vtbh = "VTBH";
+        public const string Vtbu = "VTBU";
+        public const string Vtbx = "VTBX";
+        public const string Vtby = "VTBY";
+        public const string Yndx = "YNDX";
 
         private static (string, AssetClass, string, string)[]? s_securities;
         private static IDictionary<string, AssetClass>? s_assetClassByTicker;
         private static IDictionary<string, string>? s_marketByTicker;
         private static IDictionary<string, string>? s_boardByTicker;
+        private static ILookup<AssetClass, string>? s_tickersByAssetClass;
+        private static ILookup<string, string>? s_tickersByMarket;
 
         private static (string, AssetClass, string, string)[] Securities => s_securities ??= CreateSecurities();
 
-        internal static IDictionary<string, AssetClass> AssetClassByTicker =>
-            s_assetClassByTicker ??= Securities.ToDictionary(it => it.Item1, it => it.Item2);
+        public static IDictionary<string, AssetClass> AssetClassByTicker => s_assetClassByTicker ??=
+            Securities.ToDictionary(it => it.Item1, it => it.Item2, StringComparer.Ordinal);
 
-        internal static IDictionary<string, string> MarketByTicker =>
-            s_marketByTicker ??= Securities.ToDictionary(it => it.Item1, it => it.Item3);
+        public static IDictionary<string, string> MarketByTicker => s_marketByTicker ??=
+            Securities.ToDictionary(it => it.Item1, it => it.Item3, StringComparer.Ordinal);
 
-        internal static IDictionary<string, string> BoardByTicker =>
-            s_boardByTicker ??= Securities.ToDictionary(it => it.Item1, it => it.Item4);
+        public static IDictionary<string, string> BoardByTicker => s_boardByTicker ??=
+            Securities.ToDictionary(it => it.Item1, it => it.Item4, StringComparer.Ordinal);
+
+        public static ILookup<AssetClass, string> TickersByAssetClass => s_tickersByAssetClass ??=
+            Securities.ToLookup(it => it.Item2, it => it.Item1);
+
+        public static ILookup<string, string> TickersByMarket => s_tickersByMarket ??=
+            Securities.ToLookup(it => it.Item3, it => it.Item1, StringComparer.Ordinal);
 
         private static (string, AssetClass, string, string)[] CreateSecurities() => new[]
         {
