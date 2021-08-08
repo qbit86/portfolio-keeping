@@ -2,7 +2,7 @@
 
 namespace Diversifolio
 {
-    public record Security(
+    public sealed record Security(
         string SecId, string BoardId, string CurrencyId, int LotSize, decimal FaceValue, int Decimals,
         decimal PrevAdmittedQuote)
     {
