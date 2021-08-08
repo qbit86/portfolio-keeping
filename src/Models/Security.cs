@@ -2,26 +2,12 @@
 
 namespace Diversifolio
 {
-    public sealed class Security
+    public record Security(
+        string SecId, string BoardId, string CurrencyId, int LotSize, decimal FaceValue, int Decimals,
+        decimal PrevAdmittedQuote)
     {
-        public Security(string secId, string boardId, string currencyId, int lotSize, decimal faceValue, int decimals,
-            decimal prevAdmittedQuote)
-        {
-            SecId = secId ?? throw new ArgumentNullException(nameof(secId));
-            BoardId = boardId ?? throw new ArgumentNullException(nameof(boardId));
-            CurrencyId = currencyId ?? throw new ArgumentNullException(nameof(currencyId));
-            LotSize = lotSize;
-            FaceValue = faceValue;
-            Decimals = decimals;
-            PrevAdmittedQuote = prevAdmittedQuote;
-        }
-
-        public string SecId { get; }
-        public string BoardId { get; }
-        public string CurrencyId { get; }
-        public int LotSize { get; }
-        public decimal FaceValue { get; }
-        public int Decimals { get; }
-        public decimal PrevAdmittedQuote { get; }
+        public string SecId { get; init; } = SecId ?? throw new ArgumentNullException(nameof(SecId));
+        public string BoardId { get; init; } = BoardId ?? throw new ArgumentNullException(nameof(BoardId));
+        public string CurrencyId { get; init; } = CurrencyId ?? throw new ArgumentNullException(nameof(CurrencyId));
     }
 }
