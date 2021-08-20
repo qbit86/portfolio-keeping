@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS Position
+(
+    Ticker  TEXT PRIMARY KEY,
+    Balance INTEGER
+)

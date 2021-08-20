@@ -7,8 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Logic\Logic.csproj" />
-    <ProjectReference Include="..\Models\Models.csproj" />
+    <ProjectReference Include="..\Logic\Logic.csproj"/>
+    <ProjectReference Include="..\Models\Models.csproj"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="CreatePosition.sql"/>
+    <EmbeddedResource Include="CreatePosition.sql"/>
   </ItemGroup>
 
 </Project>
