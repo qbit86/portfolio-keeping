@@ -21,7 +21,7 @@ namespace Diversifolio
                 Mode = SqliteOpenMode.ReadOnly
             };
             string connectionString = connectionStringBuilder.ToString();
-            await using SqliteConnection connection = new(connectionString);
+            SqliteConnection connection = new(connectionString);
             connection.Open();
             return connection;
         }
