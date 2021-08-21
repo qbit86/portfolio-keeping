@@ -1,4 +1,6 @@
 using System;
+using System.Globalization;
+using System.Text;
 
 namespace Diversifolio
 {
@@ -22,5 +24,24 @@ namespace Diversifolio
         public static bool operator ==(Position left, Position right) => left.Equals(right);
 
         public static bool operator !=(Position left, Position right) => !left.Equals(right);
+
+        public override string ToString()
+        {
+            StringBuilder sb = new(50);
+            sb.Append(nameof(Position) + " { ");
+            sb.Append(nameof(Ticker) + " = ");
+            sb.Append(Ticker);
+            sb.Append(", " + nameof(Balance) + " = ");
+            // src/libraries/System.Private.CoreLib/src/System/Number.NumberBuffer.cs
+            const int decimalNumberBufferLength = 29 + 1 + 1;
+            const string balanceFormat = "G";
+            Span<char> buffer = stackalloc char[decimalNumberBufferLength];
+            if (Balance.TryFormat(buffer, out int charsWritten, balanceFormat, CultureInfo.InvariantCulture))
+                sb.Append(buffer[..charsWritten]);
+            else
+                sb.Append(Balance.ToString(balanceFormat, CultureInfo.InvariantCulture));
+            sb.Append(" }");
+            return sb.ToString();
+        }
     }
 }
