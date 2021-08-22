@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 
 namespace Diversifolio
 {
-    internal abstract record PositionProvider(string PortfolioName)
+    public abstract record PositionProvider(string PortfolioName)
     {
-        internal string PortfolioName { get; } =
+        public string PortfolioName { get; } =
             PortfolioName ?? throw new ArgumentNullException(nameof(PortfolioName));
 
-        internal async Task<ImmutableDictionary<string, Position>> GetPositions()
+        public async Task<ImmutableDictionary<string, Position>> GetPositions()
         {
             ImmutableDictionary<string, Position>.Builder builder =
                 ImmutableDictionary.CreateBuilder<string, Position>(StringComparer.Ordinal);
