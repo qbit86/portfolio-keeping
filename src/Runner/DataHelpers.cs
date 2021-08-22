@@ -8,12 +8,12 @@ namespace Diversifolio
     internal static class DataHelpers
     {
         internal static async Task<SqliteConnection> CreatePortfolioConnection(
-            string directoryPath, string portfolioName)
+            string portfolioName, string directoryPath)
         {
             Directory.CreateDirectory(directoryPath);
             string databasePath = Path.Join(directoryPath, portfolioName + ".db");
             if (!File.Exists(databasePath))
-                await CreatePortfolioDatabase(directoryPath, portfolioName, databasePath).ConfigureAwait(false);
+                await CreatePortfolioDatabase(portfolioName, directoryPath, databasePath).ConfigureAwait(false);
 
             SqliteConnectionStringBuilder connectionStringBuilder = new()
             {
@@ -27,7 +27,7 @@ namespace Diversifolio
         }
 
         private static async Task CreatePortfolioDatabase(
-            string directoryPath, string portfolioName, string databasePath)
+            string portfolioName, string directoryPath, string databasePath)
         {
             SqliteConnectionStringBuilder connectionStringBuilder = new()
             {
@@ -38,7 +38,7 @@ namespace Diversifolio
             await using SqliteConnection connection = new(connectionString);
             connection.Open();
             await CreatePositionTable(connection).ConfigureAwait(false);
-            await PopulatePositionTable(connection, directoryPath, portfolioName).ConfigureAwait(false);
+            await PopulatePositionTable(connection, portfolioName, directoryPath).ConfigureAwait(false);
         }
 
         private static async Task CreatePositionTable(SqliteConnection connection)
@@ -50,7 +50,7 @@ namespace Diversifolio
         }
 
         private static async Task PopulatePositionTable(
-            SqliteConnection connection, string directoryPath, string portfolioName)
+            SqliteConnection connection, string portfolioName, string directoryPath)
         {
             string scriptPath = Path.Join(directoryPath, portfolioName + ".sql");
             using StreamReader reader = new(scriptPath);
