@@ -15,8 +15,7 @@ namespace Diversifolio
         private static async Task Main()
         {
             const string portfolioName = PortfolioNames.TinkoffIis;
-            PositionProvider positionProvider = new DatabasePositionProvider(portfolioName);
-
+            PositionProvider positionProvider = PositionProviderFactory.Create(portfolioName);
             ImmutableDictionary<string, Position> positionByTicker =
                 await positionProvider.GetPositions().ConfigureAwait(false);
             var positions = positionByTicker.Values.OrderBy(it => it.Ticker, StringComparer.Ordinal).ToImmutableArray();
