@@ -7,7 +7,7 @@ namespace Diversifolio
 {
     internal abstract record PositionProvider(string PortfolioName)
     {
-        internal string PortfolioName { get; init; } =
+        internal string PortfolioName { get; } =
             PortfolioName ?? throw new ArgumentNullException(nameof(PortfolioName));
 
         internal async Task<ImmutableDictionary<string, Position>> GetPositions()
