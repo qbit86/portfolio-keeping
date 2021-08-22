@@ -6,10 +6,13 @@ using Microsoft.Data.Sqlite;
 
 namespace Diversifolio
 {
-    internal sealed record DatabasePositionProvider(string PortfolioName) : PositionProvider(PortfolioName)
+    public sealed record DatabasePositionProvider(string PortfolioName) : PositionProvider(PortfolioName)
     {
-        protected override async Task UncheckedPopulatePositions(IDictionary<string, Position> positions)
+        protected override async Task PopulatePositions(IDictionary<string, Position> positions)
         {
+            if (positions is null)
+                throw new ArgumentNullException(nameof(positions));
+
             string directoryPath = Path.Join(
                 Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), nameof(Diversifolio));
             await using SqliteConnection connection =

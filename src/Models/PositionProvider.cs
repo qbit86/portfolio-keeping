@@ -15,10 +15,10 @@ namespace Diversifolio
             ImmutableDictionary<string, Position>.Builder builder =
                 ImmutableDictionary.CreateBuilder<string, Position>(StringComparer.Ordinal);
 
-            await UncheckedPopulatePositions(builder).ConfigureAwait(false);
+            await PopulatePositions(builder).ConfigureAwait(false);
             return builder.ToImmutable();
         }
 
-        protected abstract Task UncheckedPopulatePositions(IDictionary<string, Position> positions);
+        protected abstract Task PopulatePositions(IDictionary<string, Position> positions);
     }
 }
