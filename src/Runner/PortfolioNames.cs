@@ -1,6 +1,6 @@
 namespace Diversifolio
 {
-    internal static class Accounts
+    internal static class PortfolioNames
     {
         internal const string Sber = nameof(Sber);
         internal const string TinkoffIis = nameof(TinkoffIis);

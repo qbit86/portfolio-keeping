@@ -17,7 +17,7 @@ namespace Diversifolio
         {
             string directoryPath = Path.Join(
                 Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), nameof(Diversifolio));
-            const string portfolioName = Accounts.TinkoffIis;
+            const string portfolioName = PortfolioNames.TinkoffIis;
             await using SqliteConnection connection =
                 await DataHelpers.CreatePortfolioConnection(portfolioName, directoryPath).ConfigureAwait(false);
 
