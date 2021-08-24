@@ -10,7 +10,7 @@ namespace Diversifolio
                 throw new ArgumentNullException(portfolioName);
 
             if (portfolioName == PortfolioNames.TinkoffIis)
-                return new DatabasePositionProvider(portfolioName);
+                return new TinkoffPositionProvider(portfolioName);
 
             return new DatabasePositionProvider(portfolioName);
         }
