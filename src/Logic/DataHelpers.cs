@@ -26,7 +26,7 @@ namespace Diversifolio
             return connection;
         }
 
-        private static async Task CreatePortfolioDatabase(
+        internal static async Task CreatePortfolioDatabase(
             string portfolioName, string directoryPath, string databasePath)
         {
             SqliteConnectionStringBuilder connectionStringBuilder = new()

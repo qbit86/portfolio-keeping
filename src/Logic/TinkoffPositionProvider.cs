@@ -15,8 +15,21 @@ namespace Diversifolio
 
             string directoryPath = Path.Join(
                 Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), nameof(Diversifolio));
-            await using SqliteConnection connection =
-                await DataHelpers.CreatePortfolioConnection(PortfolioName, directoryPath).ConfigureAwait(false);
+
+            Directory.CreateDirectory(directoryPath);
+            string databasePath = Path.Join(directoryPath, PortfolioName + ".db");
+            if (!File.Exists(databasePath))
+                await DataHelpers.CreatePortfolioDatabase(PortfolioName, directoryPath, databasePath)
+                    .ConfigureAwait(false);
+
+            SqliteConnectionStringBuilder connectionStringBuilder = new()
+            {
+                DataSource = databasePath,
+                Mode = SqliteOpenMode.ReadOnly
+            };
+            string connectionString = connectionStringBuilder.ToString();
+            await using SqliteConnection connection = new(connectionString);
+            connection.Open();
 
             const string commandText = "SELECT Ticker, Balance FROM Position";
             await using SqliteCommand command = new(commandText, connection);
