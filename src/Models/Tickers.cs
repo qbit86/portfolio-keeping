@@ -7,9 +7,9 @@ namespace Diversifolio
     public static class Tickers
     {
         private static (string, AssetClass, string, string)[]? s_securities;
-        private static IDictionary<string, AssetClass>? s_assetClassByTicker;
-        private static IDictionary<string, string>? s_marketByTicker;
-        private static IDictionary<string, string>? s_boardByTicker;
+        private static Dictionary<string, AssetClass>? s_assetClassByTicker;
+        private static Dictionary<string, string>? s_marketByTicker;
+        private static Dictionary<string, string>? s_boardByTicker;
         private static ILookup<AssetClass, string>? s_tickersByAssetClass;
         private static ILookup<string, string>? s_tickersByMarket;
         private static ILookup<string, string>? s_tickersByBoard;
@@ -17,13 +17,13 @@ namespace Diversifolio
         private static (string Ticker, AssetClass AssetClass, string Market, string Board)[] Securities =>
             s_securities ??= CreateSecurities();
 
-        public static IDictionary<string, AssetClass> AssetClassByTicker => s_assetClassByTicker ??=
+        public static IReadOnlyDictionary<string, AssetClass> AssetClassByTicker => s_assetClassByTicker ??=
             Securities.ToDictionary(it => it.Item1, it => it.Item2, StringComparer.Ordinal);
 
-        public static IDictionary<string, string> MarketByTicker => s_marketByTicker ??=
+        public static IReadOnlyDictionary<string, string> MarketByTicker => s_marketByTicker ??=
             Securities.ToDictionary(it => it.Item1, it => it.Item3, StringComparer.Ordinal);
 
-        public static IDictionary<string, string> BoardByTicker => s_boardByTicker ??=
+        public static IReadOnlyDictionary<string, string> BoardByTicker => s_boardByTicker ??=
             Securities.ToDictionary(it => it.Item1, it => it.Item4, StringComparer.Ordinal);
 
         public static ILookup<AssetClass, string> TickersByAssetClass => s_tickersByAssetClass ??=
