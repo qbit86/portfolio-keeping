@@ -11,7 +11,7 @@ namespace Diversifolio
     public sealed record TinkoffPositionProvider(string PortfolioName, BrokerAccountType BrokerAccountType) :
         PositionProvider(PortfolioName)
     {
-        protected override async Task PopulatePositions(IDictionary<string, Position> positions)
+        protected override async Task PopulatePositions<TDictionary>(TDictionary positions)
         {
             if (positions is null)
                 throw new ArgumentNullException(nameof(positions));

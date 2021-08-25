@@ -19,6 +19,7 @@ namespace Diversifolio
             return builder.ToImmutable();
         }
 
-        protected abstract Task PopulatePositions(IDictionary<string, Position> positions);
+        protected abstract Task PopulatePositions<TDictionary>(TDictionary positions)
+            where TDictionary : IDictionary<string, Position>;
     }
 }
