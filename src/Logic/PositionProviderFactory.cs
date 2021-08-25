@@ -1,4 +1,5 @@
 using System;
+using Tinkoff.Trading.OpenApi.Models;
 
 namespace Diversifolio
 {
@@ -10,7 +11,7 @@ namespace Diversifolio
                 throw new ArgumentNullException(portfolioName);
 
             if (portfolioName == PortfolioNames.TinkoffIis)
-                return new TinkoffPositionProvider(portfolioName);
+                return new TinkoffPositionProvider(portfolioName, BrokerAccountType.TinkoffIis);
 
             return new DatabasePositionProvider(portfolioName);
         }

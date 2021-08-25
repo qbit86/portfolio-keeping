@@ -7,6 +7,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Data.Sqlite" Version="5.0.8"/>
+    <PackageReference Include="Tinkoff.Trading.OpenApi" Version="1.7.4"/>
   </ItemGroup>
 
   <ItemGroup>
@@ -16,6 +17,12 @@
   <ItemGroup>
     <None Remove="CreatePosition.sql"/>
     <EmbeddedResource Include="CreatePosition.sql"/>
+  </ItemGroup>
+
+  <ItemGroup Condition="Exists('token-tinkoff.txt')">
+    <None Update="token-tinkoff.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

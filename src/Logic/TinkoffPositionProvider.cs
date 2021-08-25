@@ -1,46 +1,33 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Data.Sqlite;
+using Tinkoff.Trading.OpenApi.Models;
+using Tinkoff.Trading.OpenApi.Network;
 
 namespace Diversifolio
 {
-    public sealed record TinkoffPositionProvider(string PortfolioName) : PositionProvider(PortfolioName)
+    public sealed record TinkoffPositionProvider(string PortfolioName, BrokerAccountType BrokerAccountType) :
+        PositionProvider(PortfolioName)
     {
         protected override async Task PopulatePositions(IDictionary<string, Position> positions)
         {
             if (positions is null)
                 throw new ArgumentNullException(nameof(positions));
 
-            string directoryPath = Path.Join(
-                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), nameof(Diversifolio));
+            using var reader = new StreamReader("token-tinkoff.txt");
+            string? token = await reader.ReadLineAsync().ConfigureAwait(false);
 
-            Directory.CreateDirectory(directoryPath);
-            string databasePath = Path.Join(directoryPath, PortfolioName + ".db");
-            if (!File.Exists(databasePath))
-                await DataHelpers.CreatePortfolioDatabase(PortfolioName, directoryPath, databasePath)
-                    .ConfigureAwait(false);
+            // https://github.com/TinkoffCreditSystems/invest-openapi-csharp-sdk
+            using Connection connection = ConnectionFactory.GetConnection(token);
+            Context context = connection.Context;
 
-            SqliteConnectionStringBuilder connectionStringBuilder = new()
-            {
-                DataSource = databasePath,
-                Mode = SqliteOpenMode.ReadOnly
-            };
-            string connectionString = connectionStringBuilder.ToString();
-            await using SqliteConnection connection = new(connectionString);
-            connection.Open();
-
-            const string commandText = "SELECT Ticker, Balance FROM Position";
-            await using SqliteCommand command = new(commandText, connection);
-            SqliteDataReader query = command.ExecuteReader();
-            while (query.Read())
-            {
-                string ticker = query.GetString(0);
-                decimal balance = query.GetInt32(1);
-                Position position = new(ticker, balance);
-                positions[ticker] = position;
-            }
+            IReadOnlyCollection<Account> accounts = await context.AccountsAsync().ConfigureAwait(false);
+            Account account = accounts.Single(it => it.BrokerAccountType == BrokerAccountType);
+            Portfolio portfolio = await context.PortfolioAsync(account.BrokerAccountId).ConfigureAwait(false);
+            foreach (Portfolio.Position position in portfolio.Positions)
+                positions[position.Ticker] = new(position.Ticker, position.Balance);
         }
     }
 }
