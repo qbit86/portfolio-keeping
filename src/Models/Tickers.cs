@@ -14,7 +14,8 @@ namespace Diversifolio
         private static ILookup<string, string>? s_tickersByMarket;
         private static ILookup<string, string>? s_tickersByBoard;
 
-        private static (string, AssetClass, string, string)[] Securities => s_securities ??= CreateSecurities();
+        private static (string Ticker, AssetClass AssetClass, string Market, string Board)[] Securities =>
+            s_securities ??= CreateSecurities();
 
         public static IDictionary<string, AssetClass> AssetClassByTicker => s_assetClassByTicker ??=
             Securities.ToDictionary(it => it.Item1, it => it.Item2, StringComparer.Ordinal);
