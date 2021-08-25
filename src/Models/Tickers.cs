@@ -70,7 +70,7 @@ namespace Diversifolio
             ("TECH", AssetClass.Stock, Markets.Shares, Boards.Tqtd),
             ("TMOS", AssetClass.Stock, Markets.Shares, Boards.Tqtf),
             ("TSPX", AssetClass.Stock, Markets.Shares, Boards.Tqtd),
-            ("USD000UTSTOM", AssetClass.None, Markets.Selt, Boards.Cets),
+            ("USD000UTSTOM", AssetClass.Currency, Markets.Selt, Boards.Cets),
             ("VTBA", AssetClass.Stock, Markets.Shares, Boards.Tqtf),
             ("VTBB", AssetClass.Bond, Markets.Shares, Boards.Tqtf),
             ("VTBE", AssetClass.Stock, Markets.Shares, Boards.Tqtf),

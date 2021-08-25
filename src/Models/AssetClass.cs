@@ -5,6 +5,7 @@ namespace Diversifolio
         None,
         Stock,
         Bond,
+        Currency,
         Commodity
     }
 }
