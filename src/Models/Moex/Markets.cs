@@ -1,4 +1,4 @@
-namespace Diversifolio
+namespace Diversifolio.Moex
 {
     public static class Markets
     {
