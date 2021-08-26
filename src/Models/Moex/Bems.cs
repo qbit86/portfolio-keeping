@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Diversifolio.Moex
@@ -6,7 +7,11 @@ namespace Diversifolio.Moex
     public static class Bems
     {
         private static (string, string, string)[]? s_bemTuples;
+        private static Dictionary<string, Bem>? s_bemByBoard;
         private static ILookup<string, Bem>? s_bemsByEngine;
+
+        public static IReadOnlyDictionary<string, Bem> BemByBoard => s_bemByBoard ??=
+            BemTuples.ToDictionary(it => it.Board, it => new Bem(it.Board, it.Engine, it.Market));
 
         public static ILookup<string, Bem> BemsByEngine => s_bemsByEngine ??=
             BemTuples.ToLookup(it => it.Engine, it => new Bem(it.Board, it.Engine, it.Market), StringComparer.Ordinal);
