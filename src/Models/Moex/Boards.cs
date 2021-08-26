@@ -1,5 +1,9 @@
 namespace Diversifolio.Moex
 {
+    // https://iss.moex.com/iss/engines/currency/markets/selt
+    // https://iss.moex.com/iss/engines/stock/markets/bonds
+    // https://iss.moex.com/iss/engines/stock/markets/shares
+
     internal static class Boards
     {
         internal const string Cets = "CETS";
