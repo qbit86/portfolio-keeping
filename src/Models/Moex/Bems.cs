@@ -1,11 +1,17 @@
+using System;
+using System.Linq;
+
 namespace Diversifolio.Moex
 {
     public static class Bems
     {
         private static (string, string, string)[]? s_bemTuples;
+        private static ILookup<string, Bem>? s_bemsByEngine;
 
-        private static (string Board, string Engine, string Market)[] BemTuples =>
-            s_bemTuples ??= CreateBemTuples();
+        public static ILookup<string, Bem> BemsByEngine => s_bemsByEngine ??=
+            BemTuples.ToLookup(it => it.Engine, it => new Bem(it.Board, it.Engine, it.Market), StringComparer.Ordinal);
+
+        private static (string Board, string Engine, string Market)[] BemTuples => s_bemTuples ??= CreateBemTuples();
 
         private static (string, string, string)[] CreateBemTuples() => new[]
         {
