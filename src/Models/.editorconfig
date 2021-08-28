@@ -1,2 +1,2 @@
-[Securiry.cs]
+[Moex/Securiry.cs]
 dotnet_diagnostic.CA1724.severity = none # Type names should not match namespaces
