@@ -16,10 +16,13 @@ namespace Diversifolio
 
         private static (string Market, string Column)[] ColumnTuples => s_columnsTuples ??= CreateColumnTuples();
 
-        internal static Uri BuildUri(string engine, string market, string board, string securities)
+        internal static Uri BuildUri(string engine, string market, string board)
         {
             if (!ColumnsByMarket.TryGetValue(market, out string? columns))
                 columns = string.Empty;
+
+            IEnumerable<string> tickers = Tickers.TickersByBoard[board];
+            string securities = string.Join(",", tickers);
 
             return BuildUri(engine, market, board, columns, securities);
         }
