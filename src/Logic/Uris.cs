@@ -22,7 +22,7 @@ namespace Diversifolio
 
         private static Uri BuildUri(Bem bem)
         {
-            (string board, string market, string engine) = bem;
+            (string board, string engine, string market) = bem;
             return BuildUri(engine, market, board);
         }
 
