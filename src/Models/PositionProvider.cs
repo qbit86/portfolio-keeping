@@ -10,7 +10,7 @@ namespace Diversifolio
         public string PortfolioName { get; } =
             PortfolioName ?? throw new ArgumentNullException(nameof(PortfolioName));
 
-        public async Task<ImmutableDictionary<string, Position>> GetPositions()
+        public async Task<ImmutableDictionary<string, Position>> GetPositionByTickerDictionary()
         {
             ImmutableDictionary<string, Position>.Builder builder =
                 ImmutableDictionary.CreateBuilder<string, Position>(StringComparer.Ordinal);

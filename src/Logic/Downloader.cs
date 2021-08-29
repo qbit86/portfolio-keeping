@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Immutable;
 using System.Globalization;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Diversifolio.Moex;
 
 namespace Diversifolio
 {
@@ -17,7 +19,8 @@ namespace Diversifolio
         private static CultureInfo F => CultureInfo.InvariantCulture;
 
         private HttpClient Client { get; }
-        private string Directory { get; }
+
+        public string Directory { get; }
 
         public void Dispose() => Client.Dispose();
 
@@ -30,7 +33,21 @@ namespace Diversifolio
             return new(httpClient, directory);
         }
 
-        public async Task<string> EnsureDownloaded(string board)
+        public async Task<ImmutableDictionary<string, string>> GetPathByBoardDictionary()
+        {
+            ImmutableDictionary<string, string>.Builder builder =
+                ImmutableDictionary.CreateBuilder<string, string>(StringComparer.Ordinal);
+
+            foreach (var board in Bems.BemByBoard.Keys)
+            {
+                string path = await EnsureDownloaded(board).ConfigureAwait(false);
+                builder[board] = path;
+            }
+
+            return builder.ToImmutable();
+        }
+
+        private async Task<string> EnsureDownloaded(string board)
         {
             if (board is null)
                 throw new ArgumentNullException(nameof(board));

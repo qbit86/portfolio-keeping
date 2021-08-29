@@ -17,10 +17,16 @@ namespace Diversifolio
             const string portfolioName = PortfolioNames.Tinkoff;
             PositionProvider positionProvider = PositionProviderFactory.Create(portfolioName);
             ImmutableDictionary<string, Position> positionByTicker =
-                await positionProvider.GetPositions().ConfigureAwait(false);
+                await positionProvider.GetPositionByTickerDictionary().ConfigureAwait(false);
             var positions = positionByTicker.Values.OrderBy(it => it.Ticker, StringComparer.Ordinal).ToImmutableArray();
             foreach (Position position in positions)
                 await Out.WriteLineAsync(position.ToString()).ConfigureAwait(false);
+
+            using Downloader downloader = Downloader.Create();
+            await Out.WriteLineAsync(downloader.Directory).ConfigureAwait(false);
+            // ReSharper disable once UnusedVariable
+            ImmutableDictionary<string, string> pathByBoard =
+                await downloader.GetPathByBoardDictionary().ConfigureAwait(false);
         }
     }
 }
