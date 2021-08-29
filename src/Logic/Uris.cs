@@ -16,10 +16,10 @@ namespace Diversifolio
 
         private static (string Market, string Column)[] ColumnTuples => s_columnsTuples ??= CreateColumnTuples();
 
-        internal static IEnumerable<(Bem, Uri)> BuildUris(string market)
+        internal static IDictionary<string, Uri> BuildUriByBoardDictionary(string market)
         {
             IEnumerable<Bem> bems = Bems.BemsByMarket[market];
-            return bems.Select(it => (it, BuildUri(it)));
+            return bems.ToDictionary(it => it.Board, BuildUri, StringComparer.Ordinal);
         }
 
         private static Uri BuildUri(Bem bem)
