@@ -29,7 +29,7 @@ namespace Diversifolio
             HttpClient httpClient = new();
             string baseName = DateTime.Now.ToString("yyyy-MM-dd_HH", F);
             string directory = Path.Join(
-                Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), nameof(Diversifolio), baseName);
+                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), nameof(Diversifolio), baseName);
             return new(httpClient, directory);
         }
 

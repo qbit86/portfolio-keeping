@@ -6,13 +6,13 @@ using Diversifolio.Moex;
 
 namespace Diversifolio
 {
-    internal static class Uris
+    public static class Uris
     {
         private static (string, string)[]? s_columnsTuples;
         private static Dictionary<string, Uri>? s_uriByBoard;
         private static Dictionary<string, string>? s_columnsByMarket;
 
-        internal static IReadOnlyDictionary<string, Uri> UriByBoard => s_uriByBoard ??=
+        public static IReadOnlyDictionary<string, Uri> UriByBoard => s_uriByBoard ??=
             Bems.BemByBoard.ToDictionary(it => it.Key, it => BuildUri(it.Value), StringComparer.Ordinal);
 
         private static IReadOnlyDictionary<string, string> ColumnsByMarket => s_columnsByMarket ??=

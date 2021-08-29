@@ -22,6 +22,9 @@ namespace Diversifolio
             foreach (Position position in positions)
                 await Out.WriteLineAsync(position.ToString()).ConfigureAwait(false);
 
+            foreach (Uri uri in Uris.UriByBoard.Values)
+                await Out.WriteLineAsync(uri.ToString()).ConfigureAwait(false);
+
             using Downloader downloader = Downloader.Create();
             await Out.WriteLineAsync(downloader.Directory).ConfigureAwait(false);
             // ReSharper disable once UnusedVariable
