@@ -9,14 +9,22 @@ namespace Diversifolio
     public static class Uris
     {
         private static (string, string)[]? s_columnsTuples;
-        private static Dictionary<string, string>? s_columnsByTicker;
+        private static Dictionary<string, string>? s_columnsByMarket;
 
-        public static IReadOnlyDictionary<string, string> ColumnsByTicker => s_columnsByTicker ??=
+        public static IReadOnlyDictionary<string, string> ColumnsByMarket => s_columnsByMarket ??=
             ColumnTuples.ToDictionary(it => it.Market, it => it.Column, StringComparer.Ordinal);
 
         private static (string Market, string Column)[] ColumnTuples => s_columnsTuples ??= CreateColumnTuples();
 
-        internal static Uri BuildUri(string engine, string market, string board, string columns, string securities)
+        internal static Uri BuildUri(string engine, string market, string board, string securities)
+        {
+            if (!ColumnsByMarket.TryGetValue(market, out string? columns))
+                columns = string.Empty;
+
+            return BuildUri(engine, market, board, columns, securities);
+        }
+
+        private static Uri BuildUri(string engine, string market, string board, string columns, string securities)
         {
             Uri initialUri =
                 new($"https://iss.moex.com/iss/engines/{engine}/markets/{market}/boards/{board}/securities.json");

@@ -13,9 +13,8 @@ namespace Diversifolio
             foreach (Bem bem in bems)
             {
                 Debug.Assert(market == bem.Market);
-                string columns = "";
                 string securities = "";
-                yield return (bem, Uris.BuildUri(bem.Engine, market, bem.Board, columns, securities));
+                yield return (bem, Uris.BuildUri(bem.Engine, market, bem.Board, securities));
             }
         }
     }
