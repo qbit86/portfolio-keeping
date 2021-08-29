@@ -9,9 +9,13 @@ namespace Diversifolio
     public static class Uris
     {
         private static (string, string)[]? s_columnsTuples;
+        private static Dictionary<string, Uri>? s_uriByBoard;
         private static Dictionary<string, string>? s_columnsByMarket;
 
-        public static IReadOnlyDictionary<string, string> ColumnsByMarket => s_columnsByMarket ??=
+        public static IReadOnlyDictionary<string, Uri> UriByBoard => s_uriByBoard ??=
+            Bems.BemByBoard.ToDictionary(it => it.Key, it => BuildUri(it.Value), StringComparer.Ordinal);
+
+        private static IReadOnlyDictionary<string, string> ColumnsByMarket => s_columnsByMarket ??=
             ColumnTuples.ToDictionary(it => it.Market, it => it.Column, StringComparer.Ordinal);
 
         private static (string Market, string Column)[] ColumnTuples => s_columnsTuples ??= CreateColumnTuples();
