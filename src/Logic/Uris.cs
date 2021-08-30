@@ -53,9 +53,9 @@ namespace Diversifolio
 
         private static (string, string)[] CreateColumnTuples() => new[]
         {
-            (Markets.Selt, "SECID,BOARDID,SHORTNAME,CURRENCYID,DECIMALS,FACEVALUE,FACEUNIT,PREVPRICE"),
-            (Markets.Bonds, "SECID,BOARDID,SHORTNAME,CURRENCYID,DECIMALS,FACEVALUE,LOTSIZE,PREVADMITTEDQUOTE"),
-            (Markets.Shares, "SECID,BOARDID,SHORTNAME,CURRENCYID,DECIMALS,FACEVALUE,LOTSIZE,PREVADMITTEDQUOTE")
+            (Markets.Selt, SeltSecurityFactory.Columns),
+            (Markets.Bonds, BondSecurityFactory.Columns),
+            (Markets.Shares, ShareSecurityFactory.Columns)
         };
     }
 }
