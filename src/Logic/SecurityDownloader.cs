@@ -65,9 +65,9 @@ namespace Diversifolio
 
             System.IO.Directory.CreateDirectory(Directory);
 
-            await using Stream stream = await Client.GetStreamAsync(uri).ConfigureAwait(false);
+            await using Stream source = await Client.GetStreamAsync(uri).ConfigureAwait(false);
             await using Stream destination = File.Create(filePath);
-            await stream.CopyToAsync(destination).ConfigureAwait(false);
+            await source.CopyToAsync(destination).ConfigureAwait(false);
             await destination.DisposeAsync().ConfigureAwait(false);
             return filePath;
         }
