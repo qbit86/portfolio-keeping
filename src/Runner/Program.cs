@@ -22,7 +22,7 @@ namespace Diversifolio
             foreach (Position position in positions)
                 await Out.WriteLineAsync(position.ToString()).ConfigureAwait(false);
 
-            using Downloader downloader = Downloader.Create();
+            using SecurityDownloader downloader = SecurityDownloader.Create();
             // ReSharper disable once UnusedVariable
             ImmutableDictionary<string, string> pathByBoard =
                 await downloader.GetPathByBoardDictionary().ConfigureAwait(false);

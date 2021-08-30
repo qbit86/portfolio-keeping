@@ -8,9 +8,9 @@ using Diversifolio.Moex;
 
 namespace Diversifolio
 {
-    public sealed class Downloader : IDisposable
+    public sealed class SecurityDownloader : IDisposable
     {
-        private Downloader(HttpClient client, string directory)
+        private SecurityDownloader(HttpClient client, string directory)
         {
             Client = client;
             Directory = directory;
@@ -24,7 +24,7 @@ namespace Diversifolio
 
         public void Dispose() => Client.Dispose();
 
-        public static Downloader Create()
+        public static SecurityDownloader Create()
         {
             HttpClient httpClient = new();
             string baseName = DateTime.Now.ToString("yyyy-MM-dd_HH", F);
