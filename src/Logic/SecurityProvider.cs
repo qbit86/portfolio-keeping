@@ -39,9 +39,13 @@ namespace Diversifolio
             throw new NotImplementedException();
         }
 
-        private static Task<IReadOnlyList<Security>> GetSecuritiesAsync(
-            SecurityFactory securityFactory, string path) =>
-            throw new NotImplementedException();
+        private static async Task<IReadOnlyList<Security>> GetSecuritiesAsync(
+            SecurityFactory securityFactory, string path)
+        {
+            List<Security> securities = new();
+            await PopulateSecuritiesAsync(securityFactory, path, securities).ConfigureAwait(false);
+            return securities;
+        }
 
         private static async Task PopulateSecuritiesAsync<TCollection>(
             SecurityFactory securityFactory, string path, TCollection securities)
