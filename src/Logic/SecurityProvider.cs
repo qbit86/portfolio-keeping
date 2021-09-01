@@ -11,7 +11,16 @@ namespace Diversifolio
 {
     public sealed class SecurityProvider : IDisposable
     {
+        private static (string, SecurityFactory)[]? s_factoryTuples;
+        private static Dictionary<string, SecurityFactory>? s_factoryByMarket;
+
         private SecurityProvider(SecurityDownloader downloader) => Downloader = downloader;
+
+        public static IReadOnlyDictionary<string, SecurityFactory> FactoryByMarket => s_factoryByMarket ??=
+            FactoryTuples.ToDictionary(it => it.Market, it => it.Factory, StringComparer.Ordinal);
+
+        private static (string Market, SecurityFactory Factory)[] FactoryTuples =>
+            s_factoryTuples ??= CreateFactoryTuples();
 
         private SecurityDownloader Downloader { get; }
 
@@ -44,5 +53,12 @@ namespace Diversifolio
                     securities.Add(security);
             }
         }
+
+        private static (string, SecurityFactory)[] CreateFactoryTuples() => new (string, SecurityFactory)[]
+        {
+            (Markets.Selt, SeltSecurityFactory.Instance),
+            (Markets.Bonds, BondSecurityFactory.Instance),
+            (Markets.Shares, ShareSecurityFactory.Instance)
+        };
     }
 }
