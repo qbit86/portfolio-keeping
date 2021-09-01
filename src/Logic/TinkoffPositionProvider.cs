@@ -15,7 +15,7 @@ namespace Diversifolio
     {
         private static CultureInfo F => CultureInfo.InvariantCulture;
 
-        protected override async Task PopulatePositions<TDictionary>(TDictionary positions)
+        protected override async Task PopulatePositionsAsync<TDictionary>(TDictionary positions)
         {
             if (positions is null)
                 throw new ArgumentNullException(nameof(positions));

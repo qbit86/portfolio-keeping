@@ -17,7 +17,7 @@ namespace Diversifolio
             const string portfolioName = PortfolioNames.Tinkoff;
             PositionProvider positionProvider = PositionProviderFactory.Create(portfolioName);
             ImmutableDictionary<string, Position> positionByTicker =
-                await positionProvider.GetPositionByTickerDictionary().ConfigureAwait(false);
+                await positionProvider.GetPositionByTickerDictionaryAsync().ConfigureAwait(false);
             var positions = positionByTicker.Values.OrderBy(it => it.Ticker, StringComparer.Ordinal).ToImmutableArray();
             foreach (Position position in positions)
                 await Out.WriteLineAsync(position.ToString()).ConfigureAwait(false);
@@ -25,7 +25,7 @@ namespace Diversifolio
             using SecurityDownloader downloader = SecurityDownloader.Create();
             // ReSharper disable once UnusedVariable
             ImmutableDictionary<string, string> pathByBoard =
-                await downloader.GetPathByBoardDictionary().ConfigureAwait(false);
+                await downloader.GetPathByBoardDictionaryAsync().ConfigureAwait(false);
         }
     }
 }

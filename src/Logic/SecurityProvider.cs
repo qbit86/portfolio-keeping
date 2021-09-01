@@ -32,14 +32,18 @@ namespace Diversifolio
             return new(downloader);
         }
 
-        public async Task<ILookup<string, Security>> GetSecuritiesByMarketLookup()
+        public async Task<ILookup<string, Security>> GetSecuritiesByMarketLookupAsync()
         {
             ImmutableDictionary<string, string> pathByBoard =
-                await Downloader.GetPathByBoardDictionary().ConfigureAwait(false);
+                await Downloader.GetPathByBoardDictionaryAsync().ConfigureAwait(false);
             throw new NotImplementedException();
         }
 
-        private static async Task PopulateSecurities<TCollection>(
+        private static Task<IReadOnlyList<Security>> GetSecuritiesAsync(
+            SecurityFactory securityFactory, string path) =>
+            throw new NotImplementedException();
+
+        private static async Task PopulateSecuritiesAsync<TCollection>(
             SecurityFactory securityFactory, string path, TCollection securities)
             where TCollection : ICollection<Security>
         {

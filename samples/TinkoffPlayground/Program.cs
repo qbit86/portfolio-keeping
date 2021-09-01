@@ -14,10 +14,10 @@ namespace Diversifolio
     {
         private static CultureInfo F => CultureInfo.InvariantCulture;
 
-        private static async Task Main() => await RunActualCheck().ConfigureAwait(false);
+        private static async Task Main() => await RunActualCheckAsync().ConfigureAwait(false);
 
         // ReSharper disable once UnusedMember.Local
-        private static async Task RunSandboxCheck()
+        private static async Task RunSandboxCheckAsync()
         {
             using var reader = new StreamReader("token-tinkoff-sandbox.txt");
             string? token = await reader.ReadLineAsync().ConfigureAwait(false);
@@ -55,7 +55,7 @@ namespace Diversifolio
             }
         }
 
-        private static async Task RunActualCheck()
+        private static async Task RunActualCheckAsync()
         {
             using var reader = new StreamReader("token-tinkoff.txt");
             string? token = await reader.ReadLineAsync().ConfigureAwait(false);

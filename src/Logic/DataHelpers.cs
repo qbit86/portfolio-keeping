@@ -7,13 +7,13 @@ namespace Diversifolio
 {
     internal static class DataHelpers
     {
-        internal static async Task<SqliteConnection> CreatePortfolioConnection(
+        internal static async Task<SqliteConnection> CreatePortfolioConnectionAsync(
             string portfolioName, string directoryPath)
         {
             Directory.CreateDirectory(directoryPath);
             string databasePath = Path.Join(directoryPath, portfolioName + ".db");
             if (!File.Exists(databasePath))
-                await CreatePortfolioDatabase(portfolioName, directoryPath, databasePath).ConfigureAwait(false);
+                await CreatePortfolioDatabaseAsync(portfolioName, directoryPath, databasePath).ConfigureAwait(false);
 
             SqliteConnectionStringBuilder connectionStringBuilder = new()
             {
@@ -26,7 +26,7 @@ namespace Diversifolio
             return connection;
         }
 
-        internal static async Task CreatePortfolioDatabase(
+        internal static async Task CreatePortfolioDatabaseAsync(
             string portfolioName, string directoryPath, string databasePath)
         {
             SqliteConnectionStringBuilder connectionStringBuilder = new()
@@ -37,27 +37,27 @@ namespace Diversifolio
             string connectionString = connectionStringBuilder.ToString();
             await using SqliteConnection connection = new(connectionString);
             connection.Open();
-            await CreatePositionTable(connection).ConfigureAwait(false);
-            await PopulatePositionTable(connection, portfolioName, directoryPath).ConfigureAwait(false);
+            await CreatePositionTableAsync(connection).ConfigureAwait(false);
+            await PopulatePositionTableAsync(connection, portfolioName, directoryPath).ConfigureAwait(false);
         }
 
-        private static async Task CreatePositionTable(SqliteConnection connection)
+        private static async Task CreatePositionTableAsync(SqliteConnection connection)
         {
             var assembly = Assembly.GetExecutingAssembly();
             await using Stream stream = assembly.GetManifestResourceStream(typeof(DataHelpers), "CreatePosition.sql")!;
             using StreamReader reader = new(stream);
-            await ExecuteReader(connection, reader).ConfigureAwait(false);
+            await ExecuteReaderAsync(connection, reader).ConfigureAwait(false);
         }
 
-        private static async Task PopulatePositionTable(
+        private static async Task PopulatePositionTableAsync(
             SqliteConnection connection, string portfolioName, string directoryPath)
         {
             string scriptPath = Path.Join(directoryPath, portfolioName + ".sql");
             using StreamReader reader = new(scriptPath);
-            await ExecuteReader(connection, reader).ConfigureAwait(false);
+            await ExecuteReaderAsync(connection, reader).ConfigureAwait(false);
         }
 
-        private static async Task ExecuteReader(SqliteConnection connection, StreamReader reader)
+        private static async Task ExecuteReaderAsync(SqliteConnection connection, StreamReader reader)
         {
             string commandText = await reader.ReadToEndAsync().ConfigureAwait(false);
             await using SqliteCommand command = new(commandText, connection);

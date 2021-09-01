@@ -7,7 +7,7 @@ namespace Diversifolio
 {
     public sealed record DatabasePositionProvider(string PortfolioName) : PositionProvider(PortfolioName)
     {
-        protected override async Task PopulatePositions<TDictionary>(TDictionary positions)
+        protected override async Task PopulatePositionsAsync<TDictionary>(TDictionary positions)
         {
             if (positions is null)
                 throw new ArgumentNullException(nameof(positions));
@@ -15,7 +15,7 @@ namespace Diversifolio
             string directoryPath = Path.Join(
                 Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), nameof(Diversifolio));
             await using SqliteConnection connection =
-                await DataHelpers.CreatePortfolioConnection(PortfolioName, directoryPath).ConfigureAwait(false);
+                await DataHelpers.CreatePortfolioConnectionAsync(PortfolioName, directoryPath).ConfigureAwait(false);
 
             const string commandText = "SELECT Ticker, Balance FROM Position";
             await using SqliteCommand command = new(commandText, connection);

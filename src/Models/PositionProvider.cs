@@ -10,16 +10,16 @@ namespace Diversifolio
         public string PortfolioName { get; } =
             PortfolioName ?? throw new ArgumentNullException(nameof(PortfolioName));
 
-        public async Task<ImmutableDictionary<string, Position>> GetPositionByTickerDictionary()
+        public async Task<ImmutableDictionary<string, Position>> GetPositionByTickerDictionaryAsync()
         {
             ImmutableDictionary<string, Position>.Builder builder =
                 ImmutableDictionary.CreateBuilder<string, Position>(StringComparer.Ordinal);
 
-            await PopulatePositions(builder).ConfigureAwait(false);
+            await PopulatePositionsAsync(builder).ConfigureAwait(false);
             return builder.ToImmutable();
         }
 
-        protected abstract Task PopulatePositions<TDictionary>(TDictionary positions)
+        protected abstract Task PopulatePositionsAsync<TDictionary>(TDictionary positions)
             where TDictionary : IDictionary<string, Position>;
     }
 }

@@ -33,21 +33,21 @@ namespace Diversifolio
             return new(httpClient, directory);
         }
 
-        public async Task<ImmutableDictionary<string, string>> GetPathByBoardDictionary()
+        public async Task<ImmutableDictionary<string, string>> GetPathByBoardDictionaryAsync()
         {
             ImmutableDictionary<string, string>.Builder builder =
                 ImmutableDictionary.CreateBuilder<string, string>(StringComparer.Ordinal);
 
             foreach (var board in Bems.BemByBoard.Keys)
             {
-                string path = await EnsureDownloaded(board).ConfigureAwait(false);
+                string path = await EnsureDownloadedAsync(board).ConfigureAwait(false);
                 builder[board] = path;
             }
 
             return builder.ToImmutable();
         }
 
-        private async Task<string> EnsureDownloaded(string board)
+        private async Task<string> EnsureDownloadedAsync(string board)
         {
             if (board is null)
                 throw new ArgumentNullException(nameof(board));
