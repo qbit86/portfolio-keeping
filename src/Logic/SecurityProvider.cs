@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
@@ -47,13 +46,12 @@ namespace Diversifolio
                 tuples.Add((market, securities));
             }
 
-            IEnumerable<KeyValuePair<string, IReadOnlyList<Security>>> grouped =
-                from it in tuples
-                group it by it.Market
-                into grouping
-                select KeyValuePair.Create(
-                    grouping.Key, grouping.SelectMany(it => it.Securities).ToList() as IReadOnlyList<Security>);
-            return grouped.ToImmutableDictionary(StringComparer.Ordinal);
+            IEnumerable<IGrouping<string, IReadOnlyList<Security>>> grouped =
+                tuples.GroupBy(it => it.Market, it => it.Securities);
+            return grouped.ToDictionary(
+                grouping => grouping.Key,
+                grouping => grouping.SelectMany(it => it).ToList() as IReadOnlyList<Security>,
+                StringComparer.Ordinal);
         }
 
         private static async Task<IReadOnlyList<Security>> GetSecuritiesAsync(
