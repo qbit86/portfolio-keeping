@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Globalization;
 using System.IO;
 using System.Net.Http;
@@ -36,16 +35,14 @@ namespace Diversifolio
 
         public async Task<IReadOnlyDictionary<string, string>> GetPathByBoardDictionaryAsync()
         {
-            ImmutableDictionary<string, string>.Builder builder =
-                ImmutableDictionary.CreateBuilder<string, string>(StringComparer.Ordinal);
-
+            Dictionary<string, string> pathByBoard = new(StringComparer.Ordinal);
             foreach (var board in Bems.BemByBoard.Keys)
             {
                 string path = await EnsureDownloadedAsync(board).ConfigureAwait(false);
-                builder[board] = path;
+                pathByBoard[board] = path;
             }
 
-            return builder.ToImmutable();
+            return pathByBoard;
         }
 
         private async Task<string> EnsureDownloadedAsync(string board)
