@@ -18,7 +18,7 @@ namespace Diversifolio
         {
             const string portfolioName = PortfolioNames.Tinkoff;
             PositionProvider positionProvider = PositionProviderFactory.Create(portfolioName);
-            ImmutableDictionary<string, Position> positionByTicker =
+            IReadOnlyDictionary<string, Position> positionByTicker =
                 await positionProvider.GetPositionByTickerDictionaryAsync().ConfigureAwait(false);
 
             var positions = positionByTicker.Values.OrderBy(it => it.Ticker, StringComparer.Ordinal).ToImmutableArray();

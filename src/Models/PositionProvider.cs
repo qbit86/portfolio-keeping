@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Threading.Tasks;
 
 namespace Diversifolio
@@ -10,13 +9,11 @@ namespace Diversifolio
         public string PortfolioName { get; } =
             PortfolioName ?? throw new ArgumentNullException(nameof(PortfolioName));
 
-        public async Task<ImmutableDictionary<string, Position>> GetPositionByTickerDictionaryAsync()
+        public async Task<IReadOnlyDictionary<string, Position>> GetPositionByTickerDictionaryAsync()
         {
-            ImmutableDictionary<string, Position>.Builder builder =
-                ImmutableDictionary.CreateBuilder<string, Position>(StringComparer.Ordinal);
-
-            await PopulatePositionsAsync(builder).ConfigureAwait(false);
-            return builder.ToImmutable();
+            Dictionary<string, Position> positionByTicker = new(StringComparer.Ordinal);
+            await PopulatePositionsAsync(positionByTicker).ConfigureAwait(false);
+            return positionByTicker;
         }
 
         protected abstract Task PopulatePositionsAsync<TDictionary>(TDictionary positions)
