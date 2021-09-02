@@ -32,11 +32,27 @@ namespace Diversifolio
             return new(downloader);
         }
 
-        public async Task<ILookup<string, Security>> GetSecuritiesByMarketLookupAsync()
+        public async Task<ImmutableDictionary<string, ImmutableList<Security>>> GetSecuritiesByMarketDictionaryAsync()
         {
             ImmutableDictionary<string, string> pathByBoard =
                 await Downloader.GetPathByBoardDictionaryAsync().ConfigureAwait(false);
-            throw new NotImplementedException();
+
+            List<(string Market, IReadOnlyList<Security> Securities)> tuples = new(pathByBoard.Count);
+            foreach (KeyValuePair<string, string> kv in pathByBoard)
+            {
+                string market = Bems.BemByBoard[kv.Key].Market;
+                SecurityFactory securityFactory = FactoryByMarket[market];
+                IReadOnlyList<Security> securities =
+                    await GetSecuritiesAsync(securityFactory, kv.Value).ConfigureAwait(false);
+                tuples.Add((market, securities));
+            }
+
+            IEnumerable<KeyValuePair<string, ImmutableList<Security>>> grouped =
+                from it in tuples
+                group it by it.Market
+                into grouping
+                select KeyValuePair.Create(grouping.Key, grouping.SelectMany(it => it.Securities).ToImmutableList());
+            return grouped.ToImmutableDictionary(StringComparer.Ordinal);
         }
 
         private static async Task<IReadOnlyList<Security>> GetSecuritiesAsync(
