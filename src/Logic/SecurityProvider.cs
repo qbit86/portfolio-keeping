@@ -32,7 +32,7 @@ namespace Diversifolio
             return new(downloader);
         }
 
-        public async Task<ImmutableDictionary<string, ImmutableList<Security>>> GetSecuritiesByMarketDictionaryAsync()
+        public async Task<IReadOnlyDictionary<string, IReadOnlyList<Security>>> GetSecuritiesByMarketDictionaryAsync()
         {
             ImmutableDictionary<string, string> pathByBoard =
                 await Downloader.GetPathByBoardDictionaryAsync().ConfigureAwait(false);
@@ -47,11 +47,12 @@ namespace Diversifolio
                 tuples.Add((market, securities));
             }
 
-            IEnumerable<KeyValuePair<string, ImmutableList<Security>>> grouped =
+            IEnumerable<KeyValuePair<string, IReadOnlyList<Security>>> grouped =
                 from it in tuples
                 group it by it.Market
                 into grouping
-                select KeyValuePair.Create(grouping.Key, grouping.SelectMany(it => it.Securities).ToImmutableList());
+                select KeyValuePair.Create(
+                    grouping.Key, grouping.SelectMany(it => it.Securities).ToList() as IReadOnlyList<Security>);
             return grouped.ToImmutableDictionary(StringComparer.Ordinal);
         }
 
