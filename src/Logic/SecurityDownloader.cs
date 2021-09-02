@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
 using System.IO;
@@ -33,7 +34,7 @@ namespace Diversifolio
             return new(httpClient, directory);
         }
 
-        public async Task<ImmutableDictionary<string, string>> GetPathByBoardDictionaryAsync()
+        public async Task<IReadOnlyDictionary<string, string>> GetPathByBoardDictionaryAsync()
         {
             ImmutableDictionary<string, string>.Builder builder =
                 ImmutableDictionary.CreateBuilder<string, string>(StringComparer.Ordinal);

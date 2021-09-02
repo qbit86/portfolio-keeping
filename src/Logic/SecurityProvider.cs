@@ -34,7 +34,7 @@ namespace Diversifolio
 
         public async Task<IReadOnlyDictionary<string, IReadOnlyList<Security>>> GetSecuritiesByMarketDictionaryAsync()
         {
-            ImmutableDictionary<string, string> pathByBoard =
+            IReadOnlyDictionary<string, string> pathByBoard =
                 await Downloader.GetPathByBoardDictionaryAsync().ConfigureAwait(false);
 
             List<(string Market, IReadOnlyList<Security> Securities)> tuples = new(pathByBoard.Count);
