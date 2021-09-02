@@ -16,7 +16,7 @@ namespace Diversifolio
             return positionByTicker;
         }
 
-        protected abstract Task PopulatePositionsAsync<TDictionary>(TDictionary positions)
+        protected abstract Task PopulatePositionsAsync<TDictionary>(TDictionary positionByTicker)
             where TDictionary : IDictionary<string, Position>;
     }
 }

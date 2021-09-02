@@ -15,10 +15,10 @@ namespace Diversifolio
     {
         private static CultureInfo F => CultureInfo.InvariantCulture;
 
-        protected override async Task PopulatePositionsAsync<TDictionary>(TDictionary positions)
+        protected override async Task PopulatePositionsAsync<TDictionary>(TDictionary positionByTicker)
         {
-            if (positions is null)
-                throw new ArgumentNullException(nameof(positions));
+            if (positionByTicker is null)
+                throw new ArgumentNullException(nameof(positionByTicker));
 
             using var reader = new StreamReader("token-tinkoff.txt");
             string? token = await reader.ReadLineAsync().ConfigureAwait(false);
@@ -31,7 +31,7 @@ namespace Diversifolio
             Account account = accounts.Single(it => it.BrokerAccountType == BrokerAccountType);
             Portfolio portfolio = await context.PortfolioAsync(account.BrokerAccountId).ConfigureAwait(false);
             foreach (Portfolio.Position position in portfolio.Positions)
-                positions[position.Ticker] = new(position.Ticker, position.Balance);
+                positionByTicker[position.Ticker] = new(position.Ticker, position.Balance);
 
             await WriteScriptAsync(portfolio.Positions).ConfigureAwait(false);
         }
