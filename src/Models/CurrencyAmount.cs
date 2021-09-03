@@ -10,6 +10,8 @@ namespace Diversifolio
             Amount = amount;
         }
 
+        public static CurrencyAmount Empty { get; } = new(string.Empty, 0m);
+
         public string Currency { get; }
         public decimal Amount { get; }
 
