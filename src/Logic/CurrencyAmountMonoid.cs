@@ -11,9 +11,9 @@ namespace Diversifolio
 
         public CurrencyAmount Combine(CurrencyAmount left, CurrencyAmount right)
         {
-            if (CurrencyAmount.IsDefaultOrEmpty(left))
+            if (left.IsDefaultOrEmpty)
                 return right;
-            if (CurrencyAmount.IsDefaultOrEmpty(right))
+            if (right.IsDefaultOrEmpty)
                 return left;
 
             string currency = left.Currency;

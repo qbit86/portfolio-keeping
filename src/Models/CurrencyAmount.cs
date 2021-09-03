@@ -14,9 +14,7 @@ namespace Diversifolio
 
         public string Currency { get; }
         public decimal Amount { get; }
-
-        public static bool IsDefaultOrEmpty(CurrencyAmount currencyAmount) =>
-            string.IsNullOrEmpty(currencyAmount.Currency) && currencyAmount.Amount == 0m;
+        public bool IsDefaultOrEmpty => string.IsNullOrEmpty(Currency) && Amount == 0m;
 
         public bool Equals(CurrencyAmount other) => Currency == other.Currency && Amount == other.Amount;
 
