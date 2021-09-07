@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Diversifolio
 {
-    public readonly struct Position : IEquatable<Position>
+    public readonly struct Position : IEquatable<Position>, IFormattable
     {
         public Position(string ticker, decimal balance)
         {
@@ -25,7 +25,7 @@ namespace Diversifolio
 
         public static bool operator !=(Position left, Position right) => !left.Equals(right);
 
-        public override string ToString()
+        public string ToString(string? format, IFormatProvider? formatProvider)
         {
             StringBuilder sb = new(50);
             sb.Append(nameof(Position) + " { ");
@@ -34,14 +34,15 @@ namespace Diversifolio
             sb.Append(", " + nameof(Balance) + " = ");
             // src/libraries/System.Private.CoreLib/src/System/Number.NumberBuffer.cs
             const int decimalNumberBufferLength = 29 + 1 + 1;
-            const string balanceFormat = "G";
             Span<char> buffer = stackalloc char[decimalNumberBufferLength];
-            if (Balance.TryFormat(buffer, out int charsWritten, balanceFormat, CultureInfo.InvariantCulture))
+            if (Balance.TryFormat(buffer, out int charsWritten, format, formatProvider))
                 sb.Append(buffer[..charsWritten]);
             else
-                sb.Append(Balance.ToString(balanceFormat, CultureInfo.InvariantCulture));
+                sb.Append(Balance.ToString(format, formatProvider));
             sb.Append(" }");
             return sb.ToString();
         }
+
+        public override string ToString() => ToString("G", CultureInfo.InvariantCulture);
     }
 }
