@@ -11,8 +11,10 @@ namespace Diversifolio
 
         public void Add(CurrencyAmount currencyAmount)
         {
-            // ReSharper disable once ConstantNullCoalescingCondition
-            string key = currencyAmount.Currency ?? string.Empty;
+            if (currencyAmount.IsDefaultOrEmpty)
+                return;
+
+            string key = currencyAmount.Currency;
             CurrencyAmount value = _currencyAmountByCurrency.TryGetValue(key, out CurrencyAmount existingValue)
                 ? CurrencyAmountMonoid.Instance.Combine(existingValue, currencyAmount)
                 : currencyAmount;
