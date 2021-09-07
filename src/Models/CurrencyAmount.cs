@@ -1,8 +1,10 @@
 using System;
+using System.Globalization;
+using System.Text;
 
 namespace Diversifolio
 {
-    public readonly struct CurrencyAmount : IEquatable<CurrencyAmount>
+    public readonly struct CurrencyAmount : IEquatable<CurrencyAmount>, IFormattable
     {
         public CurrencyAmount(string currency, decimal amount)
         {
@@ -25,5 +27,25 @@ namespace Diversifolio
         public static bool operator ==(CurrencyAmount left, CurrencyAmount right) => left.Equals(right);
 
         public static bool operator !=(CurrencyAmount left, CurrencyAmount right) => !left.Equals(right);
+
+        public string ToString(string? format, IFormatProvider? formatProvider)
+        {
+            StringBuilder sb = new(50);
+            sb.Append(nameof(CurrencyAmount) + " {");
+            sb.Append(" " + nameof(Currency) + " = ");
+            sb.Append(Currency);
+            sb.Append(", " + nameof(Amount) + " = ");
+            // src/libraries/System.Private.CoreLib/src/System/Number.NumberBuffer.cs
+            const int decimalNumberBufferLength = 29 + 1 + 1;
+            Span<char> buffer = stackalloc char[decimalNumberBufferLength];
+            if (Amount.TryFormat(buffer, out int charsWritten, format, formatProvider))
+                sb.Append(buffer[..charsWritten]);
+            else
+                sb.Append(Amount.ToString(format, formatProvider));
+            sb.Append(" }");
+            return sb.ToString();
+        }
+
+        public override string ToString() => ToString("G", CultureInfo.InvariantCulture);
     }
 }

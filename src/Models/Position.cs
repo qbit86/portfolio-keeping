@@ -28,8 +28,8 @@ namespace Diversifolio
         public string ToString(string? format, IFormatProvider? formatProvider)
         {
             StringBuilder sb = new(50);
-            sb.Append(nameof(Position) + " { ");
-            sb.Append(nameof(Ticker) + " = ");
+            sb.Append(nameof(Position) + " {");
+            sb.Append(" " + nameof(Ticker) + " = ");
             sb.Append(Ticker);
             sb.Append(", " + nameof(Balance) + " = ");
             // src/libraries/System.Private.CoreLib/src/System/Number.NumberBuffer.cs
