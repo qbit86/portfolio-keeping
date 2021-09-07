@@ -24,6 +24,13 @@ namespace Diversifolio
             return new(currency, amount);
         }
 
+        public static CurrencyAmount Multiply(decimal multiplier, CurrencyAmount value)
+        {
+            string currency = value.Currency;
+            decimal amount = multiplier * value.Amount;
+            return new(currency, amount);
+        }
+
         [DoesNotReturn]
         private static void ThrowArgumentException(string paramName) =>
             throw new ArgumentException("Currencies must be equal.", paramName);
