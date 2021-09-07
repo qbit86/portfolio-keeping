@@ -35,13 +35,7 @@ namespace Diversifolio
             sb.Append(" " + nameof(Currency) + " = ");
             sb.Append(Currency);
             sb.Append(", " + nameof(Amount) + " = ");
-            // src/libraries/System.Private.CoreLib/src/System/Number.NumberBuffer.cs
-            const int decimalNumberBufferLength = 29 + 1 + 1;
-            Span<char> buffer = stackalloc char[decimalNumberBufferLength];
-            if (Amount.TryFormat(buffer, out int charsWritten, format, formatProvider))
-                sb.Append(buffer[..charsWritten]);
-            else
-                sb.Append(Amount.ToString(format, formatProvider));
+            FormattingHelpers.AppendDecimal(sb, Amount, format, formatProvider);
             sb.Append(" }");
             return sb.ToString();
         }

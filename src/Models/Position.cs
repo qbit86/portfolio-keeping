@@ -32,13 +32,7 @@ namespace Diversifolio
             sb.Append(" " + nameof(Ticker) + " = ");
             sb.Append(Ticker);
             sb.Append(", " + nameof(Balance) + " = ");
-            // src/libraries/System.Private.CoreLib/src/System/Number.NumberBuffer.cs
-            const int decimalNumberBufferLength = 29 + 1 + 1;
-            Span<char> buffer = stackalloc char[decimalNumberBufferLength];
-            if (Balance.TryFormat(buffer, out int charsWritten, format, formatProvider))
-                sb.Append(buffer[..charsWritten]);
-            else
-                sb.Append(Balance.ToString(format, formatProvider));
+            FormattingHelpers.AppendDecimal(sb, Balance, format, formatProvider);
             sb.Append(" }");
             return sb.ToString();
         }
