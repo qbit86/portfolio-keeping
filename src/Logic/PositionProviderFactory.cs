@@ -10,13 +10,12 @@ namespace Diversifolio
             if (portfolioName is null)
                 throw new ArgumentNullException(portfolioName);
 
-            if (portfolioName == PortfolioNames.Tinkoff)
-                return new TinkoffPositionProvider(portfolioName, BrokerAccountType.Tinkoff);
-
-            if (portfolioName == PortfolioNames.TinkoffIis)
-                return new TinkoffPositionProvider(portfolioName, BrokerAccountType.TinkoffIis);
-
-            return new DatabasePositionProvider(portfolioName);
+            return portfolioName switch
+            {
+                PortfolioNames.Tinkoff => new TinkoffPositionProvider(portfolioName, BrokerAccountType.Tinkoff),
+                PortfolioNames.TinkoffIis => new TinkoffPositionProvider(portfolioName, BrokerAccountType.TinkoffIis),
+                _ => new DatabasePositionProvider(portfolioName)
+            };
         }
     }
 }
