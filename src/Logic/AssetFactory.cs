@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using Diversifolio.Moex;
+using static Diversifolio.TryHelpers;
 
 namespace Diversifolio
 {
@@ -70,21 +71,13 @@ namespace Diversifolio
         }
 
         private static bool TryUncheckedCreate(
-            Security security, Position position, AssetClass assetClass, [NotNullWhen(true)] out Asset? asset)
-        {
-            switch (security)
+            Security security, Position position, AssetClass assetClass, [NotNullWhen(true)] out Asset? asset) =>
+            security switch
             {
-                case ShareSecurity s:
-                    asset = UncheckedCreateShare(s, position, assetClass);
-                    return true;
-                case BondSecurity b:
-                    asset = UncheckedCreateBond(b, position, assetClass);
-                    return true;
-                default:
-                    asset = default;
-                    return false;
-            }
-        }
+                ShareSecurity s => Success(UncheckedCreateShare(s, position, assetClass), out asset),
+                BondSecurity b => Success(UncheckedCreateBond(b, position, assetClass), out asset),
+                _ => Failure(out asset)
+            };
 
         private static Asset UncheckedCreateBond(BondSecurity security, Position position, AssetClass assetClass)
         {
