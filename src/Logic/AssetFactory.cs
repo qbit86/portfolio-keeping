@@ -22,6 +22,11 @@ namespace Diversifolio
                     $"Could not find asset class for ticker: {position.Ticker}", nameof(position));
             }
 
+            return UncheckedCreateShare(security, position, assetClass);
+        }
+
+        private static Asset UncheckedCreateShare(ShareSecurity security, Position position, AssetClass assetClass)
+        {
             int balance = Convert.ToInt32(Math.Floor(position.Balance));
             CurrencyAmount price = new(security.CurrencyId, security.PrevAdmittedQuote);
             int decimalCount = security.Decimals;
