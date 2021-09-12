@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Diversifolio.Moex;
 
 namespace Diversifolio
@@ -12,13 +11,16 @@ namespace Diversifolio
         public AssetProvider(IReadOnlyDictionary<string, IReadOnlyList<Security>> securitiesByMarket) =>
             _securitiesByMarket = securitiesByMarket ?? throw new ArgumentNullException(nameof(securitiesByMarket));
 
-        public ILookup<AssetClass, Asset> GetAssetsByAssetClassLookup(
-            IReadOnlyDictionary<string, IReadOnlyList<Security>> securitiesByMarket)
-        {
-            if (securitiesByMarket is null)
-                throw new ArgumentNullException(nameof(securitiesByMarket));
-
+        private void PopulateAssets<TCollection>(IReadOnlyList<Position> positions, TCollection assets)
+            where TCollection : ICollection<Asset> =>
             throw new NotImplementedException();
-        }
+
+        private static AssetFactory? SelectAssetFactory(string market) =>
+            market switch
+            {
+                Markets.Bonds => BondAssetFactory.Instance,
+                Markets.Shares => ShareAssetFactory.Instance,
+                _ => default
+            };
     }
 }
