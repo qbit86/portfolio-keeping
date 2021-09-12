@@ -35,6 +35,6 @@ namespace Diversifolio
         }
 
         private static void UncheckedFormat(Asset asset, StringBuilder stringBuilder) =>
-            throw new NotImplementedException();
+            stringBuilder.Append(asset);
     }
 }

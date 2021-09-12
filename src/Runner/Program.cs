@@ -25,7 +25,7 @@ namespace Diversifolio
             AssetProvider assetProvider = new(securitiesByMarket);
             IReadOnlyList<Asset> assets = assetProvider.GetAssets(positions);
             foreach (Asset asset in assets)
-                await Out.WriteLineAsync(asset.ToString()).ConfigureAwait(false);
+                await Out.WriteLineAsync(AssetFormatter.Shared.Format(asset)).ConfigureAwait(false);
         }
     }
 }
