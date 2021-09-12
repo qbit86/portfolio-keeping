@@ -12,6 +12,26 @@ namespace Diversifolio
         public AssetProvider(IReadOnlyDictionary<string, IReadOnlyList<Security>> securitiesByMarket) =>
             _securitiesByMarket = securitiesByMarket ?? throw new ArgumentNullException(nameof(securitiesByMarket));
 
+        public IReadOnlyList<Asset> GetAssets(IReadOnlyList<Position> positions)
+        {
+            if (positions is null)
+                throw new ArgumentNullException(nameof(positions));
+
+            List<Asset> assets = new(positions.Count);
+            PopulateAssets(positions, assets);
+            return assets;
+        }
+
+        public ILookup<AssetClass, Asset> GetAssetByAssetClassLookup(IReadOnlyList<Position> positions)
+        {
+            if (positions is null)
+                throw new ArgumentNullException(nameof(positions));
+
+            List<Asset> assets = new(positions.Count);
+            PopulateAssets(positions, assets);
+            return assets.ToLookup(it => it.AssetClass);
+        }
+
         private void PopulateAssets<TCollection>(IReadOnlyList<Position> positions, TCollection assets)
             where TCollection : ICollection<Asset>
         {
