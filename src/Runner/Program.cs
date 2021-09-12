@@ -35,6 +35,11 @@ namespace Diversifolio
                 IEnumerable<string> tickers = kv.Value.Select(it => it.SecId);
                 await Out.WriteLineAsync("\t" + string.Join(", ", tickers)).ConfigureAwait(false);
             }
+
+            AssetProvider assetProvider = new(securitiesByMarket);
+            IReadOnlyList<Asset> assets = assetProvider.GetAssets(positions);
+            foreach (Asset asset in assets)
+                await Out.WriteLineAsync(asset.ToString()).ConfigureAwait(false);
         }
     }
 }
