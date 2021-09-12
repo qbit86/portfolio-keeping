@@ -21,8 +21,10 @@ namespace Diversifolio
         {
             int balance = Convert.ToInt32(Math.Floor(position.Balance));
             CurrencyAmount price = new(security.CurrencyId, security.PrevAdmittedQuote);
+            CurrencyAmount value = CurrencyAmountMonoid.Multiply(position.Balance, price);
             int decimalCount = security.Decimals;
-            return new(security.SecId, assetClass, security.BoardId, balance, price, decimalCount, security.LotSize);
+            return new(
+                security.SecId, assetClass, security.BoardId, balance, price, value, decimalCount, security.LotSize);
         }
     }
 }
