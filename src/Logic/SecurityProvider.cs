@@ -54,6 +54,9 @@ namespace Diversifolio
                 StringComparer.Ordinal);
         }
 
+        public Task<IReadOnlyDictionary<string, string>> GetPathByBoardDictionaryAsync() =>
+            Downloader.GetPathByBoardDictionaryAsync();
+
         private static async Task<IReadOnlyList<Security>> GetSecuritiesAsync(
             SecurityFactory securityFactory, string path)
         {
