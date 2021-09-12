@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Diversifolio.Moex;
 
 namespace Diversifolio
@@ -12,8 +13,22 @@ namespace Diversifolio
             _securitiesByMarket = securitiesByMarket ?? throw new ArgumentNullException(nameof(securitiesByMarket));
 
         private void PopulateAssets<TCollection>(IReadOnlyList<Position> positions, TCollection assets)
-            where TCollection : ICollection<Asset> =>
-            throw new NotImplementedException();
+            where TCollection : ICollection<Asset>
+        {
+            foreach (KeyValuePair<string, IReadOnlyList<Security>> kv in _securitiesByMarket)
+            {
+                if (SelectAssetFactory(kv.Key) is not { } assetFactory)
+                    continue;
+
+                IReadOnlyList<Security> securities = kv.Value;
+                IEnumerable<Asset> joinedAssets = from position in positions
+                    join security in securities on position.Ticker equals security.SecId
+                    select assetFactory.Create(security, position);
+
+                foreach (Asset asset in joinedAssets)
+                    assets.Add(asset);
+            }
+        }
 
         private static AssetFactory? SelectAssetFactory(string market) =>
             market switch
