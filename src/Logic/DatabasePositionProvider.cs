@@ -7,10 +7,10 @@ namespace Diversifolio
 {
     public sealed record DatabasePositionProvider(string PortfolioName) : PositionProvider(PortfolioName)
     {
-        protected override async Task PopulatePositionsAsync<TDictionary>(TDictionary positionByTicker)
+        protected override async Task PopulatePositionsAsync<TCollection>(TCollection positions)
         {
-            if (positionByTicker is null)
-                throw new ArgumentNullException(nameof(positionByTicker));
+            if (positions is null)
+                throw new ArgumentNullException(nameof(positions));
 
             string directoryPath = Path.Join(
                 Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), nameof(Diversifolio));
@@ -25,7 +25,7 @@ namespace Diversifolio
                 string ticker = query.GetString(0);
                 decimal balance = query.GetInt32(1);
                 Position position = new(ticker, balance);
-                positionByTicker[ticker] = position;
+                positions.Add(position);
             }
         }
     }
