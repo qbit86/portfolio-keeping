@@ -1,13 +1,15 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using Diversifolio.Moex;
-using static Diversifolio.TryHelpers;
 
 namespace Diversifolio
 {
-    public static class AssetFactory
+    public abstract class AssetFactory
     {
-        public static Asset Create(Security security, Position position)
+        protected abstract bool TryUncheckedCreate(
+            Security security, Position position, AssetClass assetClass, [NotNullWhen(true)] out Asset? asset);
+
+        public Asset Create(Security security, Position position)
         {
             if (security is null)
                 throw new ArgumentNullException(nameof(security));
@@ -69,15 +71,6 @@ namespace Diversifolio
 
             return UncheckedCreateShare(security, position, assetClass);
         }
-
-        private static bool TryUncheckedCreate(
-            Security security, Position position, AssetClass assetClass, [NotNullWhen(true)] out Asset? asset) =>
-            security switch
-            {
-                ShareSecurity s => Success(UncheckedCreateShare(s, position, assetClass), out asset),
-                BondSecurity b => Success(UncheckedCreateBond(b, position, assetClass), out asset),
-                _ => Failure(out asset)
-            };
 
         private static Asset UncheckedCreateBond(BondSecurity security, Position position, AssetClass assetClass)
         {
