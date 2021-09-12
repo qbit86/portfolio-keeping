@@ -5,7 +5,7 @@ using Diversifolio.Moex;
 
 namespace Diversifolio
 {
-    public readonly ref struct AssetProvider
+    public readonly struct AssetProvider : IEquatable<AssetProvider>
     {
         private readonly IReadOnlyDictionary<string, IReadOnlyList<Security>> _securitiesByMarket;
 
@@ -20,16 +20,6 @@ namespace Diversifolio
             List<Asset> assets = new(positions.Count);
             PopulateAssets(positions, assets);
             return assets;
-        }
-
-        public ILookup<AssetClass, Asset> GetAssetByAssetClassLookup(IReadOnlyList<Position> positions)
-        {
-            if (positions is null)
-                throw new ArgumentNullException(nameof(positions));
-
-            List<Asset> assets = new(positions.Count);
-            PopulateAssets(positions, assets);
-            return assets.ToLookup(it => it.AssetClass);
         }
 
         private void PopulateAssets<TCollection>(IReadOnlyList<Position> positions, TCollection assets)
@@ -57,5 +47,15 @@ namespace Diversifolio
                 Markets.Shares => ShareAssetFactory.Instance,
                 _ => default
             };
+
+        public bool Equals(AssetProvider other) => _securitiesByMarket.Equals(other._securitiesByMarket);
+
+        public override bool Equals(object? obj) => obj is AssetProvider other && Equals(other);
+
+        public override int GetHashCode() => _securitiesByMarket.GetHashCode();
+
+        public static bool operator ==(AssetProvider left, AssetProvider right) => left.Equals(right);
+
+        public static bool operator !=(AssetProvider left, AssetProvider right) => !left.Equals(right);
     }
 }
