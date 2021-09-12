@@ -34,7 +34,17 @@ namespace Diversifolio
             return result;
         }
 
-        private static void UncheckedFormat(Asset asset, StringBuilder stringBuilder) =>
-            stringBuilder.Append(asset);
+        private static void UncheckedFormat(Asset asset, StringBuilder stringBuilder)
+        {
+            stringBuilder.Append(asset.Ticker);
+            stringBuilder.Append(" | ");
+            stringBuilder.Append(asset.Value.Amount);
+            stringBuilder.Append(" | ");
+            stringBuilder.Append(asset.Balance);
+            stringBuilder.Append(" | ");
+            stringBuilder.Append(asset.Price.Amount);
+            stringBuilder.Append(" | ");
+            stringBuilder.Append(asset.Value.Currency);
+        }
     }
 }
