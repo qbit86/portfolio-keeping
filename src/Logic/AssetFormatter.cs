@@ -53,18 +53,22 @@ namespace Diversifolio
 
         private static bool AppendTickerValue(StringBuilder stringBuilder, string ticker, string value)
         {
-            Span<char> tickerValueBuffer = stackalloc char[16];
-            if (!ticker.AsSpan().TryCopyTo(tickerValueBuffer))
+            Span<char> destination = stackalloc char[16];
+            if (value.Length > destination.Length)
                 return Fallback();
 
-            if (!Separator.AsSpan().TryCopyTo(tickerValueBuffer[ticker.Length..]))
+            value.AsSpan().CopyTo(destination[^value.Length..]);
+
+            ReadOnlySpan<char> view = destination;
+            destination = destination[..^value.Length];
+            if (!ticker.AsSpan().TryCopyTo(destination))
                 return Fallback();
 
-            if (value.Length > tickerValueBuffer.Length - ticker.Length - Separator.Length)
+            destination = destination[ticker.Length..];
+            if (!Separator.AsSpan().TryCopyTo(destination))
                 return Fallback();
 
-            value.AsSpan().CopyTo(tickerValueBuffer[^value.Length..]);
-            stringBuilder.Append(tickerValueBuffer);
+            stringBuilder.Append(view);
             return true;
 
             bool Fallback()
