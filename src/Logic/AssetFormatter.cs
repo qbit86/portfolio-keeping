@@ -104,7 +104,7 @@ namespace Diversifolio
 
             int bound = Math.Max(balance.Length, 4);
             if (bound >= destination.Length || !Separator.AsSpan().TryCopyTo(destination[bound..]))
-                Separator.AsSpan().CopyTo(destination[balance.Length..]);
+                Separator.AsSpan().CopyTo(destination[^Separator.Length..]);
 
             stringBuilder.Append(view);
             return true;
