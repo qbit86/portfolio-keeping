@@ -85,9 +85,13 @@ namespace Diversifolio
         private static bool AppendBalancePrice(StringBuilder stringBuilder, Asset asset)
         {
             string balance = asset.Balance.ToString(P);
-            string price = asset.Price.Amount.ToString(GetFormat(), P);
+            string rawPrice = asset.Price.Amount.ToString(GetFormat(), P);
+            int priceWidth = asset.DecimalCount > 0
+                ? rawPrice.Length + 4 - asset.DecimalCount
+                : rawPrice.Length + 5;
+            string price = rawPrice.PadRight(priceWidth);
 
-            Span<char> destination = stackalloc char[13];
+            Span<char> destination = stackalloc char[16];
             if (price.Length > destination.Length)
                 return Fallback();
 
