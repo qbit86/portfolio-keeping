@@ -84,49 +84,56 @@ namespace Diversifolio
 
         private static bool AppendBalancePrice(StringBuilder stringBuilder, Asset asset)
         {
-            string balance = asset.Balance.ToString(P);
-            string rawPrice = asset.Price.Amount.ToString(GetFormat(), P);
-            int priceWidth = asset.DecimalCount > 0
-                ? rawPrice.Length + 4 - asset.DecimalCount
-                : rawPrice.Length + 5;
-            string price = rawPrice.PadRight(priceWidth);
+            int decimalCount = asset.DecimalCount;
+            string f = GetPriceFormat(decimalCount);
+            decimal price = asset.Price.Amount;
 
-            Span<char> destination = stackalloc char[16];
-            if (balance.Length + Separator.Length + price.Length > destination.Length)
-                return Fallback();
+            const int jointLength = 13;
+            Span<char> remainingBuffer = stackalloc char[jointLength];
 
-            price.AsSpan().CopyTo(destination[^price.Length..]);
+            if (!asset.Balance.TryFormat(remainingBuffer, out int balanceLength, "D", P))
+                return Fallback(asset.Balance.ToString("D", P), price.ToString(f, P));
 
-            ReadOnlySpan<char> view = destination;
+            ReadOnlySpan<char> balanceView = remainingBuffer[..balanceLength];
+            remainingBuffer = remainingBuffer[balanceLength..];
 
-            destination = destination[..^price.Length];
-            balance.AsSpan().CopyTo(destination);
+            if (!price.TryFormat(remainingBuffer, out int rawPriceLength, f, P))
+                return Fallback(balanceView, price.ToString(f, P));
 
-            int bound = Math.Max(balance.Length, 4);
-            if (bound >= destination.Length || !Separator.AsSpan().TryCopyTo(destination[bound..]))
-                Separator.AsSpan().CopyTo(destination[^Separator.Length..]);
+            int pricePadding = decimalCount > 0 ? 4 - decimalCount : 5;
+            int priceLength = Math.Min(remainingBuffer.Length, rawPriceLength + pricePadding);
+            ReadOnlySpan<char> priceView = remainingBuffer[..priceLength];
 
-            stringBuilder.Append(view);
+            Span<char> paddedSeparator =
+                stackalloc char[jointLength + Separator.Length - balanceView.Length - priceView.Length];
+            paddedSeparator.Fill(' ');
+
+            int offset = Math.Clamp(4 - balanceView.Length, 0, paddedSeparator.Length - Separator.Length);
+            Separator.AsSpan().CopyTo(paddedSeparator[offset..]);
+
+            stringBuilder.Append(balanceView);
+            stringBuilder.Append(paddedSeparator);
+            stringBuilder.Append(priceView);
             return true;
 
-            bool Fallback()
+            bool Fallback(ReadOnlySpan<char> balanceSpan, ReadOnlySpan<char> priceSpan)
             {
-                stringBuilder.Append(balance);
+                stringBuilder.Append(balanceSpan);
                 stringBuilder.Append(Separator);
-                stringBuilder.Append(price);
+                stringBuilder.Append(priceSpan);
                 return false;
             }
 
-            string GetFormat()
+            static string GetPriceFormat(int decimalCount)
             {
-                return asset.DecimalCount switch
+                return decimalCount switch
                 {
                     0 => "F0",
                     1 => "F1",
                     2 => "F2",
                     3 => "F3",
                     4 => "F4",
-                    _ => "F" + asset.DecimalCount.ToString(P)
+                    _ => "F" + decimalCount.ToString(P)
                 };
             }
         }
