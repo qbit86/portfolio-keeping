@@ -92,19 +92,18 @@ namespace Diversifolio
             string price = rawPrice.PadRight(priceWidth);
 
             Span<char> destination = stackalloc char[16];
-            if (price.Length > destination.Length)
+            if (balance.Length + Separator.Length + price.Length > destination.Length)
                 return Fallback();
 
             price.AsSpan().CopyTo(destination[^price.Length..]);
 
             ReadOnlySpan<char> view = destination;
+
             destination = destination[..^price.Length];
-            if (!balance.AsSpan().TryCopyTo(destination))
-                return Fallback();
+            balance.AsSpan().CopyTo(destination);
 
             destination = destination[balance.Length..];
-            if (!Separator.AsSpan().TryCopyTo(destination))
-                return Fallback();
+            Separator.AsSpan().CopyTo(destination);
 
             stringBuilder.Append(view);
             return true;
