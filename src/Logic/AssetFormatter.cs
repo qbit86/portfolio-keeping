@@ -50,10 +50,11 @@ namespace Diversifolio
             stringBuilder.Append(asset.Value.Currency);
         }
 
-        private static bool AppendTickerValue(StringBuilder stringBuilder, Asset asset)
+        private static int AppendTickerValue(StringBuilder stringBuilder, Asset asset)
         {
             string ticker = asset.Ticker;
             string value = asset.Value.Amount.ToString("F2", P);
+            int initialLength = stringBuilder.Length;
 
             Span<char> destination = stackalloc char[16];
             if (value.Length > destination.Length)
@@ -71,14 +72,14 @@ namespace Diversifolio
                 return Fallback();
 
             stringBuilder.Append(view);
-            return true;
+            return stringBuilder.Length - initialLength;
 
-            bool Fallback()
+            int Fallback()
             {
                 stringBuilder.Append(ticker);
                 stringBuilder.Append(Separator);
                 stringBuilder.Append(value);
-                return false;
+                return stringBuilder.Length - initialLength;
             }
         }
 
