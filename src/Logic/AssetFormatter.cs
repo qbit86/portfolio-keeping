@@ -102,8 +102,7 @@ namespace Diversifolio
             destination = destination[..^price.Length];
             balance.AsSpan().CopyTo(destination);
 
-            destination = destination[balance.Length..];
-            Separator.AsSpan().CopyTo(destination);
+            Separator.AsSpan().CopyTo(destination[balance.Length..]);
 
             stringBuilder.Append(view);
             return true;
