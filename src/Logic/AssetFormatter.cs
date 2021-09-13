@@ -82,11 +82,12 @@ namespace Diversifolio
             }
         }
 
-        private static bool AppendBalancePrice(StringBuilder stringBuilder, Asset asset)
+        private static int AppendBalancePrice(StringBuilder stringBuilder, Asset asset)
         {
             int decimalCount = asset.DecimalCount;
             string f = GetPriceFormat(decimalCount);
             decimal price = asset.Price.Amount;
+            int initialLength = stringBuilder.Length;
 
             const int jointLength = 13;
             Span<char> remainingBuffer = stackalloc char[jointLength];
@@ -114,14 +115,14 @@ namespace Diversifolio
             stringBuilder.Append(balanceView);
             stringBuilder.Append(paddedSeparator);
             stringBuilder.Append(priceView);
-            return true;
+            return stringBuilder.Length - initialLength;
 
-            bool Fallback(ReadOnlySpan<char> balanceSpan, ReadOnlySpan<char> priceSpan)
+            int Fallback(ReadOnlySpan<char> balanceSpan, ReadOnlySpan<char> priceSpan)
             {
                 stringBuilder.Append(balanceSpan);
                 stringBuilder.Append(Separator);
                 stringBuilder.Append(priceSpan);
-                return false;
+                return stringBuilder.Length - initialLength;
             }
 
             static string GetPriceFormat(int decimalCount)
