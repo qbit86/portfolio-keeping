@@ -87,7 +87,23 @@ namespace Diversifolio
             string balance = asset.Balance.ToString(P);
             string price = asset.Price.Amount.ToString(GetFormat(), P);
 
-            return Fallback();
+            Span<char> destination = stackalloc char[13];
+            if (price.Length > destination.Length)
+                return Fallback();
+
+            price.AsSpan().CopyTo(destination[^price.Length..]);
+
+            ReadOnlySpan<char> view = destination;
+            destination = destination[..^price.Length];
+            if (!balance.AsSpan().TryCopyTo(destination))
+                return Fallback();
+
+            destination = destination[balance.Length..];
+            if (!Separator.AsSpan().TryCopyTo(destination))
+                return Fallback();
+
+            stringBuilder.Append(view);
+            return true;
 
             bool Fallback()
             {
@@ -97,15 +113,18 @@ namespace Diversifolio
                 return false;
             }
 
-            string GetFormat() => asset.DecimalCount switch
+            string GetFormat()
             {
-                0 => "F0",
-                1 => "F1",
-                2 => "F2",
-                3 => "F3",
-                4 => "F4",
-                _ => "F" + asset.DecimalCount.ToString(P)
-            };
+                return asset.DecimalCount switch
+                {
+                    0 => "F0",
+                    1 => "F1",
+                    2 => "F2",
+                    3 => "F3",
+                    4 => "F4",
+                    _ => "F" + asset.DecimalCount.ToString(P)
+                };
+            }
         }
     }
 }
