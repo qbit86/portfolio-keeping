@@ -41,7 +41,7 @@ namespace Diversifolio
 
         private static void UncheckedFormat(Asset asset, StringBuilder stringBuilder)
         {
-            AppendTickerValue(stringBuilder, asset.Ticker, asset.Value.Amount.ToString("F2", P));
+            _ = AppendTickerValue(stringBuilder, asset.Ticker, asset.Value.Amount.ToString("F2", P));
 
             stringBuilder.Append(Separator);
             stringBuilder.Append(asset.Balance);
@@ -51,34 +51,28 @@ namespace Diversifolio
             stringBuilder.Append(asset.Value.Currency);
         }
 
-        private static void AppendTickerValue(StringBuilder stringBuilder, string ticker, string value)
+        private static bool AppendTickerValue(StringBuilder stringBuilder, string ticker, string value)
         {
             Span<char> tickerValueBuffer = stackalloc char[16];
             if (!ticker.AsSpan().TryCopyTo(tickerValueBuffer))
-            {
-                Fallback();
-                return;
-            }
+                return Fallback();
 
             if (!Separator.AsSpan().TryCopyTo(tickerValueBuffer[ticker.Length..]))
-            {
-                Fallback();
-            }
-            else if (value.Length > tickerValueBuffer.Length - ticker.Length - Separator.Length)
-            {
-                Fallback();
-            }
-            else
-            {
-                value.AsSpan().CopyTo(tickerValueBuffer[^value.Length..]);
-                stringBuilder.Append(tickerValueBuffer);
-            }
+                return Fallback();
 
-            void Fallback()
+            if (value.Length > tickerValueBuffer.Length - ticker.Length - Separator.Length)
+                return Fallback();
+
+            value.AsSpan().CopyTo(tickerValueBuffer[^value.Length..]);
+            stringBuilder.Append(tickerValueBuffer);
+            return true;
+
+            bool Fallback()
             {
                 stringBuilder.Append(ticker);
                 stringBuilder.Append(Separator);
                 stringBuilder.Append(value);
+                return false;
             }
         }
     }
