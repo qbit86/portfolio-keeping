@@ -44,9 +44,8 @@ namespace Diversifolio
             _ = AppendTickerValue(stringBuilder, asset);
 
             stringBuilder.Append(Separator);
-            stringBuilder.Append(asset.Balance);
-            stringBuilder.Append(Separator);
-            stringBuilder.Append(asset.Price.Amount);
+            _ = AppendBalancePrice(stringBuilder, asset);
+
             stringBuilder.Append(Separator);
             stringBuilder.Append(asset.Value.Currency);
         }
@@ -79,6 +78,22 @@ namespace Diversifolio
                 stringBuilder.Append(ticker);
                 stringBuilder.Append(Separator);
                 stringBuilder.Append(value);
+                return false;
+            }
+        }
+
+        private static bool AppendBalancePrice(StringBuilder stringBuilder, Asset asset)
+        {
+            string balance = asset.Balance.ToString(P);
+            string price = asset.Price.Amount.ToString(P);
+
+            return Fallback();
+
+            bool Fallback()
+            {
+                stringBuilder.Append(balance);
+                stringBuilder.Append(Separator);
+                stringBuilder.Append(price);
                 return false;
             }
         }
