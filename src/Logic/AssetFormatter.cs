@@ -41,7 +41,7 @@ namespace Diversifolio
 
         private static void UncheckedFormat(Asset asset, StringBuilder stringBuilder)
         {
-            _ = AppendTickerValue(stringBuilder, asset.Ticker, asset.Value.Amount.ToString("F2", P));
+            _ = AppendTickerValue(stringBuilder, asset);
 
             stringBuilder.Append(Separator);
             stringBuilder.Append(asset.Balance);
@@ -51,8 +51,11 @@ namespace Diversifolio
             stringBuilder.Append(asset.Value.Currency);
         }
 
-        private static bool AppendTickerValue(StringBuilder stringBuilder, string ticker, string value)
+        private static bool AppendTickerValue(StringBuilder stringBuilder, Asset asset)
         {
+            string ticker = asset.Ticker;
+            string value = asset.Value.Amount.ToString("F2", P);
+
             Span<char> destination = stackalloc char[16];
             if (value.Length > destination.Length)
                 return Fallback();
