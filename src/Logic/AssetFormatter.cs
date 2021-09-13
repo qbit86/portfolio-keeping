@@ -6,6 +6,8 @@ namespace Diversifolio
 {
     public sealed class AssetFormatter
     {
+        private const string Separator = " | ";
+
         private readonly StringBuilder _stringBuilder;
 
         public AssetFormatter(StringBuilder stringBuilder) =>
@@ -39,42 +41,45 @@ namespace Diversifolio
 
         private static void UncheckedFormat(Asset asset, StringBuilder stringBuilder)
         {
-            ReadOnlySpan<char> separator = " | ";
+            AppendTickerValue(stringBuilder, asset.Ticker, asset.Value.Amount.ToString("F2", P));
 
-            string ticker = asset.Ticker;
-            string valueString = asset.Value.Amount.ToString("F2", P);
-            Span<char> tickerValueBuffer = stackalloc char[16];
-            if (!asset.Ticker.AsSpan().TryCopyTo(tickerValueBuffer))
-            {
-                AppendTickerValueFallback(ticker, valueString, stringBuilder);
-            }
-            else if (!separator.TryCopyTo(tickerValueBuffer[ticker.Length..]))
-            {
-                AppendTickerValueFallback(ticker, valueString, stringBuilder);
-            }
-            else if (valueString.Length > tickerValueBuffer.Length - ticker.Length - separator.Length)
-            {
-                AppendTickerValueFallback(ticker, valueString, stringBuilder);
-            }
-            else
-            {
-                valueString.AsSpan().CopyTo(tickerValueBuffer[^valueString.Length..]);
-                stringBuilder.Append(tickerValueBuffer);
-            }
-
-            stringBuilder.Append(separator);
+            stringBuilder.Append(Separator);
             stringBuilder.Append(asset.Balance);
-            stringBuilder.Append(separator);
+            stringBuilder.Append(Separator);
             stringBuilder.Append(asset.Price.Amount);
-            stringBuilder.Append(separator);
+            stringBuilder.Append(Separator);
             stringBuilder.Append(asset.Value.Currency);
         }
 
-        private static void AppendTickerValueFallback(string ticker, string value, StringBuilder stringBuilder)
+        private static void AppendTickerValue(StringBuilder stringBuilder, string ticker, string value)
         {
-            stringBuilder.Append(ticker);
-            stringBuilder.Append(" | ");
-            stringBuilder.Append(value);
+            Span<char> tickerValueBuffer = stackalloc char[16];
+            if (!ticker.AsSpan().TryCopyTo(tickerValueBuffer))
+            {
+                Fallback();
+                return;
+            }
+
+            if (!Separator.AsSpan().TryCopyTo(tickerValueBuffer[ticker.Length..]))
+            {
+                Fallback();
+            }
+            else if (value.Length > tickerValueBuffer.Length - ticker.Length - Separator.Length)
+            {
+                Fallback();
+            }
+            else
+            {
+                value.AsSpan().CopyTo(tickerValueBuffer[^value.Length..]);
+                stringBuilder.Append(tickerValueBuffer);
+            }
+
+            void Fallback()
+            {
+                stringBuilder.Append(ticker);
+                stringBuilder.Append(Separator);
+                stringBuilder.Append(value);
+            }
         }
     }
 }
