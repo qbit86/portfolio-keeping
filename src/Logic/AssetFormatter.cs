@@ -90,7 +90,7 @@ namespace Diversifolio
             decimal price = asset.Price.Amount;
             int initialLength = stringBuilder.Length;
 
-            int jointLength = desiredLength - Separator.Length;
+            int jointLength = Math.Max(desiredLength - Separator.Length, 2);
             Span<char> remainingBuffer = stackalloc char[jointLength];
 
             if (!asset.Balance.TryFormat(remainingBuffer, out int balanceLength, "D", P))
