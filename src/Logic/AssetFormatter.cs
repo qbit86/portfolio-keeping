@@ -41,22 +41,22 @@ namespace Diversifolio
 
         private static void UncheckedFormat(Asset asset, StringBuilder stringBuilder)
         {
-            _ = AppendTickerValue(stringBuilder, asset);
+            _ = AppendTickerAndValue(stringBuilder, 16, asset);
 
             stringBuilder.Append(Separator);
-            _ = AppendBalancePrice(stringBuilder, asset);
+            _ = AppendBalanceAndPrice(stringBuilder, 16, asset);
 
             stringBuilder.Append(Separator);
             stringBuilder.Append(asset.Value.Currency);
         }
 
-        private static int AppendTickerValue(StringBuilder stringBuilder, Asset asset)
+        private static int AppendTickerAndValue(StringBuilder stringBuilder, int desiredLength, Asset asset)
         {
             string ticker = asset.Ticker;
             string value = asset.Value.Amount.ToString("F2", P);
             int initialLength = stringBuilder.Length;
 
-            Span<char> destination = stackalloc char[16];
+            Span<char> destination = stackalloc char[desiredLength];
             if (value.Length > destination.Length)
                 return Fallback();
 
@@ -83,14 +83,14 @@ namespace Diversifolio
             }
         }
 
-        private static int AppendBalancePrice(StringBuilder stringBuilder, Asset asset)
+        private static int AppendBalanceAndPrice(StringBuilder stringBuilder, int desiredLength, Asset asset)
         {
             int decimalCount = asset.DecimalCount;
             string f = GetPriceFormat(decimalCount);
             decimal price = asset.Price.Amount;
             int initialLength = stringBuilder.Length;
 
-            const int jointLength = 13;
+            int jointLength = desiredLength - Separator.Length;
             Span<char> remainingBuffer = stackalloc char[jointLength];
 
             if (!asset.Balance.TryFormat(remainingBuffer, out int balanceLength, "D", P))
