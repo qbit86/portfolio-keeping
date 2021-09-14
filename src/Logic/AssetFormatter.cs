@@ -41,10 +41,10 @@ namespace Diversifolio
 
         private static void UncheckedFormat(Asset asset, StringBuilder stringBuilder)
         {
-            _ = AppendTickerAndValue(stringBuilder, 16, asset);
+            int tickerAndValueLength = AppendTickerAndValue(stringBuilder, 16, asset);
 
             stringBuilder.Append(Separator);
-            _ = AppendBalanceAndPrice(stringBuilder, 16, asset);
+            _ = AppendBalanceAndPrice(stringBuilder, Math.Max(32 - tickerAndValueLength, 3), asset);
 
             stringBuilder.Append(Separator);
             stringBuilder.Append(asset.Value.Currency);
