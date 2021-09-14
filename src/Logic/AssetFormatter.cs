@@ -90,8 +90,7 @@ namespace Diversifolio
             decimal price = asset.Price.Amount;
             int initialLength = stringBuilder.Length;
 
-            int jointLength = Math.Max(desiredLength - Separator.Length, 2);
-            Span<char> remainingBuffer = stackalloc char[jointLength];
+            Span<char> remainingBuffer = stackalloc char[40];
 
             if (!asset.Balance.TryFormat(remainingBuffer, out int balanceLength, "D", P))
                 return Fallback(asset.Balance.ToString("D", P), price.ToString(f, P));
@@ -102,12 +101,17 @@ namespace Diversifolio
             if (!price.TryFormat(remainingBuffer, out int rawPriceLength, f, P))
                 return Fallback(balanceView, price.ToString(f, P));
 
-            int pricePadding = decimalCount > 0 ? 4 - decimalCount : 5;
-            int priceLength = Math.Min(remainingBuffer.Length, rawPriceLength + pricePadding);
+            int pricePadding = Math.Clamp(
+                decimalCount > 0 ? 4 - decimalCount : 5, 0, remainingBuffer.Length - rawPriceLength);
+            remainingBuffer.Slice(rawPriceLength, pricePadding).Fill(' ');
+            int priceLength = rawPriceLength + pricePadding;
             ReadOnlySpan<char> priceView = remainingBuffer[..priceLength];
 
-            Span<char> paddedSeparator =
-                stackalloc char[jointLength + Separator.Length - balanceView.Length - priceView.Length];
+            int paddedSeparatorLength = desiredLength - balanceView.Length - priceView.Length;
+            if (paddedSeparatorLength < Separator.Length)
+                return Fallback(balanceView, priceView[..rawPriceLength]);
+
+            Span<char> paddedSeparator = stackalloc char[paddedSeparatorLength];
             paddedSeparator.Fill(' ');
 
             int offset = Math.Clamp(4 - balanceView.Length, 0, paddedSeparator.Length - Separator.Length);
