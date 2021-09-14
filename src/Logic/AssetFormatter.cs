@@ -52,33 +52,37 @@ namespace Diversifolio
 
         private static int AppendTickerAndValue(StringBuilder stringBuilder, int desiredLength, Asset asset)
         {
+            const string f = "F2";
             string ticker = asset.Ticker;
-            string value = asset.Value.Amount.ToString("F2", P);
+            decimal value = asset.Value.Amount;
             int initialLength = stringBuilder.Length;
 
-            Span<char> destination = stackalloc char[desiredLength];
-            if (value.Length > destination.Length)
-                return Fallback();
+            Span<char> buffer = stackalloc char[24];
+            if (!value.TryFormat(buffer, out int valueLength, f, P))
+                return Fallback(value.ToString(f, P));
 
-            value.AsSpan().CopyTo(destination[^value.Length..]);
+            ReadOnlySpan<char> valueView = buffer[..valueLength];
 
-            ReadOnlySpan<char> view = destination;
-            destination = destination[..^value.Length];
-            if (!ticker.AsSpan().TryCopyTo(destination))
-                return Fallback();
+            int paddedSeparatorLength = desiredLength - ticker.Length - valueView.Length;
+            if (paddedSeparatorLength < Separator.Length)
+                return Fallback(valueView);
 
-            destination = destination[ticker.Length..];
-            if (!Separator.AsSpan().TryCopyTo(destination))
-                return Fallback();
+            Span<char> paddedSeparator = stackalloc char[paddedSeparatorLength];
+            paddedSeparator.Fill(' ');
 
-            stringBuilder.Append(view);
+            int offset = Math.Clamp(4 - ticker.Length, 0, paddedSeparator.Length - Separator.Length);
+            Separator.AsSpan().CopyTo(paddedSeparator[offset..]);
+
+            stringBuilder.Append(ticker);
+            stringBuilder.Append(paddedSeparator);
+            stringBuilder.Append(valueView);
             return stringBuilder.Length - initialLength;
 
-            int Fallback()
+            int Fallback(ReadOnlySpan<char> valueSpan)
             {
                 stringBuilder.Append(ticker);
                 stringBuilder.Append(Separator);
-                stringBuilder.Append(value);
+                stringBuilder.Append(valueSpan);
                 return stringBuilder.Length - initialLength;
             }
         }
