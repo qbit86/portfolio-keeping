@@ -104,7 +104,8 @@ namespace Diversifolio
             int pricePadding = Math.Clamp(
                 decimalCount > 0 ? 4 - decimalCount : 5, 0, remainingBuffer.Length - rawPriceLength);
             remainingBuffer.Slice(rawPriceLength, pricePadding).Fill(' ');
-            int priceLength = rawPriceLength + pricePadding;
+            int priceLength = Math.Clamp(
+                desiredLength - balanceLength - Separator.Length, rawPriceLength, rawPriceLength + pricePadding);
             ReadOnlySpan<char> priceView = remainingBuffer[..priceLength];
 
             int paddedSeparatorLength = desiredLength - balanceView.Length - priceView.Length;
