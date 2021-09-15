@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Diversifolio.Moex;
 
@@ -24,8 +25,17 @@ namespace Diversifolio
 
             AssetProvider assetProvider = new(securitiesByMarket);
             IReadOnlyList<Asset> assets = assetProvider.GetAssets(positions);
-            foreach (Asset asset in assets)
-                await Out.WriteLineAsync(AssetFormatter.Shared.Format(asset)).ConfigureAwait(false);
+
+            ILookup<bool, Asset> assetsByClass = assets.ToLookup(it => it.AssetClass == AssetClass.Stock);
+            for (int i = 0; i < 2; ++i)
+            {
+                if (i > 0)
+                    await Out.WriteLineAsync("-----------------------------------------").ConfigureAwait(false);
+                bool key = !Convert.ToBoolean(i);
+                IEnumerable<Asset> grouping = assetsByClass[key];
+                foreach (Asset asset in grouping)
+                    await Out.WriteLineAsync(AssetFormatter.Shared.Format(asset)).ConfigureAwait(false);
+            }
         }
     }
 }
