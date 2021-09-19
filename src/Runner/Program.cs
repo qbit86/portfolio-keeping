@@ -36,7 +36,10 @@ namespace Diversifolio
                     await Out.WriteLineAsync("-----------------------------------------").ConfigureAwait(false);
                 bool key = !Convert.ToBoolean(i);
                 IEnumerable<Asset> grouping = assetsByClass[key];
-                foreach (Asset asset in grouping)
+                IOrderedEnumerable<Asset> orderedAssets = grouping
+                    .OrderBy(it => it.OriginalPrice.Currency)
+                    .ThenByDescending(it => it.Value.Amount);
+                foreach (Asset asset in orderedAssets)
                     await Out.WriteLineAsync(AssetFormatter.Shared.Format(asset)).ConfigureAwait(false);
             }
         }
