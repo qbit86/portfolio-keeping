@@ -47,7 +47,7 @@ namespace Diversifolio
             _ = AppendBalanceAndPrice(stringBuilder, Math.Max(32 - tickerAndValueLength, 3), asset);
 
             stringBuilder.Append(Separator);
-            stringBuilder.Append(asset.Value.Currency);
+            stringBuilder.Append(asset.OriginalPrice.Currency);
         }
 
         private static int AppendTickerAndValue(StringBuilder stringBuilder, int desiredLength, Asset asset)
@@ -91,7 +91,7 @@ namespace Diversifolio
         {
             int decimalCount = asset.DecimalCount;
             string f = GetPriceFormat(decimalCount);
-            decimal price = asset.Price.Amount;
+            decimal price = asset.OriginalPrice.Amount;
             int initialLength = stringBuilder.Length;
 
             Span<char> remainingBuffer = stackalloc char[40];
