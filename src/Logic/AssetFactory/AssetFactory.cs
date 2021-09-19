@@ -6,10 +6,14 @@ namespace Diversifolio
 {
     public abstract class AssetFactory
     {
-        protected abstract bool TryUncheckedCreate(
-            Security security, Position position, AssetClass assetClass, [NotNullWhen(true)] out Asset? asset);
+        protected abstract bool TryUncheckedCreate<TCurrencyConverter>(
+            Security security, Position position, AssetClass assetClass, TCurrencyConverter currencyConverter,
+            [NotNullWhen(true)] out Asset? asset)
+            where TCurrencyConverter : ICurrencyConverter;
 
-        public Asset Create(Security security, Position position)
+        public Asset Create<TCurrencyConverter>(
+            Security security, Position position, TCurrencyConverter currencyConverter)
+            where TCurrencyConverter : ICurrencyConverter
         {
             if (security is null)
                 throw new ArgumentNullException(nameof(security));
@@ -26,7 +30,7 @@ namespace Diversifolio
                     $"Could not find asset class for ticker: {position.Ticker}", nameof(position));
             }
 
-            if (!TryUncheckedCreate(security, position, assetClass, out Asset? asset))
+            if (!TryUncheckedCreate(security, position, assetClass, currencyConverter, out Asset? asset))
                 throw new ArgumentException($"Unsupported security type: {security}", nameof(security));
 
             return asset;

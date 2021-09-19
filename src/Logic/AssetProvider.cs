@@ -36,10 +36,12 @@ namespace Diversifolio
                 if (SelectAssetFactory(kv.Key) is not { } assetFactory)
                     continue;
 
+                AssetProvider<TCurrencyConverter> self = this;
+
                 IReadOnlyList<Security> securities = kv.Value;
                 IEnumerable<Asset> joinedAssets = from position in positions
                     join security in securities on position.Ticker equals security.SecId
-                    select assetFactory.Create(security, position);
+                    select assetFactory.Create(security, position, self._currencyConverter);
 
                 foreach (Asset asset in joinedAssets)
                     assets.Add(asset);
