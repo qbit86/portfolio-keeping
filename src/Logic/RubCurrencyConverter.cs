@@ -3,7 +3,7 @@ using Diversifolio.Moex;
 
 namespace Diversifolio
 {
-    public sealed class RubCurrencyConverter : ICurrencyConverter
+    public readonly struct RubCurrencyConverter : ICurrencyConverter, IEquatable<RubCurrencyConverter>
     {
         private readonly decimal _rubPerUsd;
 
@@ -33,5 +33,15 @@ namespace Diversifolio
         public CurrencyAmount ConvertFrom(CurrencyAmount source) => TryConvertFrom(source, out CurrencyAmount result)
             ? result
             : throw new InvalidOperationException($"Cannot convert from {source.Currency}.");
+
+        public bool Equals(RubCurrencyConverter other) => _rubPerUsd == other._rubPerUsd;
+
+        public override bool Equals(object? obj) => obj is RubCurrencyConverter other && Equals(other);
+
+        public override int GetHashCode() => _rubPerUsd.GetHashCode();
+
+        public static bool operator ==(RubCurrencyConverter left, RubCurrencyConverter right) => left.Equals(right);
+
+        public static bool operator !=(RubCurrencyConverter left, RubCurrencyConverter right) => !left.Equals(right);
     }
 }
