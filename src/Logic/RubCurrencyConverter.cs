@@ -1,4 +1,5 @@
 using System;
+using Diversifolio.Moex;
 
 namespace Diversifolio
 {
@@ -16,6 +17,18 @@ namespace Diversifolio
                 "USD" => TryHelpers.Success(new("SUR", source.Amount * _rubPerUsd), out result),
                 _ => TryHelpers.Failure(out result)
             };
+
+        public static RubCurrencyConverter Create(SeltSecurity usd)
+        {
+            if (usd is null)
+                throw new ArgumentNullException(nameof(usd));
+            if (usd.CurrencyId != "RUB")
+                throw new ArgumentException($"The {nameof(usd.CurrencyId)} value must be equal to RUB.", nameof(usd));
+            if (usd.FaceUnit != "USD")
+                throw new ArgumentException($"The {nameof(usd.FaceUnit)} value must be equal to USD.", nameof(usd));
+
+            return new(usd.PrevPrice);
+        }
 
         public CurrencyAmount ConvertFrom(CurrencyAmount source) => TryConvertFrom(source, out CurrencyAmount result)
             ? result
