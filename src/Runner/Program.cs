@@ -52,10 +52,7 @@ namespace Diversifolio
                 .ConfigureAwait(false);
         }
 
-        private static AssetClass GetAssetClass(Asset asset) => asset.AssetClass switch
-        {
-            AssetClass.Stock => AssetClass.Stock,
-            _ => AssetClass.Other
-        };
+        private static AssetClass GetAssetClass(Asset asset) =>
+            asset.AssetClass == AssetClass.Stock ? AssetClass.Stock : AssetClass.Other;
     }
 }
