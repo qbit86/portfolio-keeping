@@ -35,8 +35,8 @@ namespace Diversifolio
 
             ILookup<AssetClass, Asset> assetsByClass = assets.ToLookup(GetAssetClass);
 
-            PortfolioWriter portfolioWriter = new(Out, s_assetClassesOfInterest);
-            await portfolioWriter.WriteAsync(assetsByClass).ConfigureAwait(false);
+            PortfolioAssetWriter portfolioAssetWriter = new(Out, s_assetClassesOfInterest);
+            await portfolioAssetWriter.WriteAsync(assetsByClass).ConfigureAwait(false);
 
             decimal totalValue = assets.Sum(it => it.Value.Amount);
             await Out.WriteLineAsync().ConfigureAwait(false);
