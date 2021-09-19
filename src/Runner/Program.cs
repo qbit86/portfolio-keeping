@@ -23,7 +23,10 @@ namespace Diversifolio
             IReadOnlyDictionary<string, IReadOnlyList<Security>> securitiesByMarket =
                 await securityProvider.GetSecuritiesByMarketDictionaryAsync().ConfigureAwait(false);
 
-            AssetProvider assetProvider = new(securitiesByMarket);
+            SeltSecurity usd = securitiesByMarket[Markets.Selt].OfType<SeltSecurity>().Single();
+            var currencyConverter = RubCurrencyConverter.Create(usd);
+
+            AssetProvider<RubCurrencyConverter> assetProvider = new(securitiesByMarket, currencyConverter);
             IReadOnlyList<Asset> assets = assetProvider.GetAssets(positions);
 
             ILookup<bool, Asset> assetsByClass = assets.ToLookup(it => it.AssetClass == AssetClass.Stock);

@@ -5,12 +5,18 @@ using Diversifolio.Moex;
 
 namespace Diversifolio
 {
-    public readonly struct AssetProvider : IEquatable<AssetProvider>
+    public readonly struct AssetProvider<TCurrencyConverter> : IEquatable<AssetProvider<TCurrencyConverter>>
+        where TCurrencyConverter : ICurrencyConverter
     {
         private readonly IReadOnlyDictionary<string, IReadOnlyList<Security>> _securitiesByMarket;
+        private readonly TCurrencyConverter _currencyConverter;
 
-        public AssetProvider(IReadOnlyDictionary<string, IReadOnlyList<Security>> securitiesByMarket) =>
+        public AssetProvider(IReadOnlyDictionary<string, IReadOnlyList<Security>> securitiesByMarket,
+            TCurrencyConverter currencyConverter)
+        {
             _securitiesByMarket = securitiesByMarket ?? throw new ArgumentNullException(nameof(securitiesByMarket));
+            _currencyConverter = currencyConverter ?? throw new ArgumentNullException(nameof(currencyConverter));
+        }
 
         public IReadOnlyList<Asset> GetAssets(IReadOnlyList<Position> positions)
         {
@@ -48,14 +54,18 @@ namespace Diversifolio
                 _ => default
             };
 
-        public bool Equals(AssetProvider other) => _securitiesByMarket.Equals(other._securitiesByMarket);
+        public bool Equals(AssetProvider<TCurrencyConverter> other) =>
+            _securitiesByMarket.Equals(other._securitiesByMarket) &&
+            EqualityComparer<TCurrencyConverter>.Default.Equals(_currencyConverter, other._currencyConverter);
 
-        public override bool Equals(object? obj) => obj is AssetProvider other && Equals(other);
+        public override bool Equals(object? obj) => obj is AssetProvider<TCurrencyConverter> other && Equals(other);
 
-        public override int GetHashCode() => _securitiesByMarket.GetHashCode();
+        public override int GetHashCode() => HashCode.Combine(_securitiesByMarket, _currencyConverter);
 
-        public static bool operator ==(AssetProvider left, AssetProvider right) => left.Equals(right);
+        public static bool operator ==(
+            AssetProvider<TCurrencyConverter> left, AssetProvider<TCurrencyConverter> right) => left.Equals(right);
 
-        public static bool operator !=(AssetProvider left, AssetProvider right) => !left.Equals(right);
+        public static bool operator !=(
+            AssetProvider<TCurrencyConverter> left, AssetProvider<TCurrencyConverter> right) => !left.Equals(right);
     }
 }
