@@ -30,10 +30,6 @@ namespace Diversifolio
             return new(usd.PrevPrice);
         }
 
-        public CurrencyAmount ConvertFrom(CurrencyAmount source) => TryConvertFrom(source, out CurrencyAmount result)
-            ? result
-            : throw new InvalidOperationException($"Cannot convert from {source.Currency}.");
-
         public bool Equals(RubCurrencyConverter other) => _rubPerUsd == other._rubPerUsd;
 
         public override bool Equals(object? obj) => obj is RubCurrencyConverter other && Equals(other);
