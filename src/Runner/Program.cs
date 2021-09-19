@@ -12,7 +12,7 @@ namespace Diversifolio
 {
     internal static class Program
     {
-        private static readonly AssetClass[] s_assetClasses = { AssetClass.Stock, AssetClass.Other };
+        private static readonly AssetClass[] s_assetClassesOfInterest = { AssetClass.Stock, AssetClass.Other };
 
         private static CultureInfo P => CultureInfo.InvariantCulture;
         private static TextWriter Out => Console.Out;
@@ -35,22 +35,12 @@ namespace Diversifolio
 
             ILookup<AssetClass, Asset> assetsByClass = assets.ToLookup(GetAssetClass);
 
-            for (int i = 0; i < s_assetClasses.Length; ++i)
-            {
-                if (i > 0)
-                    await Out.WriteLineAsync("-----------------------------------------").ConfigureAwait(false);
-                AssetClass key = s_assetClasses[i];
-                IEnumerable<Asset> grouping = assetsByClass[key];
-                IOrderedEnumerable<Asset> orderedAssets = grouping
-                    .OrderBy(it => it.OriginalPrice.Currency)
-                    .ThenByDescending(it => it.Value.Amount);
-                foreach (Asset asset in orderedAssets)
-                    await Out.WriteLineAsync(AssetFormatter.Shared.Format(asset)).ConfigureAwait(false);
-            }
+            PortfolioWriter portfolioWriter = new(Out, s_assetClassesOfInterest);
+            await portfolioWriter.WriteAsync(assetsByClass).ConfigureAwait(false);
 
             decimal totalValue = assets.Sum(it => it.Value.Amount);
             await Out.WriteLineAsync().ConfigureAwait(false);
-            foreach (AssetClass key in s_assetClasses)
+            foreach (AssetClass key in s_assetClassesOfInterest)
             {
                 decimal sum = assetsByClass[key].Sum(it => it.Value.Amount);
                 decimal ratio = sum / totalValue;
