@@ -11,7 +11,7 @@ namespace Diversifolio
         private static readonly AssetClass[] s_defaultAssetClassesOfInterest = { AssetClass.Stock, AssetClass.Other };
         private static readonly Func<Asset, AssetClass> s_defaultAssetClassSelector = it => it.AssetClass;
 
-        public PortfolioAssetWriter(TextWriter? @out = null,
+        public PortfolioAssetWriter(TextWriter? @out,
             IReadOnlyCollection<AssetClass>? assetClassesOfInterest = null, AssetFormatter? assetFormatter = null)
         {
             AssetClassesOfInterest = assetClassesOfInterest ?? s_defaultAssetClassesOfInterest;
