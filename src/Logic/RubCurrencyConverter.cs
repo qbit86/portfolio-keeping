@@ -1,5 +1,6 @@
 using System;
 using Diversifolio.Moex;
+using static Diversifolio.TryHelpers;
 
 namespace Diversifolio
 {
@@ -12,10 +13,10 @@ namespace Diversifolio
         public bool TryConvertFrom(CurrencyAmount source, out CurrencyAmount result) =>
             source.Currency switch
             {
-                "SUR" => TryHelpers.Success(source, out result),
-                "RUB" => TryHelpers.Success(new("SUR", source.Amount), out result),
-                "USD" => TryHelpers.Success(new("SUR", source.Amount * _rubPerUsd), out result),
-                _ => TryHelpers.Failure(out result)
+                "SUR" => Success(source, out result),
+                "RUB" => Success(new("SUR", source.Amount), out result),
+                "USD" => Success(new("SUR", source.Amount * _rubPerUsd), out result),
+                _ => Failure(out result)
             };
 
         public static RubCurrencyConverter Create(SeltSecurity usd)
