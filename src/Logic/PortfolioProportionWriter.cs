@@ -54,11 +54,11 @@ namespace Diversifolio
 
         private async Task UncheckedWriteAsync(ILookup<AssetClass, Asset> assetsByClass)
         {
-            MulticurrencyAmount totalMulticurrencyAmount = new();
+            var totalMulticurrencyAmount = MulticurrencyAmount.Create();
             Dictionary<AssetClass, MulticurrencyAmount> multicurrencyAmountByAssetClass = new();
             foreach (IGrouping<AssetClass, Asset> grouping in assetsByClass)
             {
-                MulticurrencyAmount assetClassMulticurrencyAmount = new();
+                var assetClassMulticurrencyAmount = MulticurrencyAmount.Create();
                 multicurrencyAmountByAssetClass[grouping.Key] = assetClassMulticurrencyAmount;
                 foreach (Asset asset in grouping)
                 {
