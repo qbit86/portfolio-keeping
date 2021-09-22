@@ -69,14 +69,14 @@ namespace Diversifolio
                 }
             }
 
-            IReadOnlyDictionary<string, CurrencyAmount> currencyAmountByCurrency =
-                totalMulticurrencyAmount.CurrencyAmountByCurrency;
+            CurrencyAmount totalCurrencyAmount = totalMulticurrencyAmount.CurrencyAmountByCurrency.Values.Aggregate(
+                CurrencyAmountMonoid.Instance.Identity, Combine);
 
-            if (currencyAmountByCurrency.Count == 1)
+            await Out.WriteLineAsync($"Total | {totalCurrencyAmount.Amount.ToString("F2", P)}").ConfigureAwait(false);
+
+            CurrencyAmount Combine(CurrencyAmount left, CurrencyAmount right)
             {
-                decimal totalValue = currencyAmountByCurrency.Single().Value.Amount;
-                await Out.WriteLineAsync($"Total\t| {totalValue.ToString("F2", P),10}")
-                    .ConfigureAwait(false);
+                return CurrencyAmountMonoid.Instance.Combine(left, _currencyConverter.ConvertFrom(right));
             }
         }
     }
