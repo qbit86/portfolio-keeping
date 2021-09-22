@@ -11,12 +11,12 @@ namespace Diversifolio
         public RubCurrencyConverter(decimal rubPerUsd) => _rubPerUsd = rubPerUsd;
 
         public bool TryConvertFrom(CurrencyAmount source, out CurrencyAmount result) =>
-            // TODO: Add handling CurrencyAmount.Empty.
-            source.Currency switch
+            source switch
             {
-                "SUR" => Success(source, out result),
-                "RUB" => Success(new("SUR", source.Amount), out result),
-                "USD" => Success(new("SUR", source.Amount * _rubPerUsd), out result),
+                ("SUR", _) => Success(source, out result),
+                ("RUB", var amount) => Success(new("SUR", amount), out result),
+                ("USD", var amount) => Success(new("SUR", amount * _rubPerUsd), out result),
+                _ when source == CurrencyAmount.Empty => Success(new("SUR", 0m), out result),
                 _ => Failure(out result)
             };
 
