@@ -18,6 +18,12 @@ namespace Diversifolio
         public decimal Amount { get; }
         public bool IsDefaultOrEmpty => string.IsNullOrEmpty(Currency) && Amount == 0m;
 
+        public void Deconstruct(out string currency, out decimal amount)
+        {
+            currency = Currency;
+            amount = Amount;
+        }
+
         public bool Equals(CurrencyAmount other) => Currency == other.Currency && Amount == other.Amount;
 
         public override bool Equals(object? obj) => obj is CurrencyAmount other && Equals(other);
