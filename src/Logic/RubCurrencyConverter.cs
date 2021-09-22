@@ -11,6 +11,7 @@ namespace Diversifolio
         public RubCurrencyConverter(decimal rubPerUsd) => _rubPerUsd = rubPerUsd;
 
         public bool TryConvertFrom(CurrencyAmount source, out CurrencyAmount result) =>
+            // TODO: Add handling CurrencyAmount.Empty.
             source.Currency switch
             {
                 "SUR" => Success(source, out result),
