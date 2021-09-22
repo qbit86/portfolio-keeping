@@ -49,6 +49,7 @@ namespace Diversifolio
             await Out.WriteLineAsync($"Total\t| {totalValue.ToString("F2", P),10}")
                 .ConfigureAwait(false);
 
+            await Out.WriteLineAsync().ConfigureAwait(false);
             var portfolioProportionWriter = PortfolioProportionWriter.Create(currencyConverter, Out);
             await portfolioProportionWriter.WriteAsync(assetsByClass).ConfigureAwait(false);
         }

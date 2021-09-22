@@ -51,7 +51,12 @@ namespace Diversifolio
 
         private async Task UncheckedWriteAsync(ILookup<AssetClass, Asset> assetsByClass)
         {
+            var currencies = assetsByClass.SelectMany(it => it.Select(a => a.OriginalValue.Currency))
+                .Distinct(StringComparer.Ordinal).OrderBy(it => it, StringComparer.Ordinal).ToList();
+            await Out.WriteLineAsync($"{string.Join(", ", currencies)}").ConfigureAwait(false);
+
             var totalMulticurrencyAmount = MulticurrencyAmount.Create();
+
             Dictionary<AssetClass, MulticurrencyAmount> multicurrencyAmountByAssetClass = new();
             foreach (IGrouping<AssetClass, Asset> grouping in assetsByClass)
             {
