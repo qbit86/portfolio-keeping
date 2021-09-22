@@ -10,22 +10,11 @@ namespace Diversifolio
 
         private readonly StringBuilder _stringBuilder;
 
-        public AssetFormatter(StringBuilder stringBuilder) =>
-            _stringBuilder = stringBuilder ?? throw new ArgumentNullException(nameof(stringBuilder));
+        public AssetFormatter(StringBuilder? stringBuilder) => _stringBuilder = stringBuilder ?? new();
 
         public static AssetFormatter Shared { get; } = new(new());
 
         private static CultureInfo P => CultureInfo.InvariantCulture;
-
-        public static void Format(Asset asset, StringBuilder stringBuilder)
-        {
-            if (asset is null)
-                throw new ArgumentNullException(nameof(asset));
-            if (stringBuilder is null)
-                throw new ArgumentNullException(nameof(stringBuilder));
-
-            UncheckedFormat(asset, stringBuilder);
-        }
 
         public string Format(Asset asset)
         {
