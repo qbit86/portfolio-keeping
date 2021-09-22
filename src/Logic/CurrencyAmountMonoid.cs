@@ -31,6 +31,15 @@ namespace Diversifolio
             return new(currency, amount);
         }
 
+        public static decimal Divide(CurrencyAmount numerator, CurrencyAmount denominator)
+        {
+            string currency = numerator.Currency;
+            if (currency != denominator.Currency)
+                ThrowArgumentException(nameof(denominator));
+
+            return numerator.Amount / denominator.Amount;
+        }
+
         [DoesNotReturn]
         private static void ThrowArgumentException(string paramName) =>
             throw new ArgumentException("Currencies must be equal.", paramName);
