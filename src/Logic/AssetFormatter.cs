@@ -10,7 +10,7 @@ namespace Diversifolio
 
         private readonly StringBuilder _stringBuilder;
 
-        public AssetFormatter(StringBuilder? stringBuilder) => _stringBuilder = stringBuilder ?? new();
+        public AssetFormatter(StringBuilder? stringBuilder = null) => _stringBuilder = stringBuilder ?? new();
 
         public static AssetFormatter Shared { get; } = new(new());
 
