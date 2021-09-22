@@ -8,19 +8,15 @@ namespace Diversifolio
 {
     public sealed class PortfolioAssetWriter
     {
-        private static readonly AssetClass[] s_defaultAssetClassesOfInterest = { AssetClass.Stock, AssetClass.Other };
         private static readonly Func<Asset, AssetClass> s_defaultAssetClassSelector = it => it.AssetClass;
 
-        public PortfolioAssetWriter(TextWriter? @out,
-            IReadOnlyCollection<AssetClass>? assetClassesOfInterest = null, AssetFormatter? assetFormatter = null)
+        public PortfolioAssetWriter(TextWriter? @out, AssetFormatter? assetFormatter = null)
         {
-            AssetClassesOfInterest = assetClassesOfInterest ?? s_defaultAssetClassesOfInterest;
             Out = @out ?? TextWriter.Null;
             AssetFormatter = assetFormatter ?? AssetFormatter.Shared;
         }
 
         private TextWriter Out { get; }
-        private IReadOnlyCollection<AssetClass> AssetClassesOfInterest { get; }
         private AssetFormatter AssetFormatter { get; }
 
         public Task WriteAsync(ILookup<AssetClass, Asset>? assetsByClass)
@@ -44,7 +40,8 @@ namespace Diversifolio
         private async Task UncheckedWriteAsync(ILookup<AssetClass, Asset> assetsByClass)
         {
             int index = 0;
-            foreach (AssetClass key in AssetClassesOfInterest)
+            IEnumerable<AssetClass> keys = assetsByClass.Select(it => it.Key);
+            foreach (AssetClass key in keys)
             {
                 if (index++ > 0)
                     await Out.WriteLineAsync("-----------------------------------------").ConfigureAwait(false);

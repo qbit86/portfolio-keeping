@@ -12,8 +12,6 @@ namespace Diversifolio
 {
     internal static class Program
     {
-        private static readonly AssetClass[] s_assetClassesOfInterest = { AssetClass.Stock, AssetClass.Other };
-
         private static CultureInfo P => CultureInfo.InvariantCulture;
         private static TextWriter Out => Console.Out;
 
@@ -32,15 +30,15 @@ namespace Diversifolio
 
             AssetProvider<RubCurrencyConverter> assetProvider = new(securitiesByMarket, currencyConverter);
             IReadOnlyList<Asset> assets = assetProvider.GetAssets(positions);
-
             ILookup<AssetClass, Asset> assetsByClass = assets.ToLookup(GetAssetClass);
 
-            PortfolioAssetWriter portfolioAssetWriter = new(Out, s_assetClassesOfInterest);
+            PortfolioAssetWriter portfolioAssetWriter = new(Out);
             await portfolioAssetWriter.WriteAsync(assetsByClass).ConfigureAwait(false);
 
             decimal totalValue = assets.Sum(it => it.Value.Amount);
             await Out.WriteLineAsync().ConfigureAwait(false);
-            foreach (AssetClass key in s_assetClassesOfInterest)
+            IEnumerable<AssetClass> keys = assetsByClass.Select(it => it.Key);
+            foreach (AssetClass key in keys)
             {
                 decimal sum = assetsByClass[key].Sum(it => it.Value.Amount);
                 decimal ratio = sum / totalValue;
