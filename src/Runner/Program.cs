@@ -35,20 +35,6 @@ namespace Diversifolio
             PortfolioAssetWriter portfolioAssetWriter = new(Out);
             await portfolioAssetWriter.WriteAsync(assetsByClass).ConfigureAwait(false);
 
-            decimal totalValue = assets.Sum(it => it.Value.Amount);
-            await Out.WriteLineAsync().ConfigureAwait(false);
-            IEnumerable<AssetClass> keys = assetsByClass.Select(it => it.Key);
-            foreach (AssetClass key in keys)
-            {
-                decimal sum = assetsByClass[key].Sum(it => it.Value.Amount);
-                decimal ratio = sum / totalValue;
-                await Out.WriteLineAsync($"{key}\t| {sum.ToString("F2", P),10} | {ratio.ToString("P2", P),8}")
-                    .ConfigureAwait(false);
-            }
-
-            await Out.WriteLineAsync($"Total\t| {totalValue.ToString("F2", P),10}")
-                .ConfigureAwait(false);
-
             await Out.WriteLineAsync().ConfigureAwait(false);
             var portfolioProportionWriter = PortfolioProportionWriter.Create(currencyConverter, Out);
             await portfolioProportionWriter.WriteAsync(assetsByClass).ConfigureAwait(false);
