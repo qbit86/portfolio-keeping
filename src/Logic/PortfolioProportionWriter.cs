@@ -9,11 +9,7 @@ namespace Diversifolio
 {
     internal static class PortfolioProportionWriter
     {
-        private static readonly AssetClass[] s_defaultAssetClassesOfInterest = { AssetClass.Stock, AssetClass.Other };
-
         internal static readonly Func<Asset, AssetClass> DefaultAssetClassSelector = it => it.AssetClass;
-
-        internal static IReadOnlyList<AssetClass> DefaultAssetClassesOfInterest => s_defaultAssetClassesOfInterest;
     }
 
     public sealed class PortfolioProportionWriter<TCurrencyConverter>
@@ -21,18 +17,15 @@ namespace Diversifolio
     {
         private readonly TCurrencyConverter _currencyConverter;
 
-        public PortfolioProportionWriter(TCurrencyConverter currencyConverter,
-            TextWriter? @out, IReadOnlyCollection<AssetClass>? assetClassesOfInterest = null)
+        public PortfolioProportionWriter(TCurrencyConverter currencyConverter, TextWriter? @out)
         {
             _currencyConverter = currencyConverter ?? throw new ArgumentNullException(nameof(currencyConverter));
-            AssetClassesOfInterest = assetClassesOfInterest ?? PortfolioProportionWriter.DefaultAssetClassesOfInterest;
             Out = @out ?? TextWriter.Null;
         }
 
         private static CultureInfo P => CultureInfo.InvariantCulture;
 
         private TextWriter Out { get; }
-        private IReadOnlyCollection<AssetClass> AssetClassesOfInterest { get; }
 
         public Task WriteAsync(ILookup<AssetClass, Asset>? assetsByClass)
         {
