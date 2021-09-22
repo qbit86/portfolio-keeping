@@ -53,7 +53,6 @@ namespace Diversifolio
         {
             var currencies = assetsByClass.SelectMany(it => it.Select(a => a.OriginalValue.Currency))
                 .Distinct(StringComparer.Ordinal).OrderBy(it => it, StringComparer.Ordinal).ToList();
-            await Out.WriteLineAsync($"{string.Join(", ", currencies)}").ConfigureAwait(false);
 
             var totalMulticurrencyAmount = MulticurrencyAmount.Create();
 
@@ -71,8 +70,12 @@ namespace Diversifolio
 
             CurrencyAmount totalCurrencyAmount = totalMulticurrencyAmount.CurrencyAmountByCurrency.Values.Aggregate(
                 CurrencyAmountMonoid.Instance.Identity, Combine);
+            var proportionFormatter = ProportionFormatter.Create(_currencyConverter, totalCurrencyAmount, currencies);
+            foreach (KeyValuePair<AssetClass, MulticurrencyAmount> kv in multicurrencyAmountByAssetClass)
+                await Out.WriteLineAsync(proportionFormatter.Format(kv.Key, kv.Value)).ConfigureAwait(false);
 
-            await Out.WriteLineAsync($"Total | {totalCurrencyAmount.Amount.ToString("F2", P)}").ConfigureAwait(false);
+            await Out.WriteAsync($"Total | {totalCurrencyAmount.Amount.ToString("F2", P)}").ConfigureAwait(false);
+            await Out.WriteLineAsync($" {totalCurrencyAmount.Currency}").ConfigureAwait(false);
 
             CurrencyAmount Combine(CurrencyAmount left, CurrencyAmount right)
             {
