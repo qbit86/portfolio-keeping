@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Diversifolio
@@ -12,19 +13,23 @@ namespace Diversifolio
         internal static readonly Func<Asset, AssetClass> DefaultAssetClassSelector = it => it.AssetClass;
 
         public static PortfolioProportionWriter<TCurrencyConverter> Create<TCurrencyConverter>(
-            TCurrencyConverter currencyConverter, TextWriter? @out) where TCurrencyConverter : ICurrencyConverter =>
-            new(currencyConverter, @out);
+            TCurrencyConverter currencyConverter, TextWriter? @out, StringBuilder? stringBuilder = null)
+            where TCurrencyConverter : ICurrencyConverter =>
+            new(currencyConverter, @out, stringBuilder);
     }
 
     public sealed class PortfolioProportionWriter<TCurrencyConverter>
         where TCurrencyConverter : ICurrencyConverter
     {
         private readonly TCurrencyConverter _currencyConverter;
+        private readonly StringBuilder _stringBuilder;
 
-        public PortfolioProportionWriter(TCurrencyConverter currencyConverter, TextWriter? @out)
+        public PortfolioProportionWriter(
+            TCurrencyConverter currencyConverter, TextWriter? @out, StringBuilder? stringBuilder = null)
         {
             _currencyConverter = currencyConverter ?? throw new ArgumentNullException(nameof(currencyConverter));
             Out = @out ?? TextWriter.Null;
+            _stringBuilder = stringBuilder ?? new();
         }
 
         private static CultureInfo P => CultureInfo.InvariantCulture;
@@ -70,7 +75,8 @@ namespace Diversifolio
 
             CurrencyAmount totalCurrencyAmount = totalMulticurrencyAmount.CurrencyAmountByCurrency.Values.Aggregate(
                 CurrencyAmountMonoid.Instance.Identity, Combine);
-            var proportionFormatter = ProportionFormatter.Create(_currencyConverter, totalCurrencyAmount, currencies);
+            var proportionFormatter = ProportionFormatter.Create(
+                _currencyConverter, totalCurrencyAmount, currencies, _stringBuilder);
             foreach (KeyValuePair<AssetClass, MulticurrencyAmount> kv in multicurrencyAmountByAssetClass)
                 await Out.WriteLineAsync(proportionFormatter.Format(kv.Key, kv.Value)).ConfigureAwait(false);
 
