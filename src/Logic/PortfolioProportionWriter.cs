@@ -7,9 +7,13 @@ using System.Threading.Tasks;
 
 namespace Diversifolio
 {
-    internal static class PortfolioProportionWriter
+    public static class PortfolioProportionWriter
     {
         internal static readonly Func<Asset, AssetClass> DefaultAssetClassSelector = it => it.AssetClass;
+
+        public static PortfolioProportionWriter<TCurrencyConverter> Create<TCurrencyConverter>(
+            TCurrencyConverter currencyConverter, TextWriter? @out) where TCurrencyConverter : ICurrencyConverter =>
+            new(currencyConverter, @out);
     }
 
     public sealed class PortfolioProportionWriter<TCurrencyConverter>
