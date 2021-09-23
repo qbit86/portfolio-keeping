@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,7 +11,6 @@ namespace Diversifolio
 {
     internal static class Program
     {
-        private static CultureInfo P => CultureInfo.InvariantCulture;
         private static TextWriter Out => Console.Out;
 
         private static async Task Main()
