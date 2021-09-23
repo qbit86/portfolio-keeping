@@ -8,11 +8,23 @@ namespace Diversifolio
 {
     public static class ProportionFormatter
     {
+        private static CultureInfo? s_formatProvider;
+
+        internal static CultureInfo FormatProvider => s_formatProvider ??= CreateFormatProvider();
+
         public static ProportionFormatter<TCurrencyConverter> Create<TCurrencyConverter>(
             TCurrencyConverter currencyConverter, CurrencyAmount total, IReadOnlyList<string> currencies,
             StringBuilder? stringBuilder = null)
             where TCurrencyConverter : ICurrencyConverter =>
             new(currencyConverter, total, currencies, stringBuilder);
+
+        private static CultureInfo CreateFormatProvider()
+        {
+            CultureInfo result = (CultureInfo)CultureInfo.InvariantCulture.Clone();
+            result.NumberFormat.PercentPositivePattern = 1;
+            result.NumberFormat.PercentNegativePattern = 1;
+            return CultureInfo.ReadOnly(result);
+        }
     }
 
     public sealed class ProportionFormatter<TCurrencyConverter>
@@ -34,7 +46,7 @@ namespace Diversifolio
             _stringBuilder = stringBuilder ?? new();
         }
 
-        private static CultureInfo P => CultureInfo.InvariantCulture;
+        private static CultureInfo P => ProportionFormatter.FormatProvider;
 
         public string Format(AssetClass assetClass,
             MulticurrencyAmount multicurrencyAmount)
@@ -60,7 +72,7 @@ namespace Diversifolio
             _stringBuilder.Append(assetClassTotal.Currency);
             _stringBuilder.Append(Separator);
             decimal ratio = CurrencyAmountMonoid.Divide(assetClassTotal, _total);
-            _stringBuilder.Append(ratio.ToString("P2", CultureInfo.CurrentCulture));
+            _stringBuilder.Append(ratio.ToString("P2", P));
 
             foreach (string currency in _currencies)
             {
