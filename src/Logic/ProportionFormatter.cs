@@ -48,8 +48,7 @@ namespace Diversifolio
 
         private static CultureInfo P => ProportionFormatter.FormatProvider;
 
-        public string Format(AssetClass assetClass,
-            MulticurrencyAmount multicurrencyAmount)
+        public string Format(AssetClass assetClass, MulticurrencyAmount multicurrencyAmount)
         {
             _stringBuilder.Clear();
             IReadOnlyDictionary<string, CurrencyAmount> currencyAmountByCurrency =
