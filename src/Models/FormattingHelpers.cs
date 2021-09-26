@@ -1,10 +1,15 @@
 using System;
+using System.Globalization;
 using System.Text;
 
 namespace Diversifolio
 {
-    internal static class FormattingHelpers
+    public static class FormattingHelpers
     {
+        private static CultureInfo? s_formatProvider;
+
+        public static CultureInfo FormatProvider => s_formatProvider ??= CreateFormatProvider();
+
         internal static void AppendDecimal(
             StringBuilder stringBuilder, decimal value, string? format, IFormatProvider? formatProvider)
         {
@@ -15,6 +20,14 @@ namespace Diversifolio
                 stringBuilder.Append(buffer[..charsWritten]);
             else
                 stringBuilder.Append(value.ToString(format, formatProvider));
+        }
+
+        private static CultureInfo CreateFormatProvider()
+        {
+            CultureInfo result = (CultureInfo)CultureInfo.InvariantCulture.Clone();
+            result.NumberFormat.PercentPositivePattern = 1;
+            result.NumberFormat.PercentNegativePattern = 1;
+            return CultureInfo.ReadOnly(result);
         }
     }
 }
