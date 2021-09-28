@@ -50,11 +50,11 @@ namespace Diversifolio
         private void UncheckedFormat(AssetClass assetClass,
             IReadOnlyDictionary<string, CurrencyAmount> currencyAmountByCurrency)
         {
-            _stringBuilder.Append(assetClass.ToString());
+            int assetClassLength = AppendAssetClass(_stringBuilder, 5, assetClass);
             _stringBuilder.Append(Separator);
             CurrencyAmount assetClassTotal = currencyAmountByCurrency.Values.Aggregate(
                 CurrencyAmountMonoid.Instance.Identity, Combine);
-            _stringBuilder.Append(assetClassTotal.Amount.ToString("F2", P));
+            _ = AppendTotalAmount(_stringBuilder, 18 - assetClassLength - Separator.Length, assetClassTotal.Amount);
             _stringBuilder.Append(' ');
             _stringBuilder.Append(assetClassTotal.Currency);
             _stringBuilder.Append(Separator);
@@ -79,6 +79,41 @@ namespace Diversifolio
             CurrencyAmount Combine(CurrencyAmount left, CurrencyAmount right)
             {
                 return CurrencyAmountMonoid.Instance.Combine(left, _currencyConverter.ConvertFrom(right));
+            }
+        }
+
+        private static int AppendAssetClass(StringBuilder stringBuilder, int desiredLength, AssetClass assetClass)
+        {
+            int initialLength = stringBuilder.Length;
+            string raw = assetClass.ToString();
+            string padded = raw.Length < desiredLength ? raw.PadRight(desiredLength) : raw;
+            stringBuilder.Append(padded);
+            return stringBuilder.Length - initialLength;
+        }
+
+        private static int AppendTotalAmount(StringBuilder stringBuilder, int desiredLength, decimal totalAmount)
+        {
+            int initialLength = stringBuilder.Length;
+            int bufferLength = Math.Max(desiredLength, 24);
+            Span<char> buffer = stackalloc char[bufferLength];
+            if (!totalAmount.TryFormat(buffer, out int totalAmountLength, "F2", P))
+                return Fallback(totalAmount.ToString("F2", P));
+
+            ReadOnlySpan<char> totalAmountSpan = buffer[..totalAmountLength];
+            if (desiredLength <= totalAmountSpan.Length)
+                return Fallback(totalAmountSpan);
+
+            int paddingLength = desiredLength - totalAmountSpan.Length;
+            Span<char> paddingSpan = buffer.Slice(totalAmountSpan.Length, paddingLength);
+            paddingSpan.Fill(' ');
+            stringBuilder.Append(paddingSpan);
+            stringBuilder.Append(totalAmountSpan);
+            return stringBuilder.Length - initialLength;
+
+            int Fallback(ReadOnlySpan<char> valueSpan)
+            {
+                stringBuilder.Append(valueSpan);
+                return stringBuilder.Length - initialLength;
             }
         }
     }
