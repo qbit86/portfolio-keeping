@@ -35,7 +35,7 @@ namespace Diversifolio
             stringBuilder.Append(Separator);
             _ = AppendBalanceAndPrice(stringBuilder, Math.Max(32 - tickerAndValueLength, 3), asset);
 
-            stringBuilder.Append(Separator);
+            stringBuilder.Append(' ');
             stringBuilder.Append(asset.OriginalPrice.Currency);
         }
 
