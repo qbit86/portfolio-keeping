@@ -50,6 +50,48 @@ namespace Diversifolio
             return UncheckedAppendAligned(stringBuilder, right, desiredWidth, true);
         }
 
+        internal static int AppendJustified(StringBuilder stringBuilder, ReadOnlySpan<char> separator,
+            ReadOnlySpan<char> left, int desiredLeftWidth, ReadOnlySpan<char> right, int desiredRightWidth)
+        {
+            if (stringBuilder is null)
+                throw new ArgumentNullException(nameof(stringBuilder));
+
+            int initialLength = stringBuilder.Length;
+            int paddingWidth = desiredLeftWidth + desiredRightWidth - left.Length - right.Length;
+            if (paddingWidth <= separator.Length)
+            {
+                stringBuilder.Append(left);
+                stringBuilder.Append(separator);
+                stringBuilder.Append(right);
+                return ActualWidth();
+            }
+
+            Span<char> padding = stackalloc char[paddingWidth];
+            padding.Fill(' ');
+            int offset = desiredLeftWidth - left.Length;
+            if (offset <= 0)
+            {
+                separator.CopyTo(padding);
+                stringBuilder.Append(left);
+                stringBuilder.Append(padding);
+                stringBuilder.Append(right);
+                return ActualWidth();
+            }
+
+            if (!separator.TryCopyTo(padding[offset..]))
+                separator.CopyTo(padding[^separator.Length..]);
+
+            stringBuilder.Append(left);
+            stringBuilder.Append(padding);
+            stringBuilder.Append(right);
+            return ActualWidth();
+
+            int ActualWidth()
+            {
+                return stringBuilder.Length - initialLength;
+            }
+        }
+
         private static int UncheckedAppendAligned(
             StringBuilder stringBuilder, ReadOnlySpan<char> value, int desiredWidth, bool padLeft)
         {
