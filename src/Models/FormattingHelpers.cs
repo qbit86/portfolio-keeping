@@ -25,7 +25,7 @@ namespace Diversifolio
                 stringBuilder.Append(value.ToString(format, formatProvider));
         }
 
-        internal static int AppendAligned(
+        public static int AppendAligned(
             StringBuilder stringBuilder, ReadOnlySpan<char> value, int desiredWidth, bool padLeft = false)
         {
             if (stringBuilder is null)
@@ -34,7 +34,7 @@ namespace Diversifolio
             return UncheckedAppendAligned(stringBuilder, value, desiredWidth, padLeft);
         }
 
-        internal static int AppendLeft(StringBuilder stringBuilder, ReadOnlySpan<char> left, int desiredWidth)
+        public static int AppendLeft(StringBuilder stringBuilder, ReadOnlySpan<char> left, int desiredWidth)
         {
             if (stringBuilder is null)
                 throw new ArgumentNullException(nameof(stringBuilder));
@@ -42,7 +42,7 @@ namespace Diversifolio
             return UncheckedAppendAligned(stringBuilder, left, desiredWidth, false);
         }
 
-        internal static int AppendRight(StringBuilder stringBuilder, ReadOnlySpan<char> right, int desiredWidth)
+        public static int AppendRight(StringBuilder stringBuilder, ReadOnlySpan<char> right, int desiredWidth)
         {
             if (stringBuilder is null)
                 throw new ArgumentNullException(nameof(stringBuilder));
@@ -50,14 +50,14 @@ namespace Diversifolio
             return UncheckedAppendAligned(stringBuilder, right, desiredWidth, true);
         }
 
-        internal static int AppendJustified(StringBuilder stringBuilder, ReadOnlySpan<char> separator,
+        public static int AppendJustified(StringBuilder stringBuilder, ReadOnlySpan<char> separator,
             ReadOnlySpan<char> left, int desiredLeftWidth, ReadOnlySpan<char> right, int desiredRightWidth)
         {
             if (stringBuilder is null)
                 throw new ArgumentNullException(nameof(stringBuilder));
 
             int initialLength = stringBuilder.Length;
-            int paddingWidth = desiredLeftWidth + desiredRightWidth - left.Length - right.Length;
+            int paddingWidth = desiredLeftWidth + desiredRightWidth - left.Length - right.Length + separator.Length;
             if (paddingWidth <= separator.Length)
             {
                 stringBuilder.Append(left);
