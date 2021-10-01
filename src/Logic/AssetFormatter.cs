@@ -1,3 +1,5 @@
+#define DIFERSIFOLIO_LEGACY
+
 using System;
 using System.Globalization;
 using System.Text;
@@ -44,6 +46,7 @@ namespace Diversifolio
             const string f = "F2";
             string ticker = asset.Ticker;
             decimal value = asset.Value.Amount;
+#if DIFERSIFOLIO_LEGACY
             int initialLength = stringBuilder.Length;
 
             Span<char> buffer = stackalloc char[24];
@@ -74,6 +77,14 @@ namespace Diversifolio
                 stringBuilder.Append(valueSpan);
                 return stringBuilder.Length - initialLength;
             }
+#else
+            ReadOnlySpan<char> left = ticker;
+            const int desiredLeftWidth = 4;
+            ReadOnlySpan<char> right = value.ToString(f, P);
+            const int desiredRightWidth = 9;
+            return FormattingHelpers.AppendJustified(
+                stringBuilder, Separator,left, desiredLeftWidth, right, desiredRightWidth);
+#endif
         }
 
         private static int AppendBalanceAndPrice(StringBuilder stringBuilder, int desiredLength, Asset asset)
@@ -81,6 +92,7 @@ namespace Diversifolio
             int decimalCount = asset.DecimalCount;
             string f = GetPriceFormat(decimalCount);
             decimal price = asset.OriginalPrice.Amount;
+#if DIFERSIFOLIO_LEGACY
             int initialLength = stringBuilder.Length;
 
             Span<char> remainingBuffer = stackalloc char[40];
@@ -123,6 +135,17 @@ namespace Diversifolio
                 stringBuilder.Append(priceSpan);
                 return stringBuilder.Length - initialLength;
             }
+#else
+            ReadOnlySpan<char> left = asset.Balance.ToString("D", P);
+            const int desiredLeftWidth = 4;
+            string rawRight = price.ToString(f, P);
+            const int desiredRightWidth = 9;
+            int pricePadding = Math.Clamp(
+                decimalCount > 0 ? 4 - decimalCount : 5, 0, desiredLeftWidth + desiredRightWidth - left.Length);
+            ReadOnlySpan<char> right = rawRight.PadRight(rawRight.Length + pricePadding);
+            return FormattingHelpers.AppendJustified(
+                stringBuilder, Separator,left, desiredLeftWidth, right, desiredRightWidth);
+#endif
 
             static string GetPriceFormat(int decimalCount)
             {
