@@ -50,11 +50,10 @@ namespace Diversifolio
         private void UncheckedFormat(AssetClass assetClass,
             IReadOnlyDictionary<string, CurrencyAmount> currencyAmountByCurrency)
         {
-            int assetClassLength = FormattingHelpers.AppendLeft(_stringBuilder, assetClass.ToString(), 5);
-            _stringBuilder.Append(Separator);
             CurrencyAmount assetClassTotal = currencyAmountByCurrency.Values.Aggregate(
                 CurrencyAmountMonoid.Instance.Identity, Combine);
-            _ = AppendTotalAmount(_stringBuilder, 18 - assetClassLength - Separator.Length, assetClassTotal.Amount);
+
+            _ = AppendAssetClassAndTotalAmount(_stringBuilder, assetClass, assetClassTotal.Amount, 5, 10);
             _stringBuilder.Append(' ');
             _stringBuilder.Append(assetClassTotal.Currency);
             _stringBuilder.Append(Separator);
@@ -82,30 +81,16 @@ namespace Diversifolio
             }
         }
 
-        private static int AppendTotalAmount(StringBuilder stringBuilder, int desiredLength, decimal totalAmount)
+        private static int AppendAssetClassAndTotalAmount(StringBuilder stringBuilder,
+            AssetClass assetClass, decimal totalAmount, int desiredLeftWidth, int desiredRightWidth)
         {
-            int initialLength = stringBuilder.Length;
-            int bufferLength = Math.Max(desiredLength, 24);
-            Span<char> buffer = stackalloc char[bufferLength];
-            if (!totalAmount.TryFormat(buffer, out int totalAmountLength, "F2", P))
-                return Fallback(totalAmount.ToString("F2", P));
-
-            ReadOnlySpan<char> totalAmountSpan = buffer[..totalAmountLength];
-            if (desiredLength <= totalAmountSpan.Length)
-                return Fallback(totalAmountSpan);
-
-            int paddingLength = desiredLength - totalAmountSpan.Length;
-            Span<char> paddingSpan = buffer.Slice(totalAmountSpan.Length, paddingLength);
-            paddingSpan.Fill(' ');
-            stringBuilder.Append(paddingSpan);
-            stringBuilder.Append(totalAmountSpan);
-            return stringBuilder.Length - initialLength;
-
-            int Fallback(ReadOnlySpan<char> valueSpan)
-            {
-                stringBuilder.Append(valueSpan);
-                return stringBuilder.Length - initialLength;
-            }
+            ReadOnlySpan<char> left = assetClass.ToString();
+            Span<char> buffer = stackalloc char[16];
+            ReadOnlySpan<char> right = totalAmount.TryFormat(buffer, out int totalAmountLength, "F2", P)
+                ? buffer[..totalAmountLength]
+                : totalAmount.ToString("F2", P);
+            return FormattingHelpers.AppendJustified(
+                stringBuilder, Separator, left, desiredLeftWidth, right, desiredRightWidth);
         }
     }
 }
