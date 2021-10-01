@@ -47,7 +47,10 @@ namespace Diversifolio
             decimal value = asset.Value.Amount;
 
             ReadOnlySpan<char> left = ticker;
-            ReadOnlySpan<char> right = value.ToString(f, P);
+            Span<char> buffer = stackalloc char[16];
+            ReadOnlySpan<char> right = value.TryFormat(buffer, out int rightLength, f, P)
+                ? buffer[..rightLength]
+                : value.ToString(f, P);
             return FormattingHelpers.AppendJustified(
                 stringBuilder, Separator, left, desiredLeftWidth, right, desiredRightWidth);
         }
@@ -59,13 +62,30 @@ namespace Diversifolio
             string f = GetPriceFormat(decimalCount);
             decimal price = asset.OriginalPrice.Amount;
 
-            ReadOnlySpan<char> left = asset.Balance.ToString("D", P);
-            string rawRight = price.ToString(f, P);
-            int pricePadding = Math.Clamp(
-                decimalCount > 0 ? 4 - decimalCount : 5, 0, desiredLeftWidth + desiredRightWidth - left.Length);
-            ReadOnlySpan<char> right = rawRight.PadRight(rawRight.Length + pricePadding);
-            return FormattingHelpers.AppendJustified(
-                stringBuilder, Separator, left, desiredLeftWidth, right, desiredRightWidth);
+            Span<char> buffer = stackalloc char[24];
+            ReadOnlySpan<char> left = asset.Balance.TryFormat(buffer, out int leftLength, "D", P)
+                ? buffer[..leftLength]
+                : asset.Balance.ToString("D", P);
+
+            buffer = buffer[leftLength..];
+
+            int rawPricePadding = decimalCount > 0 ? 4 - decimalCount : 5;
+            int maxPricePadding = Math.Max(0, desiredLeftWidth + desiredRightWidth - left.Length);
+            int pricePadding = Math.Clamp(rawPricePadding, 0, maxPricePadding);
+            if (price.TryFormat(buffer[..^pricePadding], out int rightLength, f, P))
+            {
+                buffer.Slice(rightLength, pricePadding).Fill(' ');
+                ReadOnlySpan<char> right = buffer[..(rightLength + pricePadding)];
+                return FormattingHelpers.AppendJustified(
+                    stringBuilder, Separator, left, desiredLeftWidth, right, desiredRightWidth);
+            }
+            else
+            {
+                string rawRight = price.ToString(f, P);
+                ReadOnlySpan<char> right = rawRight.PadRight(rawRight.Length + pricePadding);
+                return FormattingHelpers.AppendJustified(
+                    stringBuilder, Separator, left, desiredLeftWidth, right, desiredRightWidth);
+            }
 
             static string GetPriceFormat(int decimalCount)
             {
