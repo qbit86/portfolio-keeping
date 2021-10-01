@@ -64,10 +64,8 @@ namespace Diversifolio
 
             _ = AppendAssetClassAndTotalAmount(_stringBuilder, assetClass.ToString(), assetClassTotal.Amount, 5, 10);
             _stringBuilder.Append(' ');
-            _stringBuilder.Append(assetClassTotal.Currency);
-            _stringBuilder.Append(Separator);
             decimal ratio = CurrencyAmountMonoid.Divide(assetClassTotal, _total);
-            _stringBuilder.Append(ratio.ToString("P2", P));
+            _ = AppendCurrencyAndRatio(_stringBuilder, assetClassTotal.Currency, ratio, 3, 6);
 
             foreach (string currency in _currencies)
             {
@@ -107,6 +105,17 @@ namespace Diversifolio
                 : totalAmount.ToString("F2", P);
             return FormattingHelpers.AppendJustified(
                 stringBuilder, Separator, assetClass, desiredLeftWidth, right, desiredRightWidth);
+        }
+
+        private static int AppendCurrencyAndRatio(StringBuilder stringBuilder,
+            string currency, decimal ratio, int desiredLeftWidth, int desiredRightWidth)
+        {
+            Span<char> buffer = stackalloc char[16];
+            ReadOnlySpan<char> right = ratio.TryFormat(buffer, out int rightLength, "P2", P)
+                ? buffer[..rightLength]
+                : ratio.ToString("P2", P);
+            return FormattingHelpers.AppendJustified(
+                stringBuilder, Separator, currency, desiredLeftWidth, right, desiredRightWidth);
         }
     }
 }
