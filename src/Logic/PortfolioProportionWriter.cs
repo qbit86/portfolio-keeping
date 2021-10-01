@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -31,8 +30,6 @@ namespace Diversifolio
             Out = @out ?? TextWriter.Null;
             _stringBuilder = stringBuilder ?? new();
         }
-
-        private static CultureInfo P => CultureInfo.InvariantCulture;
 
         private TextWriter Out { get; }
 
@@ -77,8 +74,11 @@ namespace Diversifolio
                 CurrencyAmountMonoid.Instance.Identity, Combine);
             var proportionFormatter = ProportionFormatter.Create(
                 _currencyConverter, totalCurrencyAmount, currencies, _stringBuilder);
-            foreach (KeyValuePair<AssetClass, MulticurrencyAmount> kv in multicurrencyAmountByAssetClass)
-                await Out.WriteLineAsync(proportionFormatter.Format(kv.Key, kv.Value)).ConfigureAwait(false);
+
+            IOrderedEnumerable<KeyValuePair<AssetClass, MulticurrencyAmount>> ordered =
+                multicurrencyAmountByAssetClass.OrderBy(it => it.Key, AssetClassComparer.Instance);
+            foreach ((AssetClass key, MulticurrencyAmount value) in ordered)
+                await Out.WriteLineAsync(proportionFormatter.Format(key, value)).ConfigureAwait(false);
 
             await Out.WriteLineAsync(proportionFormatter.FormatTotal(totalCurrencyAmount)).ConfigureAwait(false);
 
@@ -86,6 +86,25 @@ namespace Diversifolio
             {
                 return CurrencyAmountMonoid.Instance.Combine(left, _currencyConverter.ConvertFrom(right));
             }
+        }
+    }
+
+    internal sealed class AssetClassComparer : IComparer<AssetClass>
+    {
+        internal static AssetClassComparer Instance { get; } = new();
+
+        public int Compare(AssetClass x, AssetClass y)
+        {
+            if (x == y)
+                return 0;
+
+            if (x is AssetClass.Stock || y is AssetClass.Other)
+                return -1;
+
+            if (x is AssetClass.Other || y is AssetClass.Stock)
+                return 1;
+
+            return x.CompareTo((int)y);
         }
     }
 }
