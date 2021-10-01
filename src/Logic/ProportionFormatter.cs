@@ -64,23 +64,22 @@ namespace Diversifolio
 
             int classAndTotalLength =
                 AppendAssetClassAndTotalAmount(_stringBuilder, assetClass.ToString(), assetClassTotal.Amount, 5, 10);
-            _stringBuilder.Append(' ');
+            _stringBuilder.Append(Separator);
             decimal ratio = CurrencyAmountMonoid.Divide(assetClassTotal, _total);
-            _ = AppendCurrencyAndRatio(
-                _stringBuilder, assetClassTotal.Currency, ratio, 24 - classAndTotalLength - Separator.Length, 6);
+            _ = AppendRatio(_stringBuilder, ratio, 27 - classAndTotalLength - Separator.Length);
 
             foreach (string currency in _currencies)
             {
                 _stringBuilder.Append(Separator);
                 if (currencyAmountByCurrency.TryGetValue(currency, out CurrencyAmount currencyAmount))
                 {
-                    _stringBuilder.Append(currencyAmount.Amount.ToString("F2", P));
+                    _stringBuilder.Append(currencyAmount.Amount.ToString("F2", P).PadLeft(10));
                     _stringBuilder.Append(' ');
                     _stringBuilder.Append(currencyAmount.Currency);
                 }
                 else
                 {
-                    _stringBuilder.Append("            ");
+                    _stringBuilder.Append("              ");
                 }
             }
 
@@ -90,13 +89,8 @@ namespace Diversifolio
             }
         }
 
-        private void UncheckedFormatTotal(CurrencyAmount currencyAmount)
-        {
-            (var currency, decimal amount) = currencyAmount;
-            _ = AppendAssetClassAndTotalAmount(_stringBuilder, "Total", amount, 5, 10);
-            _stringBuilder.Append(' ');
-            _stringBuilder.Append(currency);
-        }
+        private void UncheckedFormatTotal(CurrencyAmount currencyAmount) =>
+            _ = AppendAssetClassAndTotalAmount(_stringBuilder, "Total", currencyAmount.Amount, 5, 10);
 
         private static int AppendAssetClassAndTotalAmount(StringBuilder stringBuilder,
             string assetClass, decimal totalAmount, int desiredLeftWidth, int desiredRightWidth)
@@ -109,15 +103,13 @@ namespace Diversifolio
                 stringBuilder, Separator, assetClass, desiredLeftWidth, right, desiredRightWidth);
         }
 
-        private static int AppendCurrencyAndRatio(StringBuilder stringBuilder,
-            string currency, decimal ratio, int desiredLeftWidth, int desiredRightWidth)
+        private static int AppendRatio(StringBuilder stringBuilder, decimal ratio, int desiredWidth)
         {
             Span<char> buffer = stackalloc char[16];
             ReadOnlySpan<char> right = ratio.TryFormat(buffer, out int rightLength, "P2", P)
                 ? buffer[..rightLength]
                 : ratio.ToString("P2", P);
-            return FormattingHelpers.AppendJustified(
-                stringBuilder, Separator, currency, desiredLeftWidth, right, desiredRightWidth);
+            return FormattingHelpers.AppendRight(stringBuilder, right, desiredWidth);
         }
     }
 }
