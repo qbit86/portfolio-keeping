@@ -1,5 +1,3 @@
-#define DIFERSIFOLIO_LEGACY
-
 using System;
 using System.Globalization;
 using System.Text;
@@ -32,120 +30,42 @@ namespace Diversifolio
 
         private static void UncheckedFormat(Asset asset, StringBuilder stringBuilder)
         {
-            int tickerAndValueLength = AppendTickerAndValue(stringBuilder, 16, asset);
+            int tickerAndValueLength = AppendTickerAndValue(stringBuilder, asset, 4, 9);
 
             stringBuilder.Append(Separator);
-            _ = AppendBalanceAndPrice(stringBuilder, Math.Max(32 - tickerAndValueLength, 3), asset);
+            _ = AppendBalanceAndPrice(stringBuilder, asset, 23 - tickerAndValueLength - Separator.Length, 9);
 
             stringBuilder.Append(' ');
             stringBuilder.Append(asset.OriginalPrice.Currency);
         }
 
-        private static int AppendTickerAndValue(StringBuilder stringBuilder, int desiredLength, Asset asset)
+        private static int AppendTickerAndValue(
+            StringBuilder stringBuilder, Asset asset, int desiredLeftWidth, int desiredRightWidth)
         {
             const string f = "F2";
             string ticker = asset.Ticker;
             decimal value = asset.Value.Amount;
-#if DIFERSIFOLIO_LEGACY
-            int initialLength = stringBuilder.Length;
 
-            Span<char> buffer = stackalloc char[24];
-            if (!value.TryFormat(buffer, out int valueLength, f, P))
-                return Fallback(value.ToString(f, P));
-
-            ReadOnlySpan<char> valueView = buffer[..valueLength];
-
-            int paddedSeparatorLength = desiredLength - ticker.Length - valueView.Length;
-            if (paddedSeparatorLength < Separator.Length)
-                return Fallback(valueView);
-
-            Span<char> paddedSeparator = stackalloc char[paddedSeparatorLength];
-            paddedSeparator.Fill(' ');
-
-            int offset = Math.Clamp(4 - ticker.Length, 0, paddedSeparator.Length - Separator.Length);
-            Separator.AsSpan().CopyTo(paddedSeparator[offset..]);
-
-            stringBuilder.Append(ticker);
-            stringBuilder.Append(paddedSeparator);
-            stringBuilder.Append(valueView);
-            return stringBuilder.Length - initialLength;
-
-            int Fallback(ReadOnlySpan<char> valueSpan)
-            {
-                stringBuilder.Append(ticker);
-                stringBuilder.Append(Separator);
-                stringBuilder.Append(valueSpan);
-                return stringBuilder.Length - initialLength;
-            }
-#else
             ReadOnlySpan<char> left = ticker;
-            const int desiredLeftWidth = 4;
             ReadOnlySpan<char> right = value.ToString(f, P);
-            const int desiredRightWidth = 9;
             return FormattingHelpers.AppendJustified(
-                stringBuilder, Separator,left, desiredLeftWidth, right, desiredRightWidth);
-#endif
+                stringBuilder, Separator, left, desiredLeftWidth, right, desiredRightWidth);
         }
 
-        private static int AppendBalanceAndPrice(StringBuilder stringBuilder, int desiredLength, Asset asset)
+        private static int AppendBalanceAndPrice(
+            StringBuilder stringBuilder, Asset asset, int desiredLeftWidth, int desiredRightWidth)
         {
             int decimalCount = asset.DecimalCount;
             string f = GetPriceFormat(decimalCount);
             decimal price = asset.OriginalPrice.Amount;
-#if DIFERSIFOLIO_LEGACY
-            int initialLength = stringBuilder.Length;
 
-            Span<char> remainingBuffer = stackalloc char[40];
-
-            if (!asset.Balance.TryFormat(remainingBuffer, out int balanceLength, "D", P))
-                return Fallback(asset.Balance.ToString("D", P), price.ToString(f, P));
-
-            ReadOnlySpan<char> balanceView = remainingBuffer[..balanceLength];
-            remainingBuffer = remainingBuffer[balanceLength..];
-
-            if (!price.TryFormat(remainingBuffer, out int rawPriceLength, f, P))
-                return Fallback(balanceView, price.ToString(f, P));
-
-            int pricePadding = Math.Clamp(
-                decimalCount > 0 ? 4 - decimalCount : 5, 0, remainingBuffer.Length - rawPriceLength);
-            remainingBuffer.Slice(rawPriceLength, pricePadding).Fill(' ');
-            int priceLength = Math.Clamp(
-                desiredLength - balanceLength - Separator.Length, rawPriceLength, rawPriceLength + pricePadding);
-            ReadOnlySpan<char> priceView = remainingBuffer[..priceLength];
-
-            int paddedSeparatorLength = desiredLength - balanceView.Length - priceView.Length;
-            if (paddedSeparatorLength < Separator.Length)
-                return Fallback(balanceView, priceView[..rawPriceLength]);
-
-            Span<char> paddedSeparator = stackalloc char[paddedSeparatorLength];
-            paddedSeparator.Fill(' ');
-
-            int offset = Math.Clamp(4 - balanceView.Length, 0, paddedSeparator.Length - Separator.Length);
-            Separator.AsSpan().CopyTo(paddedSeparator[offset..]);
-
-            stringBuilder.Append(balanceView);
-            stringBuilder.Append(paddedSeparator);
-            stringBuilder.Append(priceView);
-            return stringBuilder.Length - initialLength;
-
-            int Fallback(ReadOnlySpan<char> balanceSpan, ReadOnlySpan<char> priceSpan)
-            {
-                stringBuilder.Append(balanceSpan);
-                stringBuilder.Append(Separator);
-                stringBuilder.Append(priceSpan);
-                return stringBuilder.Length - initialLength;
-            }
-#else
             ReadOnlySpan<char> left = asset.Balance.ToString("D", P);
-            const int desiredLeftWidth = 4;
             string rawRight = price.ToString(f, P);
-            const int desiredRightWidth = 9;
             int pricePadding = Math.Clamp(
                 decimalCount > 0 ? 4 - decimalCount : 5, 0, desiredLeftWidth + desiredRightWidth - left.Length);
             ReadOnlySpan<char> right = rawRight.PadRight(rawRight.Length + pricePadding);
             return FormattingHelpers.AppendJustified(
-                stringBuilder, Separator,left, desiredLeftWidth, right, desiredRightWidth);
-#endif
+                stringBuilder, Separator, left, desiredLeftWidth, right, desiredRightWidth);
 
             static string GetPriceFormat(int decimalCount)
             {
