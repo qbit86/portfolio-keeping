@@ -50,7 +50,7 @@ namespace Diversifolio
         private void UncheckedFormat(AssetClass assetClass,
             IReadOnlyDictionary<string, CurrencyAmount> currencyAmountByCurrency)
         {
-            int assetClassLength = AppendAssetClass(_stringBuilder, 5, assetClass);
+            int assetClassLength = FormattingHelpers.AppendLeft(_stringBuilder, assetClass.ToString(), 5);
             _stringBuilder.Append(Separator);
             CurrencyAmount assetClassTotal = currencyAmountByCurrency.Values.Aggregate(
                 CurrencyAmountMonoid.Instance.Identity, Combine);
@@ -80,15 +80,6 @@ namespace Diversifolio
             {
                 return CurrencyAmountMonoid.Instance.Combine(left, _currencyConverter.ConvertFrom(right));
             }
-        }
-
-        private static int AppendAssetClass(StringBuilder stringBuilder, int desiredLength, AssetClass assetClass)
-        {
-            int initialLength = stringBuilder.Length;
-            string raw = assetClass.ToString();
-            string padded = raw.Length < desiredLength ? raw.PadRight(desiredLength) : raw;
-            stringBuilder.Append(padded);
-            return stringBuilder.Length - initialLength;
         }
 
         private static int AppendTotalAmount(StringBuilder stringBuilder, int desiredLength, decimal totalAmount)
