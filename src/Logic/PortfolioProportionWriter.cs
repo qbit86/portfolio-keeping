@@ -80,8 +80,7 @@ namespace Diversifolio
             foreach (KeyValuePair<AssetClass, MulticurrencyAmount> kv in multicurrencyAmountByAssetClass)
                 await Out.WriteLineAsync(proportionFormatter.Format(kv.Key, kv.Value)).ConfigureAwait(false);
 
-            await Out.WriteAsync($"Total | {totalCurrencyAmount.Amount.ToString("F2", P)}").ConfigureAwait(false);
-            await Out.WriteLineAsync($" {totalCurrencyAmount.Currency}").ConfigureAwait(false);
+            await Out.WriteLineAsync(proportionFormatter.FormatTotal(totalCurrencyAmount)).ConfigureAwait(false);
 
             CurrencyAmount Combine(CurrencyAmount left, CurrencyAmount right)
             {

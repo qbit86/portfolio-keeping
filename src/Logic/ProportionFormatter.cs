@@ -47,13 +47,22 @@ namespace Diversifolio
             return result;
         }
 
+        public string FormatTotal(CurrencyAmount currencyAmount)
+        {
+            _stringBuilder.Clear();
+            UncheckedFormatTotal(currencyAmount);
+            string result = _stringBuilder.ToString();
+            _stringBuilder.Clear();
+            return result;
+        }
+
         private void UncheckedFormat(AssetClass assetClass,
             IReadOnlyDictionary<string, CurrencyAmount> currencyAmountByCurrency)
         {
             CurrencyAmount assetClassTotal = currencyAmountByCurrency.Values.Aggregate(
                 CurrencyAmountMonoid.Instance.Identity, Combine);
 
-            _ = AppendAssetClassAndTotalAmount(_stringBuilder, assetClass, assetClassTotal.Amount, 5, 10);
+            _ = AppendAssetClassAndTotalAmount(_stringBuilder, assetClass.ToString(), assetClassTotal.Amount, 5, 10);
             _stringBuilder.Append(' ');
             _stringBuilder.Append(assetClassTotal.Currency);
             _stringBuilder.Append(Separator);
@@ -81,16 +90,23 @@ namespace Diversifolio
             }
         }
 
-        private static int AppendAssetClassAndTotalAmount(StringBuilder stringBuilder,
-            AssetClass assetClass, decimal totalAmount, int desiredLeftWidth, int desiredRightWidth)
+        private void UncheckedFormatTotal(CurrencyAmount currencyAmount)
         {
-            ReadOnlySpan<char> left = assetClass.ToString();
+            (var currency, decimal amount) = currencyAmount;
+            _ = AppendAssetClassAndTotalAmount(_stringBuilder, "Total", amount, 5, 10);
+            _stringBuilder.Append(' ');
+            _stringBuilder.Append(currency);
+        }
+
+        private static int AppendAssetClassAndTotalAmount(StringBuilder stringBuilder,
+            string assetClass, decimal totalAmount, int desiredLeftWidth, int desiredRightWidth)
+        {
             Span<char> buffer = stackalloc char[16];
             ReadOnlySpan<char> right = totalAmount.TryFormat(buffer, out int totalAmountLength, "F2", P)
                 ? buffer[..totalAmountLength]
                 : totalAmount.ToString("F2", P);
             return FormattingHelpers.AppendJustified(
-                stringBuilder, Separator, left, desiredLeftWidth, right, desiredRightWidth);
+                stringBuilder, Separator, assetClass, desiredLeftWidth, right, desiredRightWidth);
         }
     }
 }
