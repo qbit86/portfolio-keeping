@@ -15,7 +15,7 @@ namespace Diversifolio
 
         private static async Task Main()
         {
-            const string portfolioName = PortfolioNames.TinkoffIis;
+            const string portfolioName = PortfolioNames.Vtb;
             PositionProvider positionProvider = PositionProviderFactory.Create(portfolioName);
             IReadOnlyList<Position> positions = await positionProvider.GetPositionsAsync().ConfigureAwait(false);
 
