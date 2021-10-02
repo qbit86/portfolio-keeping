@@ -29,14 +29,14 @@ namespace Diversifolio
 
             AssetProvider<RubCurrencyConverter> assetProvider = new(securitiesByMarket, currencyConverter);
             IReadOnlyList<Asset> portfolioAssets = assetProvider.GetAssets(portfolioPositions);
-            ILookup<AssetClass, Asset> assetsByClass = portfolioAssets.ToLookup(GetAssetClass);
+            ILookup<AssetClass, Asset> portfolioAssetsByClass = portfolioAssets.ToLookup(GetAssetClass);
 
             AssetWriter assetWriter = new(Out);
-            await assetWriter.WriteAsync(assetsByClass).ConfigureAwait(false);
+            await assetWriter.WriteAsync(portfolioAssetsByClass).ConfigureAwait(false);
 
             await Out.WriteLineAsync().ConfigureAwait(false);
             var proportionWriter = ProportionWriter.Create(currencyConverter, Out);
-            await proportionWriter.WriteAsync(assetsByClass).ConfigureAwait(false);
+            await proportionWriter.WriteAsync(portfolioAssetsByClass).ConfigureAwait(false);
         }
 
         private static AssetClass GetAssetClass(Asset asset) =>
