@@ -10,14 +10,9 @@ namespace Diversifolio
     {
         private static readonly Func<Asset, AssetClass> s_defaultAssetClassSelector = it => it.AssetClass;
 
-        public PortfolioAssetWriter(TextWriter? @out, AssetFormatter? assetFormatter = null)
-        {
-            Out = @out ?? TextWriter.Null;
-            AssetFormatter = assetFormatter ?? AssetFormatter.Shared;
-        }
+        public PortfolioAssetWriter(TextWriter? @out) => Out = @out ?? TextWriter.Null;
 
         private TextWriter Out { get; }
-        private AssetFormatter AssetFormatter { get; }
 
         public Task WriteAsync(ILookup<AssetClass, Asset>? assetsByClass)
         {
@@ -39,18 +34,20 @@ namespace Diversifolio
 
         private async Task UncheckedWriteAsync(ILookup<AssetClass, Asset> assetsByClass)
         {
+            decimal total = assetsByClass.SelectMany(it => it).Sum(it => it.Value.Amount);
+            AssetFormatter assetFormatter = new(total);
             int index = 0;
             IEnumerable<AssetClass> keys = assetsByClass.Select(it => it.Key);
             foreach (AssetClass key in keys)
             {
                 if (index++ > 0)
-                    await Out.WriteLineAsync("-----------------------------------------").ConfigureAwait(false);
+                    await Out.WriteLineAsync("------------------------------------------------").ConfigureAwait(false);
                 IEnumerable<Asset> grouping = assetsByClass[key];
                 IOrderedEnumerable<Asset> orderedAssets = grouping
                     .OrderBy(it => it.OriginalPrice.Currency)
                     .ThenByDescending(it => it.Value.Amount);
                 foreach (Asset asset in orderedAssets)
-                    await Out.WriteLineAsync(AssetFormatter.Format(asset)).ConfigureAwait(false);
+                    await Out.WriteLineAsync(assetFormatter.Format(asset)).ConfigureAwait(false);
             }
         }
     }

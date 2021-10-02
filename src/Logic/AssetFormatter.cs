@@ -9,12 +9,18 @@ namespace Diversifolio
         private const string Separator = " | ";
 
         private readonly StringBuilder _stringBuilder;
+        private readonly decimal _total;
 
-        public AssetFormatter(StringBuilder? stringBuilder = null) => _stringBuilder = stringBuilder ?? new();
+        public AssetFormatter(decimal total, StringBuilder? stringBuilder = null)
+        {
+            if (total is decimal.Zero)
+                throw new ArgumentOutOfRangeException(nameof(total));
 
-        public static AssetFormatter Shared { get; } = new(new());
+            _total = total;
+            _stringBuilder = stringBuilder ?? new();
+        }
 
-        private static CultureInfo P => CultureInfo.InvariantCulture;
+        private static CultureInfo P => FormattingHelpers.FormatProvider;
 
         public string Format(Asset asset)
         {
@@ -28,9 +34,12 @@ namespace Diversifolio
             return result;
         }
 
-        private static void UncheckedFormat(Asset asset, StringBuilder stringBuilder)
+        private void UncheckedFormat(Asset asset, StringBuilder stringBuilder)
         {
             int tickerAndValueLength = AppendTickerAndValue(stringBuilder, asset, 4, 9);
+
+            stringBuilder.Append(Separator);
+            _ = AppendRatio(stringBuilder, asset, 6);
 
             stringBuilder.Append(Separator);
             _ = AppendBalanceAndPrice(stringBuilder, asset, 23 - tickerAndValueLength - Separator.Length, 9);
@@ -53,6 +62,17 @@ namespace Diversifolio
                 : value.ToString(f, P);
             return FormattingHelpers.AppendJustified(
                 stringBuilder, Separator, left, desiredLeftWidth, right, desiredRightWidth);
+        }
+
+        private int AppendRatio(StringBuilder stringBuilder, Asset asset, int desiredWidth)
+        {
+            const string f = "P2";
+            decimal ratio = asset.Value.Amount / _total;
+            Span<char> buffer = stackalloc char[16];
+            ReadOnlySpan<char> right = ratio.TryFormat(buffer, out int rightLength, f, P)
+                ? buffer[..rightLength]
+                : ratio.ToString(f, P);
+            return FormattingHelpers.AppendRight(stringBuilder, right, desiredWidth);
         }
 
         private static int AppendBalanceAndPrice(
