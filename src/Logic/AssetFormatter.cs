@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Diversifolio
 {
-    public sealed class AssetFormatter
+    internal sealed class AssetFormatter
     {
         private const string Separator = " | ";
 

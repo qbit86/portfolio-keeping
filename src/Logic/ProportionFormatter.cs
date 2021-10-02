@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Diversifolio
 {
-    public static class ProportionFormatter
+    internal static class ProportionFormatter
     {
         public static ProportionFormatter<TCurrencyConverter> Create<TCurrencyConverter>(
             TCurrencyConverter currencyConverter, CurrencyAmount total, IReadOnlyList<string> currencies,
@@ -15,7 +15,7 @@ namespace Diversifolio
             new(currencyConverter, total, currencies, stringBuilder);
     }
 
-    public sealed class ProportionFormatter<TCurrencyConverter>
+    internal sealed class ProportionFormatter<TCurrencyConverter>
         where TCurrencyConverter : ICurrencyConverter
     {
         private const string Separator = " | ";
