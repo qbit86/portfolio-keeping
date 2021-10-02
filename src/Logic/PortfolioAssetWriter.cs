@@ -36,13 +36,13 @@ namespace Diversifolio
         {
             decimal total = assetsByClass.SelectMany(it => it).Sum(it => it.Value.Amount);
             AssetFormatter assetFormatter = new(total);
+            IOrderedEnumerable<IGrouping<AssetClass, Asset>> ordered =
+                assetsByClass.OrderBy(it => it.Key, AssetClassComparer.Instance);
             int index = 0;
-            IEnumerable<AssetClass> keys = assetsByClass.Select(it => it.Key);
-            foreach (AssetClass key in keys)
+            foreach (IGrouping<AssetClass, Asset> grouping in ordered)
             {
                 if (index++ > 0)
                     await Out.WriteLineAsync("------------------------------------------------").ConfigureAwait(false);
-                IEnumerable<Asset> grouping = assetsByClass[key];
                 IOrderedEnumerable<Asset> orderedAssets = grouping
                     .OrderBy(it => it.OriginalPrice.Currency)
                     .ThenByDescending(it => it.Value.Amount);
