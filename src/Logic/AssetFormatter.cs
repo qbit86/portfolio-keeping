@@ -1,6 +1,7 @@
 using System;
 using System.Globalization;
 using System.Text;
+using static System.Diagnostics.Debug;
 
 namespace Diversifolio
 {
@@ -36,13 +37,17 @@ namespace Diversifolio
 
         private void UncheckedFormat(Asset asset, StringBuilder stringBuilder)
         {
-            int tickerAndValueLength = AppendTickerAndValue(stringBuilder, asset, 4, 9);
+            Assert(stringBuilder.Length == 0);
+
+            _ = AppendTickerAndValue(stringBuilder, asset, 4, 9);
 
             stringBuilder.Append(Separator);
-            _ = AppendRatio(stringBuilder, asset, 6);
+            int excess = stringBuilder.Length - 19;
+            _ = AppendRatio(stringBuilder, asset, 6 - excess);
 
             stringBuilder.Append(Separator);
-            _ = AppendBalanceAndPrice(stringBuilder, asset, 23 - tickerAndValueLength - Separator.Length, 9);
+            excess = stringBuilder.Length - 28;
+            _ = AppendBalanceAndPrice(stringBuilder, asset, 4 - excess, 9);
 
             stringBuilder.Append(' ');
             stringBuilder.Append(asset.OriginalPrice.Currency);
