@@ -17,7 +17,8 @@ namespace Diversifolio
         {
             const string portfolioName = PortfolioNames.Vtb;
             PositionProvider positionProvider = PositionProviderFactory.Create(portfolioName);
-            IReadOnlyList<Position> positions = await positionProvider.GetPositionsAsync().ConfigureAwait(false);
+            IReadOnlyList<Position> portfolioPositions =
+                await positionProvider.GetPositionsAsync().ConfigureAwait(false);
 
             using var securityProvider = SecurityProvider.Create();
             IReadOnlyDictionary<string, IReadOnlyList<Security>> securitiesByMarket =
@@ -27,15 +28,15 @@ namespace Diversifolio
             var currencyConverter = RubCurrencyConverter.Create(usd);
 
             AssetProvider<RubCurrencyConverter> assetProvider = new(securitiesByMarket, currencyConverter);
-            IReadOnlyList<Asset> assets = assetProvider.GetAssets(positions);
-            ILookup<AssetClass, Asset> assetsByClass = assets.ToLookup(GetAssetClass);
+            IReadOnlyList<Asset> portfolioAssets = assetProvider.GetAssets(portfolioPositions);
+            ILookup<AssetClass, Asset> assetsByClass = portfolioAssets.ToLookup(GetAssetClass);
 
             AssetWriter assetWriter = new(Out);
             await assetWriter.WriteAsync(assetsByClass).ConfigureAwait(false);
 
             await Out.WriteLineAsync().ConfigureAwait(false);
-            var portfolioProportionWriter = ProportionWriter.Create(currencyConverter, Out);
-            await portfolioProportionWriter.WriteAsync(assetsByClass).ConfigureAwait(false);
+            var proportionWriter = ProportionWriter.Create(currencyConverter, Out);
+            await proportionWriter.WriteAsync(assetsByClass).ConfigureAwait(false);
         }
 
         private static AssetClass GetAssetClass(Asset asset) =>
