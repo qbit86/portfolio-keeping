@@ -93,20 +93,25 @@ namespace Diversifolio
                 : asset.Balance.ToString("D", P);
 
             buffer = buffer[leftLength..];
-
             int rawPricePadding = decimalCount > 0 ? 4 - decimalCount : 5;
-            int maxPricePadding = Math.Max(0, desiredLeftWidth + desiredRightWidth - left.Length);
+            if (!price.TryFormat(buffer, out int rawRightLength, f, P))
+                return Fallback(left);
+
+            int maxPricePadding = Math.Max(0, desiredLeftWidth + desiredRightWidth - left.Length - rawRightLength);
             int pricePadding = Math.Clamp(rawPricePadding, 0, maxPricePadding);
-            if (price.TryFormat(buffer[..^pricePadding], out int rightLength, f, P))
-            {
-                buffer.Slice(rightLength, pricePadding).Fill(' ');
-                ReadOnlySpan<char> right = buffer[..(rightLength + pricePadding)];
-                return FormattingHelpers.AppendJustified(
-                    stringBuilder, Separator, left, desiredLeftWidth, right, desiredRightWidth);
-            }
-            else
+            if (buffer.Length < rawRightLength + pricePadding)
+                return Fallback(left);
+
+            buffer.Slice(rawRightLength, pricePadding).Fill(' ');
+            ReadOnlySpan<char> right = buffer[..(rawRightLength + pricePadding)];
+            return FormattingHelpers.AppendJustified(
+                stringBuilder, Separator, left, desiredLeftWidth, right, desiredRightWidth);
+
+            int Fallback(ReadOnlySpan<char> left)
             {
                 string rawRight = price.ToString(f, P);
+                int maxPricePadding = Math.Max(0, desiredLeftWidth + desiredRightWidth - left.Length - rawRight.Length);
+                int pricePadding = Math.Clamp(rawPricePadding, 0, maxPricePadding);
                 ReadOnlySpan<char> right = rawRight.PadRight(rawRight.Length + pricePadding);
                 return FormattingHelpers.AppendJustified(
                     stringBuilder, Separator, left, desiredLeftWidth, right, desiredRightWidth);
