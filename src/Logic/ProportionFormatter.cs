@@ -65,11 +65,12 @@ namespace Diversifolio
             CurrencyAmount assetClassTotal = currencyAmountByCurrency.Values.Aggregate(
                 CurrencyAmountMonoid.Instance.Identity, Combine);
 
-            int classAndTotalLength =
-                AppendAssetClassAndTotalAmount(assetClass.ToString(), assetClassTotal.Amount, 5, 10);
+            _ = AppendAssetClassAndTotalAmount(assetClass.ToString(), assetClassTotal.Amount, 5, 10);
+
             _stringBuilder.Append(Separator);
+            int excess = _stringBuilder.Length - 21;
             decimal ratio = CurrencyAmountMonoid.Divide(assetClassTotal, _total);
-            _ = AppendRatio(ratio, 27 - classAndTotalLength - Separator.Length);
+            _ = AppendRatio(ratio, 6 - excess);
 
             foreach (string currency in _currencies)
             {
