@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using static System.Diagnostics.Debug;
 
 namespace Diversifolio
 {
@@ -59,14 +60,16 @@ namespace Diversifolio
         private void UncheckedFormat(AssetClass assetClass,
             IReadOnlyDictionary<string, CurrencyAmount> currencyAmountByCurrency)
         {
+            Assert(_stringBuilder.Length == 0);
+
             CurrencyAmount assetClassTotal = currencyAmountByCurrency.Values.Aggregate(
                 CurrencyAmountMonoid.Instance.Identity, Combine);
 
             int classAndTotalLength =
-                AppendAssetClassAndTotalAmount(_stringBuilder, assetClass.ToString(), assetClassTotal.Amount, 5, 10);
+                AppendAssetClassAndTotalAmount(assetClass.ToString(), assetClassTotal.Amount, 5, 10);
             _stringBuilder.Append(Separator);
             decimal ratio = CurrencyAmountMonoid.Divide(assetClassTotal, _total);
-            _ = AppendRatio(_stringBuilder, ratio, 27 - classAndTotalLength - Separator.Length);
+            _ = AppendRatio(ratio, 27 - classAndTotalLength - Separator.Length);
 
             foreach (string currency in _currencies)
             {
@@ -90,9 +93,9 @@ namespace Diversifolio
         }
 
         private void UncheckedFormatTotal(CurrencyAmount currencyAmount) =>
-            _ = AppendAssetClassAndTotalAmount(_stringBuilder, "Total", currencyAmount.Amount, 5, 10);
+            _ = AppendAssetClassAndTotalAmount("Total", currencyAmount.Amount, 5, 10);
 
-        private static int AppendAssetClassAndTotalAmount(StringBuilder stringBuilder,
+        private int AppendAssetClassAndTotalAmount(
             string assetClass, decimal totalAmount, int desiredLeftWidth, int desiredRightWidth)
         {
             Span<char> buffer = stackalloc char[16];
@@ -100,16 +103,16 @@ namespace Diversifolio
                 ? buffer[..totalAmountLength]
                 : totalAmount.ToString("F2", P);
             return FormattingHelpers.AppendJustified(
-                stringBuilder, Separator, assetClass, desiredLeftWidth, right, desiredRightWidth);
+                _stringBuilder, Separator, assetClass, desiredLeftWidth, right, desiredRightWidth);
         }
 
-        private static int AppendRatio(StringBuilder stringBuilder, decimal ratio, int desiredWidth)
+        private int AppendRatio(decimal ratio, int desiredWidth)
         {
             Span<char> buffer = stackalloc char[16];
             ReadOnlySpan<char> right = ratio.TryFormat(buffer, out int rightLength, "P2", P)
                 ? buffer[..rightLength]
                 : ratio.ToString("P2", P);
-            return FormattingHelpers.AppendRight(stringBuilder, right, desiredWidth);
+            return FormattingHelpers.AppendRight(_stringBuilder, right, desiredWidth);
         }
     }
 }
