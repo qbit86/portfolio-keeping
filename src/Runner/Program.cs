@@ -16,9 +16,6 @@ namespace Diversifolio
         private static async Task Main()
         {
             const string portfolioName = PortfolioNames.Vtb;
-            PositionProvider positionProvider = PositionProviderFactory.Create(portfolioName);
-            IReadOnlyList<Position> portfolioPositions =
-                await positionProvider.GetPositionsAsync().ConfigureAwait(false);
 
             using var securityProvider = SecurityProvider.Create();
             IReadOnlyDictionary<string, IReadOnlyList<Security>> securitiesByMarket =
@@ -28,6 +25,17 @@ namespace Diversifolio
             var currencyConverter = RubCurrencyConverter.Create(usd);
 
             AssetProvider<RubCurrencyConverter> assetProvider = new(securitiesByMarket, currencyConverter);
+
+            await PlanAsync(portfolioName, currencyConverter, assetProvider).ConfigureAwait(false);
+        }
+
+        private static async Task PlanAsync(string portfolioName, RubCurrencyConverter currencyConverter,
+            AssetProvider<RubCurrencyConverter> assetProvider)
+        {
+            PositionProvider positionProvider = PositionProviderFactory.Create(portfolioName);
+            IReadOnlyList<Position> portfolioPositions =
+                await positionProvider.GetPositionsAsync().ConfigureAwait(false);
+
             IReadOnlyList<Asset> portfolioAssets = assetProvider.GetAssets(portfolioPositions);
             ILookup<AssetClass, Asset> portfolioAssetsByClass = portfolioAssets.ToLookup(GetAssetClass);
 
