@@ -7,23 +7,23 @@ using System.Threading.Tasks;
 
 namespace Diversifolio
 {
-    public static class PortfolioProportionWriter
+    public static class ProportionWriter
     {
         internal static readonly Func<Asset, AssetClass> DefaultAssetClassSelector = it => it.AssetClass;
 
-        public static PortfolioProportionWriter<TCurrencyConverter> Create<TCurrencyConverter>(
+        public static ProportionWriter<TCurrencyConverter> Create<TCurrencyConverter>(
             TCurrencyConverter currencyConverter, TextWriter? @out, StringBuilder? stringBuilder = null)
             where TCurrencyConverter : ICurrencyConverter =>
             new(currencyConverter, @out, stringBuilder);
     }
 
-    public sealed class PortfolioProportionWriter<TCurrencyConverter>
+    public sealed class ProportionWriter<TCurrencyConverter>
         where TCurrencyConverter : ICurrencyConverter
     {
         private readonly TCurrencyConverter _currencyConverter;
         private readonly StringBuilder _stringBuilder;
 
-        public PortfolioProportionWriter(
+        public ProportionWriter(
             TCurrencyConverter currencyConverter, TextWriter? @out, StringBuilder? stringBuilder = null)
         {
             _currencyConverter = currencyConverter ?? throw new ArgumentNullException(nameof(currencyConverter));
@@ -47,7 +47,7 @@ namespace Diversifolio
                 return Task.CompletedTask;
 
             ILookup<AssetClass, Asset> assetsByClass =
-                assets.ToLookup(assetClassSelector ?? PortfolioProportionWriter.DefaultAssetClassSelector);
+                assets.ToLookup(assetClassSelector ?? ProportionWriter.DefaultAssetClassSelector);
             return UncheckedWriteAsync(assetsByClass);
         }
 

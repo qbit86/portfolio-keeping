@@ -30,11 +30,11 @@ namespace Diversifolio
             IReadOnlyList<Asset> assets = assetProvider.GetAssets(positions);
             ILookup<AssetClass, Asset> assetsByClass = assets.ToLookup(GetAssetClass);
 
-            PortfolioAssetWriter portfolioAssetWriter = new(Out);
-            await portfolioAssetWriter.WriteAsync(assetsByClass).ConfigureAwait(false);
+            AssetWriter assetWriter = new(Out);
+            await assetWriter.WriteAsync(assetsByClass).ConfigureAwait(false);
 
             await Out.WriteLineAsync().ConfigureAwait(false);
-            var portfolioProportionWriter = PortfolioProportionWriter.Create(currencyConverter, Out);
+            var portfolioProportionWriter = ProportionWriter.Create(currencyConverter, Out);
             await portfolioProportionWriter.WriteAsync(assetsByClass).ConfigureAwait(false);
         }
 

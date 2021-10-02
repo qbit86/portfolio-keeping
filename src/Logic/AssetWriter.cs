@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace Diversifolio
 {
-    public sealed class PortfolioAssetWriter
+    public sealed class AssetWriter
     {
         private static readonly Func<Asset, AssetClass> s_defaultAssetClassSelector = it => it.AssetClass;
 
-        public PortfolioAssetWriter(TextWriter? @out) => Out = @out ?? TextWriter.Null;
+        public AssetWriter(TextWriter? @out) => Out = @out ?? TextWriter.Null;
 
         private TextWriter Out { get; }
 
