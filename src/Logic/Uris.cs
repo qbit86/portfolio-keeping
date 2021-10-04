@@ -55,7 +55,8 @@ namespace Diversifolio
         {
             (Markets.Selt, SeltSecurityFactory.Columns),
             (Markets.Bonds, BondSecurityFactory.Columns),
-            (Markets.Shares, ShareSecurityFactory.Columns)
+            (Markets.Shares, ShareSecurityFactory.Columns),
+            (Markets.ForeignShares, ShareSecurityFactory.Columns)
         };
     }
 }

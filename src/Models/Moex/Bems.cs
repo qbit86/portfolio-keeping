@@ -26,6 +26,7 @@ namespace Diversifolio.Moex
         {
             (Boards.Cets, Engines.Currency, Markets.Selt),
             (Boards.Tqob, Engines.Stock, Markets.Bonds),
+            (Boards.Tqbd, Engines.Stock, Markets.ForeignShares),
             (Boards.Tqbr, Engines.Stock, Markets.Shares),
             (Boards.Tqtd, Engines.Stock, Markets.Shares),
             (Boards.Tqtf, Engines.Stock, Markets.Shares)

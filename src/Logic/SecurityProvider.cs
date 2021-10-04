@@ -84,7 +84,8 @@ namespace Diversifolio
         {
             (Markets.Selt, SeltSecurityFactory.Instance),
             (Markets.Bonds, BondSecurityFactory.Instance),
-            (Markets.Shares, ShareSecurityFactory.Instance)
+            (Markets.Shares, ShareSecurityFactory.Instance),
+            (Markets.ForeignShares, ShareSecurityFactory.Instance)
         };
     }
 }

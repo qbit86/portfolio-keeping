@@ -53,6 +53,7 @@ namespace Diversifolio
             {
                 Markets.Bonds => BondAssetFactory.Instance,
                 Markets.Shares => ShareAssetFactory.Instance,
+                Markets.ForeignShares => ShareAssetFactory.Instance,
                 _ => default
             };
 
