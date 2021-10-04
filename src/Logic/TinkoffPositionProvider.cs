@@ -82,7 +82,12 @@ namespace Diversifolio
             Account account = accounts.Single(it => it.BrokerAccountType == BrokerAccountType);
             Portfolio portfolio = await context.PortfolioAsync(account.BrokerAccountId).ConfigureAwait(false);
             foreach (Portfolio.Position position in portfolio.Positions)
-                positions.Add(new(position.Ticker, position.Balance));
+                positions.Add(new(Convert(position.Ticker), position.Balance));
+
+            static string Convert(string ticker)
+            {
+                return ticker switch { "TSLA" => "TSLA-RM", _ => ticker };
+            }
         }
 
         private async Task WriteInsertScriptAsync(List<Position> positions)
