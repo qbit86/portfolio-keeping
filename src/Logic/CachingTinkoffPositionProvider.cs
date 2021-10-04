@@ -14,6 +14,11 @@ namespace Diversifolio
     public sealed record CachingTinkoffPositionProvider(string PortfolioName, BrokerAccountType BrokerAccountType) :
         PositionProvider(PortfolioName)
     {
+        private static string? s_directoryPath;
+
+        private static string DirectoryPath => s_directoryPath ??= Path.Join(
+            Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), nameof(Diversifolio));
+
         private static CultureInfo P => CultureInfo.InvariantCulture;
 
         protected override async Task PopulatePositionsAsync<TCollection>(TCollection positions)
@@ -21,10 +26,8 @@ namespace Diversifolio
             if (positions is null)
                 throw new ArgumentNullException(nameof(positions));
 
-            string directoryPath = Path.Join(
-                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), nameof(Diversifolio));
             await using SqliteConnection connection =
-                await CreatePortfolioConnectionAsync(directoryPath).ConfigureAwait(false);
+                await CreatePortfolioConnectionAsync().ConfigureAwait(false);
 
             const string commandText = "SELECT Ticker, Balance FROM Position";
             await using SqliteCommand command = new(commandText, connection);
@@ -38,12 +41,12 @@ namespace Diversifolio
             }
         }
 
-        private async Task<SqliteConnection> CreatePortfolioConnectionAsync(string directoryPath)
+        private async Task<SqliteConnection> CreatePortfolioConnectionAsync()
         {
-            Directory.CreateDirectory(directoryPath);
-            string databasePath = Path.Join(directoryPath, PortfolioName + ".db");
+            Directory.CreateDirectory(DirectoryPath);
+            string databasePath = Path.Join(DirectoryPath, PortfolioName + ".db");
             if (!File.Exists(databasePath))
-                await CreatePortfolioDatabaseAsync(directoryPath, databasePath).ConfigureAwait(false);
+                await CreatePortfolioDatabaseAsync(databasePath).ConfigureAwait(false);
 
             SqliteConnectionStringBuilder connectionStringBuilder = new()
             {
@@ -56,12 +59,12 @@ namespace Diversifolio
             return connection;
         }
 
-        internal async Task CreatePortfolioDatabaseAsync(string directoryPath, string databasePath)
+        internal async Task CreatePortfolioDatabaseAsync(string databasePath)
         {
             List<Position> positions = new();
 
             await PopulatePositionsFromTinkoffAsync(positions).ConfigureAwait(false);
-            await WriteInsertScriptAsync(positions, directoryPath).ConfigureAwait(false);
+            await WriteInsertScriptAsync(positions, DirectoryPath).ConfigureAwait(false);
 
             // TODO: Read sqlite script.
             throw new NotImplementedException();
