@@ -1,14 +1,21 @@
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
 using Tinkoff.Trading.OpenApi.Models;
+using Tinkoff.Trading.OpenApi.Network;
 
 namespace Diversifolio
 {
     public sealed record CachingTinkoffPositionProvider(string PortfolioName, BrokerAccountType BrokerAccountType) :
         PositionProvider(PortfolioName)
     {
+        private static CultureInfo P => CultureInfo.InvariantCulture;
+
         protected override async Task PopulatePositionsAsync<TCollection>(TCollection positions)
         {
             if (positions is null)
@@ -17,7 +24,7 @@ namespace Diversifolio
             string directoryPath = Path.Join(
                 Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), nameof(Diversifolio));
             await using SqliteConnection connection =
-                await CreatePortfolioConnectionAsync(PortfolioName, directoryPath).ConfigureAwait(false);
+                await CreatePortfolioConnectionAsync(directoryPath).ConfigureAwait(false);
 
             const string commandText = "SELECT Ticker, Balance FROM Position";
             await using SqliteCommand command = new(commandText, connection);
@@ -31,12 +38,12 @@ namespace Diversifolio
             }
         }
 
-        private async Task<SqliteConnection> CreatePortfolioConnectionAsync(string portfolioName, string directoryPath)
+        private async Task<SqliteConnection> CreatePortfolioConnectionAsync(string directoryPath)
         {
             Directory.CreateDirectory(directoryPath);
-            string databasePath = Path.Join(directoryPath, portfolioName + ".db");
+            string databasePath = Path.Join(directoryPath, PortfolioName + ".db");
             if (!File.Exists(databasePath))
-                await CreatePortfolioDatabaseAsync(portfolioName, directoryPath, databasePath).ConfigureAwait(false);
+                await CreatePortfolioDatabaseAsync(directoryPath, databasePath).ConfigureAwait(false);
 
             SqliteConnectionStringBuilder connectionStringBuilder = new()
             {
@@ -49,8 +56,51 @@ namespace Diversifolio
             return connection;
         }
 
-        internal static async Task CreatePortfolioDatabaseAsync(
-            string portfolioName, string directoryPath, string databasePath) =>
+        internal async Task CreatePortfolioDatabaseAsync(string directoryPath, string databasePath)
+        {
+            List<Position> positions = new();
+
+            await PopulatePositionsFromTinkoffAsync(positions).ConfigureAwait(false);
+            await WriteInsertScriptAsync(positions, directoryPath).ConfigureAwait(false);
+
+            // TODO: Read sqlite script.
             throw new NotImplementedException();
+        }
+
+        private async Task PopulatePositionsFromTinkoffAsync<TCollection>(TCollection positions)
+            where TCollection : ICollection<Position>
+        {
+            using var reader = new StreamReader("token-tinkoff.txt");
+            string? token = await reader.ReadLineAsync().ConfigureAwait(false);
+
+            // https://github.com/TinkoffCreditSystems/invest-openapi-csharp-sdk
+            using Connection connection = ConnectionFactory.GetConnection(token);
+            Context context = connection.Context;
+
+            IReadOnlyCollection<Account> accounts = await context.AccountsAsync().ConfigureAwait(false);
+            Account account = accounts.Single(it => it.BrokerAccountType == BrokerAccountType);
+            Portfolio portfolio = await context.PortfolioAsync(account.BrokerAccountId).ConfigureAwait(false);
+            foreach (Portfolio.Position position in portfolio.Positions)
+                positions.Add(new(position.Ticker, position.Balance));
+        }
+
+        private async Task WriteInsertScriptAsync(List<Position> positions, string directoryPath)
+        {
+            string scriptPath = Path.Join(directoryPath, PortfolioName + ".sql");
+            await using var fileStream = new FileStream(scriptPath, FileMode.Create, FileAccess.Write, FileShare.None);
+            await using var writer = new StreamWriter(fileStream, Encoding.UTF8);
+            await writer.WriteLineAsync("INSERT INTO Position (Ticker, Balance)").ConfigureAwait(false);
+            for (int i = 0; i < positions.Count; ++i)
+            {
+                Position position = positions[i];
+                if (position.Ticker.Contains('\'', StringComparison.Ordinal))
+                    throw new InvalidOperationException("The ticker must not contain the apostrophe.");
+                bool isConsequent = i > 0;
+                string delimiter = isConsequent ? ",\r\n       " : "VALUES ";
+                await writer.WriteAsync(delimiter).ConfigureAwait(false);
+                string value = $"('{position.Ticker}', {Convert.ToInt32(Math.Floor(position.Balance)).ToString(P)})";
+                await writer.WriteAsync(value).ConfigureAwait(false);
+            }
+        }
     }
 }
