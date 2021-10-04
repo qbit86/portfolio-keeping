@@ -61,6 +61,7 @@ namespace Diversifolio
             ("TBIO", AssetClass.Stock, Boards.Tqtd),
             ("TECH", AssetClass.Stock, Boards.Tqtd),
             ("TMOS", AssetClass.Stock, Boards.Tqtf),
+            ("TSLA-RM", AssetClass.Stock, Boards.Tqbd),
             ("TSPX", AssetClass.Stock, Boards.Tqtd),
             ("USD000UTSTOM", AssetClass.Currency, Boards.Cets),
             ("VTBA", AssetClass.Stock, Boards.Tqtf),
