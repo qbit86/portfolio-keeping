@@ -64,7 +64,7 @@ namespace Diversifolio
             List<Position> positions = new();
 
             await PopulatePositionsFromTinkoffAsync(positions).ConfigureAwait(false);
-            await WriteInsertScriptAsync(positions, DirectoryPath).ConfigureAwait(false);
+            await WriteInsertScriptAsync(positions).ConfigureAwait(false);
 
             // TODO: Read sqlite script.
             throw new NotImplementedException();
@@ -87,9 +87,9 @@ namespace Diversifolio
                 positions.Add(new(position.Ticker, position.Balance));
         }
 
-        private async Task WriteInsertScriptAsync(List<Position> positions, string directoryPath)
+        private async Task WriteInsertScriptAsync(List<Position> positions)
         {
-            string scriptPath = Path.Join(directoryPath, PortfolioName + ".sql");
+            string scriptPath = Path.Join(DirectoryPath, PortfolioName + ".sql");
             await using var fileStream = new FileStream(scriptPath, FileMode.Create, FileAccess.Write, FileShare.None);
             await using var writer = new StreamWriter(fileStream, Encoding.UTF8);
             await writer.WriteLineAsync("INSERT INTO Position (Ticker, Balance)").ConfigureAwait(false);
