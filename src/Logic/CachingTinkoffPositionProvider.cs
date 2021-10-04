@@ -59,15 +59,13 @@ namespace Diversifolio
             return connection;
         }
 
-        internal async Task CreatePortfolioDatabaseAsync(string databasePath)
+        private async Task CreatePortfolioDatabaseAsync(string databasePath)
         {
             List<Position> positions = new();
-
             await PopulatePositionsFromTinkoffAsync(positions).ConfigureAwait(false);
             await WriteInsertScriptAsync(positions).ConfigureAwait(false);
-
-            // TODO: Read sqlite script.
-            throw new NotImplementedException();
+            await DataHelpers.CreatePortfolioDatabaseAsync(PortfolioName, DirectoryPath, databasePath)
+                .ConfigureAwait(false);
         }
 
         private async Task PopulatePositionsFromTinkoffAsync<TCollection>(TCollection positions)
