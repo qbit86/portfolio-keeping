@@ -70,14 +70,20 @@ namespace Diversifolio
                 await assetWriter.WriteAsync(executedAssetsByClass).ConfigureAwait(false);
             }
 
-            ILookup<AssetClass, Asset> contributionsByClass =
-                plannedAssets.Concat(executedAssets).ToLookup(GetAssetClass);
+            List<Asset> contributions = plannedAssets.Concat(executedAssets).ToList();
+            ILookup<AssetClass, Asset> contributionsByClass = contributions.ToLookup(GetAssetClass);
             if (contributionsByClass.Count > 0)
             {
                 await Out.WriteLineAsync($"{Environment.NewLine}{nameof(contributionsByClass)} ({portfolioName})")
                     .ConfigureAwait(false);
                 await proportionWriter.WriteAsync(contributionsByClass).ConfigureAwait(false);
             }
+
+            List<Asset> mergedAssets = portfolioAssets.Concat(contributions).ToList();
+            ILookup<AssetClass, Asset> mergedAssetsByClass = mergedAssets.ToLookup(GetAssetClass);
+            await Out.WriteLineAsync($"{Environment.NewLine}{nameof(mergedAssets)} ({portfolioName})")
+                .ConfigureAwait(false);
+            await proportionWriter.WriteAsync(mergedAssetsByClass).ConfigureAwait(false);
         }
 
         private static AssetClass GetAssetClass(Asset asset) =>
