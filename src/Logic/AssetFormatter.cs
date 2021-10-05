@@ -14,9 +14,6 @@ namespace Diversifolio
 
         public AssetFormatter(decimal total, StringBuilder? stringBuilder = null)
         {
-            if (total is decimal.Zero)
-                throw new ArgumentOutOfRangeException(nameof(total));
-
             _total = total;
             _stringBuilder = stringBuilder ?? new();
         }
