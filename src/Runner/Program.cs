@@ -69,6 +69,15 @@ namespace Diversifolio
                     .ConfigureAwait(false);
                 await assetWriter.WriteAsync(executedAssetsByClass).ConfigureAwait(false);
             }
+
+            ILookup<AssetClass, Asset> contributionsByClass =
+                plannedAssets.Concat(executedAssets).ToLookup(GetAssetClass);
+            if (contributionsByClass.Count > 0)
+            {
+                await Out.WriteLineAsync($"{Environment.NewLine}{nameof(contributionsByClass)} ({portfolioName})")
+                    .ConfigureAwait(false);
+                await proportionWriter.WriteAsync(contributionsByClass).ConfigureAwait(false);
+            }
         }
 
         private static AssetClass GetAssetClass(Asset asset) =>
