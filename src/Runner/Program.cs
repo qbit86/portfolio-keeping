@@ -74,7 +74,7 @@ namespace Diversifolio
             ILookup<AssetClass, Asset> contributionsByClass = contributions.ToLookup(GetAssetClass);
             if (contributionsByClass.Count > 0)
             {
-                await Out.WriteLineAsync($"{Environment.NewLine}{nameof(contributionsByClass)} ({portfolioName})")
+                await Out.WriteLineAsync($"{Environment.NewLine}{nameof(contributions)} ({portfolioName})")
                     .ConfigureAwait(false);
                 await proportionWriter.WriteAsync(contributionsByClass).ConfigureAwait(false);
             }
