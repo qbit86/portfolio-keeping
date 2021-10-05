@@ -53,13 +53,21 @@ namespace Diversifolio
             Position[] plannedPositions = Array.Empty<Position>();
             IReadOnlyList<Asset> plannedAssets = assetProvider.GetAssets(plannedPositions);
             ILookup<AssetClass, Asset> plannedAssetsByClass = plannedAssets.ToLookup(GetAssetClass);
-
             if (plannedAssets.Count > 0)
             {
-                await Out.WriteLineAsync($"{Environment.NewLine}{nameof(plannedAssets)}").ConfigureAwait(false);
+                await Out.WriteLineAsync($"{Environment.NewLine}{nameof(plannedAssets)} ({portfolioName})")
+                    .ConfigureAwait(false);
                 await assetWriter.WriteAsync(plannedAssetsByClass).ConfigureAwait(false);
-                await Out.WriteLineAsync().ConfigureAwait(false);
-                await proportionWriter.WriteAsync(plannedAssetsByClass).ConfigureAwait(false);
+            }
+
+            Position[] executedPositions = Array.Empty<Position>();
+            IReadOnlyList<Asset> executedAssets = assetProvider.GetAssets(executedPositions);
+            ILookup<AssetClass, Asset> executedAssetsByClass = executedAssets.ToLookup(GetAssetClass);
+            if (executedAssetsByClass.Count > 0)
+            {
+                await Out.WriteLineAsync($"{Environment.NewLine}{nameof(executedAssets)} ({portfolioName})")
+                    .ConfigureAwait(false);
+                await assetWriter.WriteAsync(executedAssetsByClass).ConfigureAwait(false);
             }
         }
 
