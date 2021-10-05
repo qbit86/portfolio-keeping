@@ -24,27 +24,43 @@ namespace Diversifolio
             SeltSecurity usd = securitiesByMarket[Markets.Selt].OfType<SeltSecurity>().Single();
             var currencyConverter = RubCurrencyConverter.Create(usd);
 
+            PositionProvider positionProvider = PositionProviderFactory.Create(portfolioName);
             AssetProvider<RubCurrencyConverter> assetProvider = new(securitiesByMarket, currencyConverter);
 
-            await PlanAsync(portfolioName, currencyConverter, assetProvider).ConfigureAwait(false);
+            AssetWriter assetWriter = new(Out);
+            var proportionWriter = ProportionWriter.Create(currencyConverter, Out);
+
+            await PlanAsync(portfolioName, positionProvider, assetProvider, assetWriter, proportionWriter)
+                .ConfigureAwait(false);
         }
 
-        private static async Task PlanAsync(string portfolioName, RubCurrencyConverter currencyConverter,
-            AssetProvider<RubCurrencyConverter> assetProvider)
+        private static async Task PlanAsync(string portfolioName,
+            PositionProvider positionProvider, AssetProvider<RubCurrencyConverter> assetProvider,
+            AssetWriter assetWriter, ProportionWriter<RubCurrencyConverter> proportionWriter)
         {
-            PositionProvider positionProvider = PositionProviderFactory.Create(portfolioName);
             IReadOnlyList<Position> portfolioPositions =
                 await positionProvider.GetPositionsAsync().ConfigureAwait(false);
 
             IReadOnlyList<Asset> portfolioAssets = assetProvider.GetAssets(portfolioPositions);
             ILookup<AssetClass, Asset> portfolioAssetsByClass = portfolioAssets.ToLookup(GetAssetClass);
 
-            AssetWriter assetWriter = new(Out);
+            await Out.WriteLineAsync($"{nameof(portfolioAssets)} ({portfolioName})").ConfigureAwait(false);
             await assetWriter.WriteAsync(portfolioAssetsByClass).ConfigureAwait(false);
 
             await Out.WriteLineAsync().ConfigureAwait(false);
-            var proportionWriter = ProportionWriter.Create(currencyConverter, Out);
             await proportionWriter.WriteAsync(portfolioAssetsByClass).ConfigureAwait(false);
+
+            Position[] plannedPositions = Array.Empty<Position>();
+            IReadOnlyList<Asset> plannedAssets = assetProvider.GetAssets(plannedPositions);
+            ILookup<AssetClass, Asset> plannedAssetsByClass = plannedAssets.ToLookup(GetAssetClass);
+
+            if (plannedAssets.Count > 0)
+            {
+                await Out.WriteLineAsync($"{Environment.NewLine}{nameof(plannedAssets)}").ConfigureAwait(false);
+                await assetWriter.WriteAsync(plannedAssetsByClass).ConfigureAwait(false);
+                await Out.WriteLineAsync().ConfigureAwait(false);
+                await proportionWriter.WriteAsync(plannedAssetsByClass).ConfigureAwait(false);
+            }
         }
 
         private static AssetClass GetAssetClass(Asset asset) =>
