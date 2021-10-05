@@ -12,8 +12,10 @@ namespace Diversifolio
 
             return portfolioName switch
             {
-                PortfolioNames.Tinkoff => new TinkoffPositionProvider(portfolioName, BrokerAccountType.Tinkoff),
-                PortfolioNames.TinkoffIis => new TinkoffPositionProvider(portfolioName, BrokerAccountType.TinkoffIis),
+                PortfolioNames.Tinkoff =>
+                    new TinkoffPositionProvider(portfolioName, BrokerAccountType.Tinkoff, "token-tinkoff.txt"),
+                PortfolioNames.TinkoffIis =>
+                    new TinkoffPositionProvider(portfolioName, BrokerAccountType.TinkoffIis, "token-tinkoff.txt"),
                 _ => new DatabasePositionProvider(portfolioName)
             };
         }

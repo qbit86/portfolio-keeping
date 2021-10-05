@@ -11,7 +11,8 @@ using Tinkoff.Trading.OpenApi.Network;
 
 namespace Diversifolio
 {
-    public sealed record TinkoffPositionProvider(string PortfolioName, BrokerAccountType BrokerAccountType) :
+    public sealed record TinkoffPositionProvider(
+        string PortfolioName, BrokerAccountType BrokerAccountType, string TokenPath) :
         PositionProvider(PortfolioName)
     {
         private static string? s_directoryPath;
@@ -20,6 +21,8 @@ namespace Diversifolio
             Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), nameof(Diversifolio));
 
         private static CultureInfo P => CultureInfo.InvariantCulture;
+
+        private string TokenPath { get; } = TokenPath ?? throw new ArgumentNullException(nameof(TokenPath));
 
         protected override async Task PopulatePositionsAsync<TCollection>(TCollection positions)
         {
@@ -71,7 +74,7 @@ namespace Diversifolio
         private async Task PopulatePositionsFromTinkoffAsync<TCollection>(TCollection positions)
             where TCollection : ICollection<Position>
         {
-            using var reader = new StreamReader("token-tinkoff.txt");
+            using var reader = new StreamReader(TokenPath);
             string? token = await reader.ReadLineAsync().ConfigureAwait(false);
 
             // https://github.com/TinkoffCreditSystems/invest-openapi-csharp-sdk
