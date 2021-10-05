@@ -50,16 +50,6 @@ namespace Diversifolio
             await Out.WriteLineAsync().ConfigureAwait(false);
             await proportionWriter.WriteAsync(portfolioAssetsByClass).ConfigureAwait(false);
 
-            Position[] plannedPositions = Array.Empty<Position>();
-            IReadOnlyList<Asset> plannedAssets = assetProvider.GetAssets(plannedPositions);
-            ILookup<AssetClass, Asset> plannedAssetsByClass = plannedAssets.ToLookup(GetAssetClass);
-            if (plannedAssets.Count > 0)
-            {
-                await Out.WriteLineAsync($"{Environment.NewLine}{nameof(plannedAssets)} ({portfolioName})")
-                    .ConfigureAwait(false);
-                await assetWriter.WriteAsync(plannedAssetsByClass).ConfigureAwait(false);
-            }
-
             Position[] executedPositions = Array.Empty<Position>();
             IReadOnlyList<Asset> executedAssets = assetProvider.GetAssets(executedPositions);
             ILookup<AssetClass, Asset> executedAssetsByClass = executedAssets.ToLookup(GetAssetClass);
@@ -68,6 +58,16 @@ namespace Diversifolio
                 await Out.WriteLineAsync($"{Environment.NewLine}{nameof(executedAssets)} ({portfolioName})")
                     .ConfigureAwait(false);
                 await assetWriter.WriteAsync(executedAssetsByClass).ConfigureAwait(false);
+            }
+
+            Position[] plannedPositions = Array.Empty<Position>();
+            IReadOnlyList<Asset> plannedAssets = assetProvider.GetAssets(plannedPositions);
+            ILookup<AssetClass, Asset> plannedAssetsByClass = plannedAssets.ToLookup(GetAssetClass);
+            if (plannedAssets.Count > 0)
+            {
+                await Out.WriteLineAsync($"{Environment.NewLine}{nameof(plannedAssets)} ({portfolioName})")
+                    .ConfigureAwait(false);
+                await assetWriter.WriteAsync(plannedAssetsByClass).ConfigureAwait(false);
             }
 
             List<Asset> contributions = plannedAssets.Concat(executedAssets).ToList();
@@ -81,9 +81,12 @@ namespace Diversifolio
 
             List<Asset> mergedAssets = portfolioAssets.Concat(contributions).ToList();
             ILookup<AssetClass, Asset> mergedAssetsByClass = mergedAssets.ToLookup(GetAssetClass);
-            await Out.WriteLineAsync($"{Environment.NewLine}{nameof(mergedAssets)} ({portfolioName})")
-                .ConfigureAwait(false);
-            await proportionWriter.WriteAsync(mergedAssetsByClass).ConfigureAwait(false);
+            if (contributionsByClass.Count > 0)
+            {
+                await Out.WriteLineAsync($"{Environment.NewLine}{nameof(mergedAssets)} ({portfolioName})")
+                    .ConfigureAwait(false);
+                await proportionWriter.WriteAsync(mergedAssetsByClass).ConfigureAwait(false);
+            }
         }
 
         private static AssetClass GetAssetClass(Asset asset) =>
