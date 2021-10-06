@@ -1,6 +1,9 @@
 [AssetFormatter.cs]
 resharper_variable_hides_outer_variable_highlighting = none # Variable in local function hides variable from outer scope
 
+[AssetProvider.cs]
+resharper_convert_to_auto_property_when_possible_highlighting = none # Convert property to auto-property (when possible)
+
 [TinkoffPositionProvider.cs]
 dotnet_diagnostic.CA1801.severity = none # Review unused parameters
 dotnet_diagnostic.CS3001.severity = none # Argument type 'type' is not CLS-compliant

@@ -18,6 +18,8 @@ namespace Diversifolio
             _currencyConverter = currencyConverter ?? throw new ArgumentNullException(nameof(currencyConverter));
         }
 
+        public TCurrencyConverter CurrencyConverter => _currencyConverter;
+
         public IReadOnlyList<Asset> GetAssets(IReadOnlyList<Position> positions)
         {
             if (positions is null)
