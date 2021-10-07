@@ -95,6 +95,7 @@ namespace Diversifolio
 
         private async Task WriteInsertScriptAsync(List<Position> positions)
         {
+            positions.Sort((left, right) => StringComparer.Ordinal.Compare(left.Ticker, right.Ticker));
             string scriptPath = Path.Join(DirectoryPath, PortfolioName + ".sql");
             await using var fileStream = new FileStream(scriptPath, FileMode.Create, FileAccess.Write, FileShare.None);
             await using var writer = new StreamWriter(fileStream, Encoding.UTF8);
