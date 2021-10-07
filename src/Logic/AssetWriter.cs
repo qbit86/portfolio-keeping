@@ -44,8 +44,7 @@ namespace Diversifolio
                 if (index++ > 0)
                     await Out.WriteLineAsync("------------------------------------------------").ConfigureAwait(false);
                 IOrderedEnumerable<Asset> orderedAssets = grouping
-                    .OrderBy(it => it.OriginalPrice.Currency)
-                    .ThenByDescending(it => it.Value.Amount);
+                    .OrderByDescending(it => it.Value.Amount);
                 foreach (Asset asset in orderedAssets)
                     await Out.WriteLineAsync(assetFormatter.Format(asset)).ConfigureAwait(false);
             }
