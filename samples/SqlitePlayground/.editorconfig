@@ -1,0 +1,2 @@
+[Program.cs]
+dotnet_diagnostic.CA1849.severity = none # Call async methods when in an async method
