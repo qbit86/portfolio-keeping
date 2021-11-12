@@ -2,21 +2,21 @@
 
   <PropertyGroup>
     <AssemblyName>$(RootNamespace).$(MSBuildProjectName)</AssemblyName>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="5.0.10"/>
-    <PackageReference Include="Tinkoff.Trading.OpenApi" Version="1.7.4"/>
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="6.0.0" />
+    <PackageReference Include="Tinkoff.Trading.OpenApi" Version="1.7.4" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Models\Models.csproj"/>
+    <ProjectReference Include="..\Models\Models.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="CreatePosition.sql"/>
-    <EmbeddedResource Include="CreatePosition.sql"/>
+    <None Remove="CreatePosition.sql" />
+    <EmbeddedResource Include="CreatePosition.sql" />
   </ItemGroup>
 
   <ItemGroup Condition="Exists('token-tinkoff.txt')">
