@@ -17,6 +17,9 @@ indent_style = tab
 [*.md]
 trim_trailing_whitespace = false
 
+[*.sql]
+ij_formatter_enabled = false
+
 [*.{cs,vb}]
 dotnet_code_quality_unused_parameters = non_public:suggestion
 dotnet_remove_unnecessary_suppression_exclusions = none
