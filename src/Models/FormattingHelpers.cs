@@ -127,7 +127,7 @@ namespace Diversifolio
 
         private static CultureInfo CreateFormatProvider()
         {
-            CultureInfo result = (CultureInfo)CultureInfo.InvariantCulture.Clone();
+            var result = (CultureInfo)CultureInfo.InvariantCulture.Clone();
             result.NumberFormat.PercentPositivePattern = 1;
             result.NumberFormat.PercentNegativePattern = 1;
             return CultureInfo.ReadOnly(result);

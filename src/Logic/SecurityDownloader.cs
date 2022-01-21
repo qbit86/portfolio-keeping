@@ -36,7 +36,7 @@ namespace Diversifolio
         public async Task<IReadOnlyDictionary<string, string>> GetPathByBoardDictionaryAsync()
         {
             Dictionary<string, string> pathByBoard = new(StringComparer.Ordinal);
-            foreach (var board in Bems.BemByBoard.Keys)
+            foreach (string board in Bems.BemByBoard.Keys)
             {
                 string path = await EnsureDownloadedAsync(board).ConfigureAwait(false);
                 pathByBoard[board] = path;

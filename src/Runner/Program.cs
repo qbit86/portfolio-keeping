@@ -70,7 +70,7 @@ namespace Diversifolio
                 await assetWriter.WriteAsync(plannedAssetsByClass).ConfigureAwait(false);
             }
 
-            List<Asset> contributions = plannedAssets.Concat(executedAssets).ToList();
+            var contributions = plannedAssets.Concat(executedAssets).ToList();
             ILookup<AssetClass, Asset> contributionsByClass = contributions.ToLookup(GetAssetClass);
             if (contributionsByClass.Count > 0)
             {
@@ -79,7 +79,7 @@ namespace Diversifolio
                 await proportionWriter.WriteAsync(contributionsByClass).ConfigureAwait(false);
             }
 
-            List<Asset> mergedAssets = portfolioAssets.Concat(contributions).ToList();
+            var mergedAssets = portfolioAssets.Concat(contributions).ToList();
             ILookup<AssetClass, Asset> mergedAssetsByClass = mergedAssets.ToLookup(GetAssetClass);
             if (contributionsByClass.Count > 0)
             {

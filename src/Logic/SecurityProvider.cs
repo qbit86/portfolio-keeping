@@ -27,7 +27,7 @@ namespace Diversifolio
 
         public static SecurityProvider Create()
         {
-            SecurityDownloader downloader = SecurityDownloader.Create();
+            var downloader = SecurityDownloader.Create();
             return new(downloader);
         }
 
