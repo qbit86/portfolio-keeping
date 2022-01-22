@@ -111,5 +111,7 @@ public sealed record TinkoffPositionProvider(
             string value = $"('{position.Ticker}', {Convert.ToInt32(Math.Floor(position.Balance)).ToString(P)})";
             await writer.WriteAsync(value).ConfigureAwait(false);
         }
+
+        await writer.WriteAsync(";").ConfigureAwait(false);
     }
 }
