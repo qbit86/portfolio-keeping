@@ -55,8 +55,6 @@ public static class Tickers
         ("SBMX", AssetClass.Stock, Boards.Tqtf),
         ("SBRB", AssetClass.Bond, Boards.Tqtf),
         ("SBSP", AssetClass.Stock, Boards.Tqtf),
-        ("SU25083RMFS5", AssetClass.Bond, Boards.Tqob),
-        ("SU26214RMFS5", AssetClass.Bond, Boards.Tqob),
         ("SU29012RMFS0", AssetClass.Bond, Boards.Tqob),
         ("TBIO", AssetClass.Stock, Boards.Tqtd),
         ("TECH", AssetClass.Stock, Boards.Tqtd),
