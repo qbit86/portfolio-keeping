@@ -33,7 +33,7 @@ namespace Diversifolio
                 await CreatePortfolioConnectionAsync().ConfigureAwait(false);
 
             const string commandText = "SELECT Ticker, Balance FROM Position";
-            await using SqliteCommand command = new(commandText, connection);
+            using SqliteCommand command = new(commandText, connection);
             SqliteDataReader query = command.ExecuteReader();
             while (query.Read())
             {

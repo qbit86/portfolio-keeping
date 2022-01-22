@@ -11,11 +11,11 @@ namespace Diversifolio
 {
     internal static class Program
     {
-        private static CultureInfo F => CultureInfo.InvariantCulture;
+        private static CultureInfo P => CultureInfo.InvariantCulture;
 
         private static async Task Main()
         {
-            string dateString = DateTime.Now.ToString("yyyy-MM-dd", F);
+            string dateString = DateTime.Now.ToString("yyyy-MM-dd", P);
             string dirName = Path.Join(
                 Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "SqlitePlayground");
             Directory.CreateDirectory(dirName);
@@ -39,7 +39,7 @@ namespace Diversifolio
             await using Stream stream = assembly.GetManifestResourceStream(typeof(Program), "CreatePosition.sql")!;
             using StreamReader reader = new(stream);
             string commandText = await reader.ReadToEndAsync().ConfigureAwait(false);
-            await using SqliteCommand command = new(commandText, connection);
+            using SqliteCommand command = new(commandText, connection);
             command.ExecuteReader();
         }
     }

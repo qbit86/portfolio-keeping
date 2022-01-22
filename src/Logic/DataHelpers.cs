@@ -60,7 +60,7 @@ namespace Diversifolio
         private static async Task ExecuteReaderAsync(SqliteConnection connection, StreamReader reader)
         {
             string commandText = await reader.ReadToEndAsync().ConfigureAwait(false);
-            await using SqliteCommand command = new(commandText, connection);
+            using SqliteCommand command = new(commandText, connection);
             command.ExecuteReader();
         }
     }

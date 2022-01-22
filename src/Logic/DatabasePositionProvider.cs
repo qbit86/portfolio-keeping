@@ -18,7 +18,7 @@ namespace Diversifolio
                 await DataHelpers.CreatePortfolioConnectionAsync(PortfolioName, directoryPath).ConfigureAwait(false);
 
             const string commandText = "SELECT Ticker, Balance FROM Position";
-            await using SqliteCommand command = new(commandText, connection);
+            using SqliteCommand command = new(commandText, connection);
             SqliteDataReader query = command.ExecuteReader();
             while (query.Read())
             {
