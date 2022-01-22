@@ -1,12 +1,11 @@
-namespace Diversifolio
+namespace Diversifolio;
+
+public enum AssetClass
 {
-    public enum AssetClass
-    {
-        None,
-        Other,
-        Stock,
-        Bond,
-        Currency,
-        Commodity
-    }
+    None,
+    Other,
+    Stock,
+    Bond,
+    Currency,
+    Commodity
 }

@@ -7,40 +7,39 @@ using Microsoft.Data.Sqlite;
 
 [assembly: CLSCompliant(true)]
 
-namespace Diversifolio
+namespace Diversifolio;
+
+internal static class Program
 {
-    internal static class Program
+    private static CultureInfo P => CultureInfo.InvariantCulture;
+
+    private static async Task Main()
     {
-        private static CultureInfo P => CultureInfo.InvariantCulture;
+        string dateString = DateTime.Now.ToString("yyyy-MM-dd", P);
+        string dirName = Path.Join(
+            Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "SqlitePlayground");
+        Directory.CreateDirectory(dirName);
+        Console.WriteLine($"{nameof(dirName)}: {dirName}");
+        string baseName = $"SqlitePlayground-{dateString}.db";
+        string path = Path.Join(dirName, baseName);
 
-        private static async Task Main()
+        SqliteConnectionStringBuilder connectionStringBuilder = new()
         {
-            string dateString = DateTime.Now.ToString("yyyy-MM-dd", P);
-            string dirName = Path.Join(
-                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "SqlitePlayground");
-            Directory.CreateDirectory(dirName);
-            Console.WriteLine($"{nameof(dirName)}: {dirName}");
-            string baseName = $"SqlitePlayground-{dateString}.db";
-            string path = Path.Join(dirName, baseName);
+            DataSource = path,
+            Mode = SqliteOpenMode.ReadWriteCreate
+        };
+        string connectionString = connectionStringBuilder.ToString();
+        using SqliteConnection connection = new(connectionString);
+        connection.Open();
 
-            SqliteConnectionStringBuilder connectionStringBuilder = new()
-            {
-                DataSource = path,
-                Mode = SqliteOpenMode.ReadWriteCreate
-            };
-            string connectionString = connectionStringBuilder.ToString();
-            using SqliteConnection connection = new(connectionString);
-            connection.Open();
+        var assembly = Assembly.GetExecutingAssembly();
+        string[] resourceNames = assembly.GetManifestResourceNames();
+        Console.WriteLine($"{nameof(resourceNames)}: {string.Join(", ", resourceNames)}");
 
-            var assembly = Assembly.GetExecutingAssembly();
-            string[] resourceNames = assembly.GetManifestResourceNames();
-            Console.WriteLine($"{nameof(resourceNames)}: {string.Join(", ", resourceNames)}");
-
-            using Stream stream = assembly.GetManifestResourceStream(typeof(Program), "CreatePosition.sql")!;
-            using StreamReader reader = new(stream);
-            string commandText = await reader.ReadToEndAsync().ConfigureAwait(false);
-            using SqliteCommand command = new(commandText, connection);
-            command.ExecuteReader();
-        }
+        using Stream stream = assembly.GetManifestResourceStream(typeof(Program), "CreatePosition.sql")!;
+        using StreamReader reader = new(stream);
+        string commandText = await reader.ReadToEndAsync().ConfigureAwait(false);
+        using SqliteCommand command = new(commandText, connection);
+        command.ExecuteReader();
     }
 }
