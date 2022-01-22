@@ -35,7 +35,7 @@ namespace Diversifolio
                 Mode = SqliteOpenMode.ReadWriteCreate
             };
             string connectionString = connectionStringBuilder.ToString();
-            await using SqliteConnection connection = new(connectionString);
+            using SqliteConnection connection = new(connectionString);
             connection.Open();
             await CreatePositionTableAsync(connection).ConfigureAwait(false);
             await PopulatePositionTableAsync(connection, portfolioName, directoryPath).ConfigureAwait(false);

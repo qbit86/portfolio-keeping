@@ -29,7 +29,7 @@ namespace Diversifolio
             if (positions is null)
                 throw new ArgumentNullException(nameof(positions));
 
-            await using SqliteConnection connection =
+            using SqliteConnection connection =
                 await CreatePortfolioConnectionAsync().ConfigureAwait(false);
 
             const string commandText = "SELECT Ticker, Balance FROM Position";

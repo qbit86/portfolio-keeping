@@ -29,7 +29,7 @@ namespace Diversifolio
                 Mode = SqliteOpenMode.ReadWriteCreate
             };
             string connectionString = connectionStringBuilder.ToString();
-            await using SqliteConnection connection = new(connectionString);
+            using SqliteConnection connection = new(connectionString);
             connection.Open();
 
             var assembly = Assembly.GetExecutingAssembly();
