@@ -20,7 +20,7 @@ namespace Diversifolio
 
         private HttpClient Client { get; }
 
-        public string Directory { get; }
+        private string Directory { get; }
 
         public void Dispose() => Client.Dispose();
 
@@ -64,7 +64,7 @@ namespace Diversifolio
             System.IO.Directory.CreateDirectory(Directory);
 
             using Stream source = await Client.GetStreamAsync(uri).ConfigureAwait(false);
-            await using FileStream destination = File.Create(filePath);
+            using FileStream destination = File.Create(filePath);
             await source.CopyToAsync(destination).ConfigureAwait(false);
             await destination.DisposeAsync().ConfigureAwait(false);
             return filePath;

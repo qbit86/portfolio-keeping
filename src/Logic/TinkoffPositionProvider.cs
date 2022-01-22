@@ -97,7 +97,7 @@ namespace Diversifolio
         {
             positions.Sort((left, right) => StringComparer.Ordinal.Compare(left.Ticker, right.Ticker));
             string scriptPath = Path.Join(DirectoryPath, PortfolioName + ".sql");
-            await using var fileStream = new FileStream(scriptPath, FileMode.Create, FileAccess.Write, FileShare.None);
+            using var fileStream = new FileStream(scriptPath, FileMode.Create, FileAccess.Write, FileShare.None);
             using var writer = new StreamWriter(fileStream, Encoding.UTF8);
             await writer.WriteLineAsync("INSERT INTO Position (Ticker, Balance)").ConfigureAwait(false);
             for (int i = 0; i < positions.Count; ++i)

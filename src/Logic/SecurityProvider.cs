@@ -69,7 +69,7 @@ namespace Diversifolio
             SecurityFactory securityFactory, string path, TCollection securities)
             where TCollection : ICollection<Security>
         {
-            await using FileStream stream = File.OpenRead(path);
+            using FileStream stream = File.OpenRead(path);
             using JsonDocument document = await JsonDocument.ParseAsync(stream).ConfigureAwait(false);
             JsonElement securitiesElement = document.RootElement.GetProperty("securities");
             JsonElement securitiesData = securitiesElement.GetProperty("data");
