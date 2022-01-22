@@ -2,14 +2,11 @@
 
   <PropertyGroup>
     <AssemblyName>$(RootNamespace).$(MSBuildProjectName)</AssemblyName>
-    <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Formatting\Formatting.csproj" />
     <ProjectReference Include="..\Logic\Logic.csproj" />
-    <ProjectReference Include="..\Models\Models.csproj" />
   </ItemGroup>
 
 </Project>

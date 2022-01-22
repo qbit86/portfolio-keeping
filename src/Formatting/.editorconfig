@@ -1,0 +1,2 @@
+[AssetFormatter.cs]
+resharper_variable_hides_outer_variable_highlighting = none # Variable in local function hides variable from outer scope
