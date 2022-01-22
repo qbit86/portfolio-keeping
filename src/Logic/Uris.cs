@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using Diversifolio.Moex;
@@ -11,6 +12,8 @@ namespace Diversifolio
         private static (string, string)[]? s_columnsTuples;
         private static Dictionary<string, Uri>? s_uriByBoard;
         private static Dictionary<string, string>? s_columnsByMarket;
+
+        private static CultureInfo P => CultureInfo.InvariantCulture;
 
         public static IReadOnlyDictionary<string, Uri> UriByBoard => s_uriByBoard ??=
             Bems.BemByBoard.ToDictionary(it => it.Key, it => BuildUri(it.Value), StringComparer.Ordinal);
@@ -44,9 +47,9 @@ namespace Diversifolio
             StringBuilder queryBuilder = new(280);
             queryBuilder.Append("?iss.meta=off").Append("&iss.only=securities");
             if (!string.IsNullOrWhiteSpace(columns))
-                queryBuilder.Append($"&securities.columns={columns}");
+                queryBuilder.Append(P, $"&securities.columns={columns}");
             if (!string.IsNullOrWhiteSpace(securities))
-                queryBuilder.Append($"&securities={securities}");
+                queryBuilder.Append(P, $"&securities={securities}");
             UriBuilder uriBuilder = new(initialUri) { Query = queryBuilder.ToString() };
             return uriBuilder.Uri;
         }
