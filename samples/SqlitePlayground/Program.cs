@@ -36,7 +36,7 @@ namespace Diversifolio
             string[] resourceNames = assembly.GetManifestResourceNames();
             Console.WriteLine($"{nameof(resourceNames)}: {string.Join(", ", resourceNames)}");
 
-            await using Stream stream = assembly.GetManifestResourceStream(typeof(Program), "CreatePosition.sql")!;
+            using Stream stream = assembly.GetManifestResourceStream(typeof(Program), "CreatePosition.sql")!;
             using StreamReader reader = new(stream);
             string commandText = await reader.ReadToEndAsync().ConfigureAwait(false);
             using SqliteCommand command = new(commandText, connection);

@@ -44,7 +44,7 @@ namespace Diversifolio
         private static async Task CreatePositionTableAsync(SqliteConnection connection)
         {
             var assembly = Assembly.GetExecutingAssembly();
-            await using Stream stream = assembly.GetManifestResourceStream(typeof(DataHelpers), "CreatePosition.sql")!;
+            using Stream stream = assembly.GetManifestResourceStream(typeof(DataHelpers), "CreatePosition.sql")!;
             using StreamReader reader = new(stream);
             await ExecuteReaderAsync(connection, reader).ConfigureAwait(false);
         }
