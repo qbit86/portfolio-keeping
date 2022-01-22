@@ -2,9 +2,9 @@ using System.Collections.Generic;
 
 namespace Diversifolio;
 
-internal sealed class AssetClassComparer : IComparer<AssetClass>
+public sealed class AssetClassComparer : IComparer<AssetClass>
 {
-    internal static AssetClassComparer Instance { get; } = new();
+    public static AssetClassComparer Instance { get; } = new();
 
     public int Compare(AssetClass x, AssetClass y)
     {

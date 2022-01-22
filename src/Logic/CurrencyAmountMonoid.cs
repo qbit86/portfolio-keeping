@@ -3,9 +3,9 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Diversifolio;
 
-internal sealed class CurrencyAmountMonoid : IMonoid<CurrencyAmount>
+public sealed class CurrencyAmountMonoid : IMonoid<CurrencyAmount>
 {
-    internal static CurrencyAmountMonoid Instance { get; } = new();
+    public static CurrencyAmountMonoid Instance { get; } = new();
 
     public CurrencyAmount Identity => CurrencyAmount.Empty;
 
