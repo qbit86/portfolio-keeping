@@ -10,6 +10,7 @@ public static class PositionProviderFactory
         if (portfolioName is null)
             throw new ArgumentNullException(portfolioName);
 
+#if false
         return portfolioName switch
         {
             PortfolioNames.Tinkoff =>
@@ -18,5 +19,8 @@ public static class PositionProviderFactory
                 new TinkoffPositionProvider(portfolioName, BrokerAccountType.TinkoffIis, "token-tinkoff.txt"),
             _ => new DatabasePositionProvider(portfolioName)
         };
+#else
+        return new DatabasePositionProvider(portfolioName);
+#endif
     }
 }
