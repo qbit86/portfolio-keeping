@@ -1,5 +1,7 @@
 using System;
+#if DIVERSIFOLIO_TINKOFF_ENABLED
 using Tinkoff.Trading.OpenApi.Models;
+#endif
 
 namespace Diversifolio;
 
@@ -10,7 +12,7 @@ public static class PositionProviderFactory
         if (portfolioName is null)
             throw new ArgumentNullException(portfolioName);
 
-#if false
+#if DIVERSIFOLIO_TINKOFF_ENABLED
         return portfolioName switch
         {
             PortfolioNames.Tinkoff =>
