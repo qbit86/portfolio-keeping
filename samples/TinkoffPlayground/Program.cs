@@ -23,7 +23,7 @@ internal static class Program
         string? token = await reader.ReadLineAsync().ConfigureAwait(false);
         Console.WriteLine($"{nameof(token)}: {token}");
 
-        // https://github.com/TinkoffCreditSystems/invest-openapi-csharp-sdk
+        // https://github.com/Tinkoff/invest-openapi-csharp-sdk
         using SandboxConnection connection = ConnectionFactory.GetSandboxConnection(token);
         SandboxContext context = connection.Context;
 
@@ -61,7 +61,7 @@ internal static class Program
         string? token = await reader.ReadLineAsync().ConfigureAwait(false);
         Console.WriteLine($"{nameof(token)}: {token}");
 
-        // https://github.com/TinkoffCreditSystems/invest-openapi-csharp-sdk
+        // https://github.com/Tinkoff/invest-openapi-csharp-sdk
         using Connection connection = ConnectionFactory.GetConnection(token);
         Context context = connection.Context;
 
