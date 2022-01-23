@@ -17,7 +17,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TinkoffPlayground", "sample
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlitePlayground", "samples\SqlitePlayground\SqlitePlayground.csproj", "{678B765C-61E6-46AE-9CC2-2D1E7C635008}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Runner", "src\Runner\Runner.csproj", "{0ECE0787-DEC3-4CA9-AE59-A4FFF67358B2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleRunner", "src\ConsoleRunner\ConsoleRunner.csproj", "{0ECE0787-DEC3-4CA9-AE59-A4FFF67358B2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Models", "src\Models\Models.csproj", "{4A9D7EE2-9D10-493A-8473-DEEFFA35B7D2}"
 EndProject
