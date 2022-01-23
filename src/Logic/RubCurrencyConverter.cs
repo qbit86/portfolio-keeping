@@ -22,8 +22,7 @@ public readonly struct RubCurrencyConverter : ICurrencyConverter, IEquatable<Rub
 
     public static RubCurrencyConverter Create(SeltSecurity usd)
     {
-        if (usd is null)
-            throw new ArgumentNullException(nameof(usd));
+        ArgumentNullException.ThrowIfNull(usd);
         if (usd.CurrencyId != "RUB")
             throw new ArgumentException($"The {nameof(usd.CurrencyId)} value must be equal to RUB.", nameof(usd));
         if (usd.FaceUnit != "USD")

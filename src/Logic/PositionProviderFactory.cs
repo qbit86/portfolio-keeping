@@ -9,8 +9,7 @@ public static class PositionProviderFactory
 {
     public static PositionProvider Create(string portfolioName)
     {
-        if (portfolioName is null)
-            throw new ArgumentNullException(portfolioName);
+        ArgumentNullException.ThrowIfNull(portfolioName);
 
 #if DIVERSIFOLIO_TINKOFF_ENABLED
         return portfolioName switch

@@ -22,8 +22,7 @@ internal sealed class AssetFormatter
 
     public string Format(Asset asset)
     {
-        if (asset is null)
-            throw new ArgumentNullException(nameof(asset));
+        ArgumentNullException.ThrowIfNull(asset);
 
         _stringBuilder.Clear();
         UncheckedFormat(asset);

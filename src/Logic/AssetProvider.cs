@@ -22,8 +22,7 @@ public readonly struct AssetProvider<TCurrencyConverter> : IEquatable<AssetProvi
 
     public IReadOnlyList<Asset> GetAssets(IReadOnlyList<Position> positions)
     {
-        if (positions is null)
-            throw new ArgumentNullException(nameof(positions));
+        ArgumentNullException.ThrowIfNull(positions);
 
         List<Asset> assets = new(positions.Count);
         PopulateAssets(positions, assets);

@@ -47,8 +47,7 @@ public sealed class SecurityDownloader : IDisposable
 
     private async Task<string> EnsureDownloadedAsync(string board)
     {
-        if (board is null)
-            throw new ArgumentNullException(nameof(board));
+        ArgumentNullException.ThrowIfNull(board);
 
         string baseName = board + ".json";
         string filePath = Path.Join(Directory, baseName);

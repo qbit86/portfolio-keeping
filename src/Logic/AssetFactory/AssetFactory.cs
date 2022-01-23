@@ -15,8 +15,7 @@ public abstract class AssetFactory
         Security security, Position position, TCurrencyConverter currencyConverter)
         where TCurrencyConverter : ICurrencyConverter
     {
-        if (security is null)
-            throw new ArgumentNullException(nameof(security));
+        ArgumentNullException.ThrowIfNull(security);
 
         if (!string.Equals(position.Ticker, security.SecId, StringComparison.Ordinal))
         {
