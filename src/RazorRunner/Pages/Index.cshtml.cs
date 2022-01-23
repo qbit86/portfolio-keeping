@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 
-namespace RazorRunner.Pages;
+namespace Diversifolio.Pages;
 
 public class IndexModel : PageModel
 {
