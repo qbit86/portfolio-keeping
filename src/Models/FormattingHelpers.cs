@@ -13,8 +13,7 @@ public static class FormattingHelpers
     internal static void AppendDecimal(
         StringBuilder stringBuilder, decimal value, string? format, IFormatProvider? formatProvider)
     {
-        if (stringBuilder is null)
-            throw new ArgumentNullException(nameof(stringBuilder));
+        ArgumentNullException.ThrowIfNull(stringBuilder);
 
         // src/libraries/System.Private.CoreLib/src/System/Number.NumberBuffer.cs
         const int decimalNumberBufferLength = 29 + 1 + 1;
@@ -28,24 +27,21 @@ public static class FormattingHelpers
     public static int AppendAligned(
         StringBuilder stringBuilder, ReadOnlySpan<char> value, int desiredWidth, bool padLeft = false)
     {
-        if (stringBuilder is null)
-            throw new ArgumentNullException(nameof(stringBuilder));
+        ArgumentNullException.ThrowIfNull(stringBuilder);
 
         return UncheckedAppendAligned(stringBuilder, value, desiredWidth, padLeft);
     }
 
     public static int AppendLeft(StringBuilder stringBuilder, ReadOnlySpan<char> left, int desiredWidth)
     {
-        if (stringBuilder is null)
-            throw new ArgumentNullException(nameof(stringBuilder));
+        ArgumentNullException.ThrowIfNull(stringBuilder);
 
         return UncheckedAppendAligned(stringBuilder, left, desiredWidth, false);
     }
 
     public static int AppendRight(StringBuilder stringBuilder, ReadOnlySpan<char> right, int desiredWidth)
     {
-        if (stringBuilder is null)
-            throw new ArgumentNullException(nameof(stringBuilder));
+        ArgumentNullException.ThrowIfNull(stringBuilder);
 
         return UncheckedAppendAligned(stringBuilder, right, desiredWidth, true);
     }
@@ -53,8 +49,7 @@ public static class FormattingHelpers
     public static int AppendJustified(StringBuilder stringBuilder, ReadOnlySpan<char> separator,
         ReadOnlySpan<char> left, int desiredLeftWidth, ReadOnlySpan<char> right, int desiredRightWidth)
     {
-        if (stringBuilder is null)
-            throw new ArgumentNullException(nameof(stringBuilder));
+        ArgumentNullException.ThrowIfNull(stringBuilder);
 
         int initialLength = stringBuilder.Length;
         int paddingWidth = desiredLeftWidth + desiredRightWidth - left.Length - right.Length + separator.Length;
