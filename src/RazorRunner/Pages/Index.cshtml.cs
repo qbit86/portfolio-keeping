@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Diversifolio.Pages;
 
-public class IndexModel : PageModel
+public sealed class IndexModel : PageModel
 {
     private readonly ILogger<IndexModel> _logger;
 

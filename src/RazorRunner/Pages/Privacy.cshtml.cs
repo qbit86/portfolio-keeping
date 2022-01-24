@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Diversifolio.Pages;
 
-public class PrivacyModel : PageModel
+public sealed class PrivacyModel : PageModel
 {
     private readonly ILogger<PrivacyModel> _logger;
 
