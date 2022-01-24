@@ -3,9 +3,11 @@ using Microsoft.Extensions.Logging;
 
 namespace Diversifolio.Pages;
 
-internal sealed class PrivacyModel : PageModel
+public sealed class PrivacyModel : PageModel
 {
     private readonly ILogger<PrivacyModel> _logger;
 
-    internal PrivacyModel(ILogger<PrivacyModel> logger) => _logger = logger;
+    public PrivacyModel(ILogger<PrivacyModel> logger) => _logger = logger;
+
+    public void OnGet() { }
 }
