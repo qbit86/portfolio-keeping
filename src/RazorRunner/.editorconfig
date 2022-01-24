@@ -8,5 +8,5 @@ ij_formatter_enabled = false
 [Pages/*.cs]
 resharper_not_accessed_field_local_highlighting = hint
 
-[Program.cs]
+[*.cs]
 dotnet_diagnostic.CA1812.severity = silent # Avoid uninstantiated internal classes

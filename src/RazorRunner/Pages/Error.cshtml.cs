@@ -7,15 +7,15 @@ namespace Diversifolio.Pages;
 
 [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
 [IgnoreAntiforgeryToken]
-public sealed class ErrorModel : PageModel
+internal sealed class ErrorModel : PageModel
 {
     private readonly ILogger<ErrorModel> _logger;
 
-    public ErrorModel(ILogger<ErrorModel> logger) => _logger = logger;
+    internal ErrorModel(ILogger<ErrorModel> logger) => _logger = logger;
 
-    public string? RequestId { get; set; }
+    internal string? RequestId { get; private set; }
 
-    public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
+    internal bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
 
-    public void OnGet() => RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier;
+    internal void OnGet() => RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier;
 }
