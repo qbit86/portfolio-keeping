@@ -12,24 +12,21 @@ public sealed class IndexModel : PageModel
 {
     internal const string PortfolioName = PortfolioNames.TinkoffIis;
 
+    private static readonly ILookup<AssetClass, Asset> s_emptyLookup = Array.Empty<Asset>().ToLookup(GetAssetClass);
+
     private readonly ILogger<IndexModel> _logger;
-    private ILookup<AssetClass, Asset> _portfolioAssetsByClass = Array.Empty<Asset>().ToLookup(GetAssetClass);
-    private ILookup<AssetClass, Asset> _executedAssetsByClass = Array.Empty<Asset>().ToLookup(GetAssetClass);
-    private ILookup<AssetClass, Asset> _plannedAssetsByClass = Array.Empty<Asset>().ToLookup(GetAssetClass);
-    private ILookup<AssetClass, Asset> _contributionsByClass = Array.Empty<Asset>().ToLookup(GetAssetClass);
-    private ILookup<AssetClass, Asset> _mergedAssetsByClass = Array.Empty<Asset>().ToLookup(GetAssetClass);
 
     public IndexModel(ILogger<IndexModel> logger) => _logger = logger;
 
-    internal ILookup<AssetClass, Asset> PortfolioAssetsByClass => _portfolioAssetsByClass;
+    internal ILookup<AssetClass, Asset> PortfolioAssetsByClass { get; private set; } = s_emptyLookup;
 
-    internal ILookup<AssetClass, Asset> ExecutedAssetsByClass => _executedAssetsByClass;
+    internal ILookup<AssetClass, Asset> ExecutedAssetsByClass { get; private set; } = s_emptyLookup;
 
-    internal ILookup<AssetClass, Asset> PlannedAssetsByClass => _plannedAssetsByClass;
+    internal ILookup<AssetClass, Asset> PlannedAssetsByClass { get; private set; } = s_emptyLookup;
 
-    internal ILookup<AssetClass, Asset> ContributionsByClass => _contributionsByClass;
+    internal ILookup<AssetClass, Asset> ContributionsByClass { get; private set; } = s_emptyLookup;
 
-    internal ILookup<AssetClass, Asset> MergedAssetsByClass => _mergedAssetsByClass;
+    internal ILookup<AssetClass, Asset> MergedAssetsByClass { get; private set; } = s_emptyLookup;
 
     internal async Task OnGet()
     {
@@ -52,7 +49,7 @@ public sealed class IndexModel : PageModel
             await positionProvider.GetPositionsAsync().ConfigureAwait(false);
 
         IReadOnlyList<Asset> portfolioAssets = assetProvider.GetAssets(portfolioPositions);
-        _portfolioAssetsByClass = portfolioAssets.ToLookup(GetAssetClass);
+        PortfolioAssetsByClass = portfolioAssets.ToLookup(GetAssetClass);
 
 #if false
         await Out.WriteLineAsync($"{nameof(portfolioAssets)} ({portfolioName})").ConfigureAwait(false);
@@ -64,9 +61,9 @@ public sealed class IndexModel : PageModel
 
         Position[] executedPositions = Array.Empty<Position>();
         IReadOnlyList<Asset> executedAssets = assetProvider.GetAssets(executedPositions);
-        _executedAssetsByClass = executedAssets.ToLookup(GetAssetClass);
+        ExecutedAssetsByClass = executedAssets.ToLookup(GetAssetClass);
 #if false
-        if (_executedAssetsByClass.Count > 0)
+        if (ExecutedAssetsByClass.Count > 0)
         {
             await Out.WriteLineAsync($"{Environment.NewLine}{nameof(executedAssets)} ({portfolioName})")
                 .ConfigureAwait(false);
@@ -76,9 +73,9 @@ public sealed class IndexModel : PageModel
 
         Position[] plannedPositions = Array.Empty<Position>();
         IReadOnlyList<Asset> plannedAssets = assetProvider.GetAssets(plannedPositions);
-        _plannedAssetsByClass = plannedAssets.ToLookup(GetAssetClass);
+        PlannedAssetsByClass = plannedAssets.ToLookup(GetAssetClass);
 #if false
-        if (_plannedAssetsByClass.Count > 0)
+        if (PlannedAssetsByClass.Count > 0)
         {
             await Out.WriteLineAsync($"{Environment.NewLine}{nameof(plannedAssets)} ({portfolioName})")
                 .ConfigureAwait(false);
@@ -87,9 +84,9 @@ public sealed class IndexModel : PageModel
 #endif
 
         var contributions = plannedAssets.Concat(executedAssets).ToList();
-        _contributionsByClass = contributions.ToLookup(GetAssetClass);
+        ContributionsByClass = contributions.ToLookup(GetAssetClass);
 #if false
-        if (_contributionsByClass.Count > 0)
+        if (ContributionsByClass.Count > 0)
         {
             await Out.WriteLineAsync($"{Environment.NewLine}{nameof(contributions)} ({portfolioName})")
                 .ConfigureAwait(false);
@@ -98,9 +95,9 @@ public sealed class IndexModel : PageModel
 #endif
 
         var mergedAssets = portfolioAssets.Concat(contributions).ToList();
-        _mergedAssetsByClass = mergedAssets.ToLookup(GetAssetClass);
+        MergedAssetsByClass = mergedAssets.ToLookup(GetAssetClass);
 #if false
-        if (_mergedAssetsByClass.Count > 0)
+        if (MergedAssetsByClass.Count > 0)
         {
             await Out.WriteLineAsync($"{Environment.NewLine}{nameof(mergedAssets)} ({portfolioName})")
                 .ConfigureAwait(false);
