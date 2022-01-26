@@ -1,4 +1,5 @@
 ﻿@page
+@using System.Globalization
 @using Diversifolio
 @using Diversifolio.Pages
 @model IndexModel
@@ -11,19 +12,26 @@
 </div>
 
 <table>
+    <caption style="caption-side: top">@nameof(Model.PortfolioAssetsByClass)</caption>
     <tbody>
     @{
+        CultureInfo p = FormattingHelpers.FormatProvider;
+
         IOrderedEnumerable<IGrouping<AssetClass, Asset>> ordered =
             Model.PortfolioAssetsByClass.OrderBy(it => it.Key, AssetClassComparer.Instance);
 
+        int groupIndex = 0;
         foreach (IGrouping<AssetClass, Asset> grouping in ordered)
         {
+            bool needsBorder = groupIndex++ > 0;
             IOrderedEnumerable<Asset> orderedAssets = grouping.OrderByDescending(it => it.Value.Amount);
             foreach (Asset asset in orderedAssets)
             {
-                <tr>
+                string? rowStyle = needsBorder ? "border-top: 1px solid" : null;
+                needsBorder = false;
+                <tr style="@rowStyle">
                     <td>@asset.Ticker</td>
-                    <td style="font-family: monospace; float: right">@asset.Value.Amount</td>
+                    <td style="font-family: monospace; float: right">@asset.Value.Amount.ToString("F2", p)</td>
                 </tr>
             }
         }
