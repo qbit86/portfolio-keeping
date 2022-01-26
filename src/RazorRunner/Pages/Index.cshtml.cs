@@ -28,6 +28,17 @@ public sealed class IndexModel : PageModel
 
     internal ILookup<AssetClass, Asset> MergedAssetsByClass { get; private set; } = s_emptyLookup;
 
+    internal static string GetPriceFormat(int decimalCount) =>
+        decimalCount switch
+        {
+            0 => "F0",
+            1 => "F1",
+            2 => "F2",
+            3 => "F3",
+            4 => "F4",
+            _ => "F" + decimalCount.ToString(FormattingHelpers.FormatProvider)
+        };
+
     public async Task OnGet()
     {
         using var securityProvider = SecurityProvider.Create();

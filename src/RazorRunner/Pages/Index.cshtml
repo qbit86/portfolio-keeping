@@ -32,10 +32,15 @@
                 string? rowStyle = needsBorder ? "border-top: 1px solid" : null;
                 needsBorder = false;
                 decimal ratio = asset.Value.Amount / portfolioTotal;
+                int decimalCount = asset.DecimalCount;
+                string f = IndexModel.GetPriceFormat(decimalCount);
+                decimal price = asset.OriginalPrice.Amount;
                 <tr style="@rowStyle">
                     <td>@asset.Ticker</td>
-                    <td style="padding-left: 2em; text-align: right; font-family: monospace">@asset.Value.Amount.ToString("F2", p)</td>
+                    <td style="padding-left: 2em; text-align: right">@asset.Value.Amount.ToString("F2", p)</td>
                     <td style="padding-left: 2em; text-align: right">@ratio.ToString("P2", p)</td>
+                    <td style="padding-left: 2em; text-align: right">@asset.Balance.ToString("D", p)</td>
+                    <td style="padding-left: 2em; text-align: right; font-family: 'JetBrains Mono',monospace">@price.ToString(f, p)</td>
                 </tr>
             }
         }
