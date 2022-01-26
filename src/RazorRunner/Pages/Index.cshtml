@@ -1,4 +1,5 @@
 ﻿@page
+@using Diversifolio
 @using Diversifolio.Pages
 @model IndexModel
 @{
@@ -8,3 +9,24 @@
 <div class="text-center">
     <h1 class="display-4">@IndexModel.PortfolioName</h1>
 </div>
+
+<table>
+    <tbody>
+    @{
+        IOrderedEnumerable<IGrouping<AssetClass, Asset>> ordered =
+            Model.PortfolioAssetsByClass.OrderBy(it => it.Key, AssetClassComparer.Instance);
+
+        foreach (IGrouping<AssetClass, Asset> grouping in ordered)
+        {
+            IOrderedEnumerable<Asset> orderedAssets = grouping.OrderByDescending(it => it.Value.Amount);
+            foreach (Asset asset in orderedAssets)
+            {
+                <tr>
+                    <td>@asset.Ticker</td>
+                    <td>@asset.Value.Amount</td>
+                </tr>
+            }
+        }
+    }
+    </tbody>
+</table>
