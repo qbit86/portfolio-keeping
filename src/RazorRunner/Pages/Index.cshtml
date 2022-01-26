@@ -34,8 +34,8 @@
                 decimal ratio = asset.Value.Amount / portfolioTotal;
                 <tr style="@rowStyle">
                     <td>@asset.Ticker</td>
-                    <td style="font-family: monospace; text-align: right">@asset.Value.Amount.ToString("F2", p)</td>
-                    <td style="float: right">@ratio.ToString("P2", p)</td>
+                    <td style="padding-left: 2em; text-align: right; font-family: monospace">@asset.Value.Amount.ToString("F2", p)</td>
+                    <td style="padding-left: 2em; text-align: right">@ratio.ToString("P2", p)</td>
                 </tr>
             }
         }
