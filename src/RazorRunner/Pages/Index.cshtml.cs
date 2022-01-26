@@ -28,7 +28,7 @@ public sealed class IndexModel : PageModel
 
     internal ILookup<AssetClass, Asset> MergedAssetsByClass { get; private set; } = s_emptyLookup;
 
-    internal async Task OnGet()
+    public async Task OnGet()
     {
         using var securityProvider = SecurityProvider.Create();
         IReadOnlyDictionary<string, IReadOnlyList<Security>> securitiesByMarket =
