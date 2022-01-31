@@ -35,12 +35,16 @@
                 int decimalCount = asset.DecimalCount;
                 string f = IndexModel.GetPriceFormat(decimalCount);
                 decimal price = asset.OriginalPrice.Amount;
+                string formattedPrice = price.ToString(f, p);
+                int pricePadding = decimalCount > 0 ? 4 - decimalCount : 5;
+                if (pricePadding > 0)
+                    formattedPrice = formattedPrice.PadRight(formattedPrice.Length + pricePadding);
                 <tr style="@rowStyle">
                     <td>@asset.Ticker</td>
                     <td style="padding-left: 2em; text-align: right">@asset.Value.Amount.ToString("F2", p)</td>
                     <td style="padding-left: 2em; text-align: right">@ratio.ToString("P2", p)</td>
                     <td style="padding-left: 2em; text-align: right">@asset.Balance.ToString("D", p)</td>
-                    <td style="padding-left: 2em; text-align: right; font-family: 'JetBrains Mono',monospace">@price.ToString(f, p)</td>
+                    <td style="padding-left: 2em; text-align: right; font-family: 'JetBrains Mono',monospace">@formattedPrice</td>
                 </tr>
             }
         }
