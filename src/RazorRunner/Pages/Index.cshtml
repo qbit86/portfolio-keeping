@@ -16,6 +16,7 @@
     <tbody>
     @{
         CultureInfo p = FormattingHelpers.FormatProvider;
+        const char figureSpace = '\u2007'; // https://en.wikipedia.org/wiki/Figure_space
 
         decimal portfolioTotal = Model.PortfolioAssetsByClass
             .SelectMany(it => it).Sum(it => it.Value.Amount);
@@ -38,13 +39,13 @@
                 string formattedPrice = price.ToString(f, p);
                 int pricePadding = decimalCount > 0 ? 4 - decimalCount : 5;
                 if (pricePadding > 0)
-                    formattedPrice = formattedPrice.PadRight(formattedPrice.Length + pricePadding);
+                    formattedPrice = formattedPrice.PadRight(formattedPrice.Length + pricePadding, figureSpace);
                 <tr style="@rowStyle">
                     <td>@asset.Ticker</td>
                     <td style="padding-left: 2em; text-align: right">@asset.Value.Amount.ToString("F2", p)</td>
                     <td style="padding-left: 2em; text-align: right">@ratio.ToString("P2", p)</td>
                     <td style="padding-left: 2em; text-align: right">@asset.Balance.ToString("D", p)</td>
-                    <td style="padding-left: 2em; text-align: right; font-family: 'JetBrains Mono',monospace">@formattedPrice</td>
+                    <td style="padding-left: 2em; text-align: right">@formattedPrice</td>
                 </tr>
             }
         }
