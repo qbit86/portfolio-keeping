@@ -37,15 +37,20 @@
                 string f = IndexModel.GetPriceFormat(decimalCount);
                 decimal price = asset.OriginalPrice.Amount;
                 string formattedPrice = price.ToString(f, p);
-                int pricePadding = decimalCount > 0 ? 4 - decimalCount : 5;
-                if (pricePadding > 0)
-                    formattedPrice = formattedPrice.PadRight(formattedPrice.Length + pricePadding, figureSpace);
+
+                string paddedPrice = decimalCount switch
+                {
+                    <= 0 => formattedPrice + ".\u2007\u2007\u2007\u2007",
+                    < 4 => formattedPrice.PadRight(formattedPrice.Length + 4 - decimalCount, figureSpace),
+                    _ => formattedPrice
+                };
+
                 <tr style="@rowStyle">
                     <td>@asset.Ticker</td>
                     <td style="padding-left: 2em; text-align: right">@asset.Value.Amount.ToString("F2", p)</td>
                     <td style="padding-left: 2em; text-align: right">@ratio.ToString("P2", p)</td>
                     <td style="padding-left: 2em; text-align: right">@asset.Balance.ToString("D", p)</td>
-                    <td style="padding-left: 2em; text-align: right">@formattedPrice</td>
+                    <td style="padding-left: 2em; text-align: right">@paddedPrice</td>
                 </tr>
             }
         }
