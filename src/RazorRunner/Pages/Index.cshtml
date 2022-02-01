@@ -7,12 +7,23 @@
     ViewData["Title"] = "Home page";
 }
 
+<style>
+caption.df-table-caption {
+    caption-side: top;
+}
+
+td.df-number-cell {
+    padding-left: 2em;
+    text-align: right;
+}
+</style>
+
 <div class="text-center">
     <h1 class="display-4">@IndexModel.PortfolioName</h1>
 </div>
 
 <table>
-    <caption style="caption-side: top">@nameof(Model.PortfolioAssetsByClass)</caption>
+    <caption class="df-table-caption">@nameof(Model.PortfolioAssetsByClass)</caption>
     <tbody>
     @{
         CultureInfo p = FormattingHelpers.FormatProvider;
@@ -47,10 +58,10 @@
 
                 <tr style="@rowStyle">
                     <td>@asset.Ticker</td>
-                    <td style="padding-left: 2em; text-align: right">@asset.Value.Amount.ToString("F2", p)</td>
-                    <td style="padding-left: 2em; text-align: right">@ratio.ToString("P2", p)</td>
-                    <td style="padding-left: 2em; text-align: right">@asset.Balance.ToString("D", p)</td>
-                    <td style="padding-left: 2em; text-align: right">@paddedPrice</td>
+                    <td class="df-number-cell">@asset.Value.Amount.ToString("F2", p)</td>
+                    <td class="df-number-cell">@ratio.ToString("P2", p)</td>
+                    <td class="df-number-cell">@asset.Balance.ToString("D", p)</td>
+                    <td class="df-number-cell">@paddedPrice</td>
                 </tr>
             }
         }
