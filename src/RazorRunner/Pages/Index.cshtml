@@ -16,6 +16,10 @@ td.df-number-cell {
     padding-left: 2em;
     text-align: right;
 }
+
+th.df-number-cell {
+    text-align: right;
+}
 </style>
 
 <div class="text-center">
@@ -24,6 +28,15 @@ td.df-number-cell {
 
 <table>
     <caption class="df-table-caption">@nameof(Model.PortfolioAssetsByClass)</caption>
+    <thead>
+    <tr>
+        <th>Ticker</th>
+        <th class="df-number-cell">Value</th>
+        <th class="df-number-cell">Ratio</th>
+        <th class="df-number-cell">Balance</th>
+        <th class="df-number-cell">Price</th>
+    </tr>
+    </thead>
     <tbody>
     @{
         CultureInfo p = FormattingHelpers.FormatProvider;
