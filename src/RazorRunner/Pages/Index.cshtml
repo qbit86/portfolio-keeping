@@ -3,6 +3,12 @@
 @using Diversifolio
 @using Diversifolio.Pages
 @model IndexModel
+
+@functions
+{
+    private static CultureInfo P => FormattingHelpers.FormatProvider;
+}
+
 @{
     ViewData["Title"] = "Home page";
 }
@@ -39,7 +45,6 @@ th.df-number-cell {
     </thead>
     <tbody>
     @{
-        CultureInfo p = FormattingHelpers.FormatProvider;
         const char figureSpace = '\u2007'; // https://en.wikipedia.org/wiki/Figure_space
 
         decimal portfolioTotal = Model.PortfolioAssetsByClass
@@ -60,7 +65,7 @@ th.df-number-cell {
                 int decimalCount = asset.DecimalCount;
                 string f = IndexModel.GetPriceFormat(decimalCount);
                 decimal price = asset.OriginalPrice.Amount;
-                string formattedPrice = price.ToString(f, p);
+                string formattedPrice = price.ToString(f, P);
 
                 string paddedPrice = decimalCount switch
                 {
@@ -71,9 +76,9 @@ th.df-number-cell {
 
                 <tr style="@rowStyle">
                     <td>@asset.Ticker</td>
-                    <td class="df-number-cell">@asset.Value.Amount.ToString("F2", p)</td>
-                    <td class="df-number-cell">@ratio.ToString("P2", p)</td>
-                    <td class="df-number-cell">@asset.Balance.ToString("D", p)</td>
+                    <td class="df-number-cell">@asset.Value.Amount.ToString("F2", P)</td>
+                    <td class="df-number-cell">@ratio.ToString("P2", P)</td>
+                    <td class="df-number-cell">@asset.Balance.ToString("D", P)</td>
                     <td class="df-number-cell">@paddedPrice</td>
                 </tr>
             }
