@@ -9,10 +9,6 @@
     private static CultureInfo P => FormattingHelpers.FormatProvider;
 }
 
-@{
-    ViewData["Title"] = "Home page";
-}
-
 <style>
 caption.df-table-caption {
     caption-side: top;
@@ -32,57 +28,69 @@ th.df-number-cell {
     <h1 class="display-4">@IndexModel.PortfolioName</h1>
 </div>
 
-<table>
-    <caption class="df-table-caption">@nameof(Model.PortfolioAssetsByClass)</caption>
-    <thead>
-    <tr>
-        <th>Ticker</th>
-        <th class="df-number-cell">Value</th>
-        <th class="df-number-cell">Ratio</th>
-        <th class="df-number-cell">Balance</th>
-        <th class="df-number-cell">Price</th>
-    </tr>
-    </thead>
-    <tbody>
-    @{
-        const char figureSpace = '\u2007'; // https://en.wikipedia.org/wiki/Figure_space
+@{
+    ViewData["Title"] = "Home page";
 
-        decimal portfolioTotal = Model.PortfolioAssetsByClass
-            .SelectMany(it => it).Sum(it => it.Value.Amount);
-        IOrderedEnumerable<IGrouping<AssetClass, Asset>> ordered = Model.PortfolioAssetsByClass
-            .OrderBy(it => it.Key, AssetClassComparer.Instance);
+    WriteAssets(nameof(Model.PortfolioAssetsByClass), Model.PortfolioAssetsByClass);
+}
 
-        int groupIndex = 0;
-        foreach (IGrouping<AssetClass, Asset> grouping in ordered)
-        {
-            bool needsBorder = groupIndex++ > 0;
-            IOrderedEnumerable<Asset> orderedAssets = grouping.OrderByDescending(it => it.Value.Amount);
-            foreach (Asset asset in orderedAssets)
-            {
-                string? rowStyle = needsBorder ? "border-top: 1px solid" : null;
-                needsBorder = false;
-                decimal ratio = asset.Value.Amount / portfolioTotal;
-                int decimalCount = asset.DecimalCount;
-                string f = IndexModel.GetPriceFormat(decimalCount);
-                decimal price = asset.OriginalPrice.Amount;
-                string formattedPrice = price.ToString(f, P);
+@functions
+{
+    private void WriteAssets(string caption, ILookup<AssetClass, Asset> assetsByClass)
+    {
+        <table>
+            <caption class="df-table-caption">@caption</caption>
+            <thead>
+            <tr>
+                <th>Ticker</th>
+                <th class="df-number-cell">Value</th>
+                <th class="df-number-cell">Ratio</th>
+                <th class="df-number-cell">Balance</th>
+                <th class="df-number-cell">Price</th>
+            </tr>
+            </thead>
+            <tbody>
+            @{
+                const char figureSpace = '\u2007'; // https://en.wikipedia.org/wiki/Figure_space
 
-                string paddedPrice = decimalCount switch
+                decimal portfolioTotal = assetsByClass
+                    .SelectMany(it => it).Sum(it => it.Value.Amount);
+                IOrderedEnumerable<IGrouping<AssetClass, Asset>> ordered = assetsByClass
+                    .OrderBy(it => it.Key, AssetClassComparer.Instance);
+
+                int groupIndex = 0;
+                foreach (IGrouping<AssetClass, Asset> grouping in ordered)
                 {
-                    <= 0 => formattedPrice + ".\u2007\u2007\u2007\u2007",
-                    < 4 => formattedPrice.PadRight(formattedPrice.Length + 4 - decimalCount, figureSpace),
-                    _ => formattedPrice
-                };
+                    bool needsBorder = groupIndex++ > 0;
+                    IOrderedEnumerable<Asset> orderedAssets = grouping.OrderByDescending(it => it.Value.Amount);
+                    foreach (Asset asset in orderedAssets)
+                    {
+                        string? rowStyle = needsBorder ? "border-top: 1px solid" : null;
+                        needsBorder = false;
+                        decimal ratio = asset.Value.Amount / portfolioTotal;
+                        int decimalCount = asset.DecimalCount;
+                        string f = IndexModel.GetPriceFormat(decimalCount);
+                        decimal price = asset.OriginalPrice.Amount;
+                        string formattedPrice = price.ToString(f, P);
 
-                <tr style="@rowStyle">
-                    <td>@asset.Ticker</td>
-                    <td class="df-number-cell">@asset.Value.Amount.ToString("F2", P)</td>
-                    <td class="df-number-cell">@ratio.ToString("P2", P)</td>
-                    <td class="df-number-cell">@asset.Balance.ToString("D", P)</td>
-                    <td class="df-number-cell">@paddedPrice</td>
-                </tr>
+                        string paddedPrice = decimalCount switch
+                        {
+                            <= 0 => formattedPrice + ".\u2007\u2007\u2007\u2007",
+                            < 4 => formattedPrice.PadRight(formattedPrice.Length + 4 - decimalCount, figureSpace),
+                            _ => formattedPrice
+                        };
+
+                        <tr style="@rowStyle">
+                            <td>@asset.Ticker</td>
+                            <td class="df-number-cell">@asset.Value.Amount.ToString("F2", P)</td>
+                            <td class="df-number-cell">@ratio.ToString("P2", P)</td>
+                            <td class="df-number-cell">@asset.Balance.ToString("D", P)</td>
+                            <td class="df-number-cell">@paddedPrice</td>
+                        </tr>
+                    }
+                }
             }
-        }
+            </tbody>
+        </table>
     }
-    </tbody>
-</table>
+}
