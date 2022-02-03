@@ -54,46 +54,80 @@ th.df-number-cell {
             </thead>
             <tbody>
             @{
-                const char figureSpace = '\u2007'; // https://en.wikipedia.org/wiki/Figure_space
+        const char figureSpace = '\u2007'; // https://en.wikipedia.org/wiki/Figure_space
 
-                decimal portfolioTotal = assetsByClass
-                    .SelectMany(it => it).Sum(it => it.Value.Amount);
-                IOrderedEnumerable<IGrouping<AssetClass, Asset>> ordered = assetsByClass
-                    .OrderBy(it => it.Key, AssetClassComparer.Instance);
+        decimal portfolioTotal = assetsByClass
+            .SelectMany(it => it).Sum(it => it.Value.Amount);
+        IOrderedEnumerable<IGrouping<AssetClass, Asset>> ordered = assetsByClass
+            .OrderBy(it => it.Key, AssetClassComparer.Instance);
 
-                int groupIndex = 0;
-                foreach (IGrouping<AssetClass, Asset> grouping in ordered)
+        int groupIndex = 0;
+        foreach (IGrouping<AssetClass, Asset> grouping in ordered)
+        {
+            bool needsBorder = groupIndex++ > 0;
+            IOrderedEnumerable<Asset> orderedAssets = grouping.OrderByDescending(it => it.Value.Amount);
+            foreach (Asset asset in orderedAssets)
+            {
+                string? rowStyle = needsBorder ? "border-top: 1px solid" : null;
+                needsBorder = false;
+                decimal ratio = asset.Value.Amount / portfolioTotal;
+                int decimalCount = asset.DecimalCount;
+                string f = IndexModel.GetPriceFormat(decimalCount);
+                decimal price = asset.OriginalPrice.Amount;
+                string formattedPrice = price.ToString(f, P);
+
+                string paddedPrice = decimalCount switch
                 {
-                    bool needsBorder = groupIndex++ > 0;
-                    IOrderedEnumerable<Asset> orderedAssets = grouping.OrderByDescending(it => it.Value.Amount);
-                    foreach (Asset asset in orderedAssets)
-                    {
-                        string? rowStyle = needsBorder ? "border-top: 1px solid" : null;
-                        needsBorder = false;
-                        decimal ratio = asset.Value.Amount / portfolioTotal;
-                        int decimalCount = asset.DecimalCount;
-                        string f = IndexModel.GetPriceFormat(decimalCount);
-                        decimal price = asset.OriginalPrice.Amount;
-                        string formattedPrice = price.ToString(f, P);
+                    <= 0 => formattedPrice + ".\u2007\u2007\u2007\u2007",
+                    < 4 => formattedPrice.PadRight(formattedPrice.Length + 4 - decimalCount, figureSpace),
+                    _ => formattedPrice
+                    };
 
-                        string paddedPrice = decimalCount switch
-                        {
-                            <= 0 => formattedPrice + ".\u2007\u2007\u2007\u2007",
-                            < 4 => formattedPrice.PadRight(formattedPrice.Length + 4 - decimalCount, figureSpace),
-                            _ => formattedPrice
-                        };
-
-                        <tr style="@rowStyle">
-                            <td>@asset.Ticker</td>
-                            <td class="df-number-cell">@asset.Value.Amount.ToString("F2", P)</td>
-                            <td class="df-number-cell">@ratio.ToString("P2", P)</td>
-                            <td class="df-number-cell">@asset.Balance.ToString("D", P)</td>
-                            <td class="df-number-cell">@paddedPrice</td>
-                        </tr>
-                    }
-                }
+                <tr style="@rowStyle">
+                    <td>@asset.Ticker</td>
+                    <td class="df-number-cell">@asset.Value.Amount.ToString("F2", P)</td>
+                    <td class="df-number-cell">@ratio.ToString("P2", P)</td>
+                    <td class="df-number-cell">@asset.Balance.ToString("D", P)</td>
+                    <td class="df-number-cell">@paddedPrice</td>
+                </tr>
+            }
+        }
             }
             </tbody>
         </table>
     }
+
+        @*
+    private void WriteProportions(ILookup<AssetClass, Asset> assetsByClass, string? caption = null)
+    {
+        <table>
+            @if (!string.IsNullOrWhiteSpace(caption))
+            {
+                <caption class="df-table-caption">@caption</caption>
+            }
+            <tbody>
+            @{
+        var currencies = assetsByClass.SelectMany(it => it.Select(a => a.OriginalValue.Currency))
+            .Distinct(StringComparer.Ordinal).OrderBy(it => it, StringComparer.Ordinal).ToList();
+
+        var totalMulticurrencyAmount = MulticurrencyAmount.Create();
+
+        Dictionary<AssetClass, MulticurrencyAmount> multicurrencyAmountByAssetClass = new();
+        foreach (IGrouping<AssetClass, Asset> grouping in assetsByClass)
+        {
+            var assetClassMulticurrencyAmount = MulticurrencyAmount.Create();
+            multicurrencyAmountByAssetClass[grouping.Key] = assetClassMulticurrencyAmount;
+            foreach (Asset asset in grouping)
+            {
+                totalMulticurrencyAmount.Add(asset.OriginalValue);
+                assetClassMulticurrencyAmount.Add(asset.OriginalValue);
+            }
+        }
+
+    // TODO:
+            }
+            </tbody>
+        </table>
+    }
+    *@
 }
