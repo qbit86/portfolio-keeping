@@ -31,15 +31,18 @@ th.df-number-cell {
 @{
     ViewData["Title"] = "Home page";
 
-    WriteAssets(nameof(Model.PortfolioAssetsByClass), Model.PortfolioAssetsByClass);
+    WriteAssets(Model.PortfolioAssetsByClass, nameof(Model.PortfolioAssetsByClass));
 }
 
 @functions
 {
-    private void WriteAssets(string caption, ILookup<AssetClass, Asset> assetsByClass)
+    private void WriteAssets(ILookup<AssetClass, Asset> assetsByClass, string? caption = null)
     {
         <table>
-            <caption class="df-table-caption">@caption</caption>
+            @if (!string.IsNullOrWhiteSpace(caption))
+            {
+                <caption class="df-table-caption">@caption</caption>
+            }
             <thead>
             <tr>
                 <th>Ticker</th>
