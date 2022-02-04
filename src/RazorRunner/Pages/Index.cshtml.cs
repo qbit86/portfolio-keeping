@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 using Diversifolio.Moex;
@@ -17,6 +18,11 @@ public sealed class IndexModel : PageModel
     private readonly ILogger<IndexModel> _logger;
 
     public IndexModel(ILogger<IndexModel> logger) => _logger = logger;
+
+    internal IReadOnlyDictionary<string, IReadOnlyList<Security>> SecuritiesByMarket { get; private set; } =
+        ImmutableDictionary<string, IReadOnlyList<Security>>.Empty;
+
+    internal RubCurrencyConverter CurrencyConverter { get; private set; }
 
     internal ILookup<AssetClass, Asset> PortfolioAssetsByClass { get; private set; } = s_emptyLookup;
 
@@ -42,14 +48,13 @@ public sealed class IndexModel : PageModel
     public async Task OnGet()
     {
         using var securityProvider = SecurityProvider.Create();
-        IReadOnlyDictionary<string, IReadOnlyList<Security>> securitiesByMarket =
-            await securityProvider.GetSecuritiesByMarketDictionaryAsync().ConfigureAwait(false);
+        SecuritiesByMarket = await securityProvider.GetSecuritiesByMarketDictionaryAsync().ConfigureAwait(false);
 
-        SeltSecurity usd = securitiesByMarket[Markets.Selt].OfType<SeltSecurity>().Single();
-        var currencyConverter = RubCurrencyConverter.Create(usd);
+        SeltSecurity usd = SecuritiesByMarket[Markets.Selt].OfType<SeltSecurity>().Single();
+        CurrencyConverter = RubCurrencyConverter.Create(usd);
 
         PositionProvider positionProvider = PositionProviderFactory.Create(PortfolioName);
-        AssetProvider<RubCurrencyConverter> assetProvider = new(securitiesByMarket, currencyConverter);
+        AssetProvider<RubCurrencyConverter> assetProvider = new(SecuritiesByMarket, CurrencyConverter);
 
         await PlanAsync(positionProvider, assetProvider).ConfigureAwait(false);
     }
