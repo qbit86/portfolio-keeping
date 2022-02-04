@@ -32,6 +32,7 @@ th.df-number-cell {
     ViewData["Title"] = "Home page";
 
     WriteAssets(Model.PortfolioAssetsByClass, nameof(Model.PortfolioAssetsByClass));
+    WriteProportions(Model.PortfolioAssetsByClass, nameof(Model.PortfolioAssetsByClass));
 }
 
 @functions
@@ -97,7 +98,6 @@ th.df-number-cell {
         </table>
     }
 
-        @*
     private void WriteProportions(ILookup<AssetClass, Asset> assetsByClass, string? caption = null)
     {
         <table>
@@ -124,10 +124,32 @@ th.df-number-cell {
             }
         }
 
-    // TODO:
+        CurrencyAmount totalCurrencyAmount = totalMulticurrencyAmount.CurrencyAmountByCurrency.Values.Aggregate(
+            CurrencyAmountMonoid.Instance.Identity, Combine);
+
+        IOrderedEnumerable<KeyValuePair<AssetClass, MulticurrencyAmount>> ordered =
+            multicurrencyAmountByAssetClass.OrderBy(it => it.Key, AssetClassComparer.Instance);
+
+        foreach ((AssetClass key, MulticurrencyAmount value) in ordered)
+        {
+            IReadOnlyDictionary<string, CurrencyAmount> currencyAmountByCurrency = value.CurrencyAmountByCurrency;
+            CurrencyAmount assetClassTotal = currencyAmountByCurrency.Values.Aggregate(CurrencyAmountMonoid.Instance.Identity, Combine);
+            <tr>
+                <td>@key</td>
+                <td>@assetClassTotal.Amount.ToString("F2", P)</td>
+                @* TODO *@
+                @* await Out.WriteLineAsync(proportionFormatter.Format(key, value)).ConfigureAwait(false); *@
+            </tr>
+        }
+
+        @* await Out.WriteLineAsync(proportionFormatter.FormatTotal(totalCurrencyAmount)).ConfigureAwait(false); *@
             }
             </tbody>
         </table>
+
+        CurrencyAmount Combine(CurrencyAmount left, CurrencyAmount right)
+        {
+            return CurrencyAmountMonoid.Instance.Combine(left, Model.CurrencyConverter.ConvertFrom(right));
+        }
     }
-    *@
 }
