@@ -1,5 +1,6 @@
 ﻿@page
 @using System.Globalization
+@using System.Runtime.CompilerServices
 @using Diversifolio
 @using Diversifolio.Pages
 @model IndexModel
@@ -145,6 +146,18 @@ th.df-number-cell {
                 <td>@key</td>
                 <td class="df-number-cell">@assetClassTotal.Amount.ToString("F2", P)</td>
                 <td class="df-number-cell">@ratio.ToString("P2", P)</td>
+                @foreach (string currency in currencies)
+                {
+                    if (currencyAmountByCurrency.TryGetValue(currency, out CurrencyAmount currencyAmount))
+                    {
+                        DefaultInterpolatedStringHandler interpolatedAmountAndCurrency = $"{currencyAmount.Amount:F2} {currencyAmount.Currency}";
+                        <td class="df-number-cell">@string.Create(P, ref interpolatedAmountAndCurrency)</td>
+                    }
+                    else
+                    {
+                        <td class="df-number-cell"/>
+                    }
+                }
                 @* TODO *@
                 @* await Out.WriteLineAsync(proportionFormatter.Format(key, value)).ConfigureAwait(false); *@
             </tr>
