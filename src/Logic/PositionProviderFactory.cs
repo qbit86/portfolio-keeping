@@ -18,6 +18,23 @@ public static class PositionProviderFactory
             Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), nameof(Diversifolio));
         string populateScriptDirectory = databaseDirectory;
 
+        return UncheckedCreate(portfolioName, populateScriptDirectory, databaseDirectory);
+    }
+
+    public static PositionProvider Create(string portfolioName, string populateScriptDirectory)
+    {
+        ArgumentNullException.ThrowIfNull(portfolioName);
+        ArgumentNullException.ThrowIfNull(populateScriptDirectory);
+
+        string databaseDirectory = Path.Join(
+            Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), nameof(Diversifolio));
+
+        return UncheckedCreate(portfolioName, populateScriptDirectory, databaseDirectory);
+    }
+
+    private static PositionProvider UncheckedCreate(
+        string portfolioName, string populateScriptDirectory, string databaseDirectory)
+    {
 #if DIVERSIFOLIO_TINKOFF_ENABLED
         return portfolioName switch
         {
