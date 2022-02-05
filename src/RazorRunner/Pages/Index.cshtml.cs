@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Diversifolio.Moex;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace Diversifolio.Pages;
@@ -14,10 +15,15 @@ public sealed class IndexModel : PageModel
     internal const string PortfolioName = PortfolioNames.Test;
 
     private static readonly ILookup<AssetClass, Asset> s_emptyLookup = Array.Empty<Asset>().ToLookup(GetAssetClass);
+    private readonly IConfiguration _configuration;
 
     private readonly ILogger<IndexModel> _logger;
 
-    public IndexModel(ILogger<IndexModel> logger) => _logger = logger;
+    public IndexModel(ILogger<IndexModel> logger, IConfiguration configuration)
+    {
+        _logger = logger;
+        _configuration = configuration;
+    }
 
     private IReadOnlyDictionary<string, IReadOnlyList<Security>> SecuritiesByMarket { get; set; } =
         ImmutableDictionary<string, IReadOnlyList<Security>>.Empty;
@@ -53,7 +59,8 @@ public sealed class IndexModel : PageModel
         SeltSecurity usd = SecuritiesByMarket[Markets.Selt].OfType<SeltSecurity>().Single();
         CurrencyConverter = RubCurrencyConverter.Create(usd);
 
-        PositionProvider positionProvider = PositionProviderFactory.Create(PortfolioName);
+        string? populateScriptDirectory = _configuration["PopulateScriptDirectory"];
+        PositionProvider positionProvider = PositionProviderFactory.Create(PortfolioName, populateScriptDirectory);
         AssetProvider<RubCurrencyConverter> assetProvider = new(SecuritiesByMarket, CurrencyConverter);
 
         await PlanAsync(positionProvider, assetProvider).ConfigureAwait(false);
