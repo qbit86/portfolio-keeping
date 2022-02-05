@@ -112,6 +112,6 @@ public sealed record TinkoffPositionProvider(
             await writer.WriteAsync(value).ConfigureAwait(false);
         }
 
-        await writer.WriteAsync(";").ConfigureAwait(false);
+        await writer.WriteLineAsync(";").ConfigureAwait(false);
     }
 }
