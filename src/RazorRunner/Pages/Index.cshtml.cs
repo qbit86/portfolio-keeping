@@ -19,7 +19,7 @@ public sealed class IndexModel : PageModel
 
     public IndexModel(ILogger<IndexModel> logger) => _logger = logger;
 
-    internal IReadOnlyDictionary<string, IReadOnlyList<Security>> SecuritiesByMarket { get; private set; } =
+    private IReadOnlyDictionary<string, IReadOnlyList<Security>> SecuritiesByMarket { get; set; } =
         ImmutableDictionary<string, IReadOnlyList<Security>>.Empty;
 
     internal RubCurrencyConverter CurrencyConverter { get; private set; }
@@ -67,59 +67,19 @@ public sealed class IndexModel : PageModel
         IReadOnlyList<Asset> portfolioAssets = assetProvider.GetAssets(portfolioPositions);
         PortfolioAssetsByClass = portfolioAssets.ToLookup(GetAssetClass);
 
-#if false
-        await Out.WriteLineAsync($"{nameof(portfolioAssets)} ({portfolioName})").ConfigureAwait(false);
-        await assetWriter.WriteAsync(portfolioAssetsByClass).ConfigureAwait(false);
-
-        await Out.WriteLineAsync().ConfigureAwait(false);
-        await proportionWriter.WriteAsync(portfolioAssetsByClass).ConfigureAwait(false);
-#endif
-
         Position[] executedPositions = Array.Empty<Position>();
         IReadOnlyList<Asset> executedAssets = assetProvider.GetAssets(executedPositions);
         ExecutedAssetsByClass = executedAssets.ToLookup(GetAssetClass);
-#if false
-        if (ExecutedAssetsByClass.Count > 0)
-        {
-            await Out.WriteLineAsync($"{Environment.NewLine}{nameof(executedAssets)} ({portfolioName})")
-                .ConfigureAwait(false);
-            await assetWriter.WriteAsync(executedAssetsByClass).ConfigureAwait(false);
-        }
-#endif
 
         Position[] plannedPositions = Array.Empty<Position>();
         IReadOnlyList<Asset> plannedAssets = assetProvider.GetAssets(plannedPositions);
         PlannedAssetsByClass = plannedAssets.ToLookup(GetAssetClass);
-#if false
-        if (PlannedAssetsByClass.Count > 0)
-        {
-            await Out.WriteLineAsync($"{Environment.NewLine}{nameof(plannedAssets)} ({portfolioName})")
-                .ConfigureAwait(false);
-            await assetWriter.WriteAsync(plannedAssetsByClass).ConfigureAwait(false);
-        }
-#endif
 
         var contributions = plannedAssets.Concat(executedAssets).ToList();
         ContributionsByClass = contributions.ToLookup(GetAssetClass);
-#if false
-        if (ContributionsByClass.Count > 0)
-        {
-            await Out.WriteLineAsync($"{Environment.NewLine}{nameof(contributions)} ({portfolioName})")
-                .ConfigureAwait(false);
-            await proportionWriter.WriteAsync(contributionsByClass).ConfigureAwait(false);
-        }
-#endif
 
         var mergedAssets = portfolioAssets.Concat(contributions).ToList();
         MergedAssetsByClass = mergedAssets.ToLookup(GetAssetClass);
-#if false
-        if (MergedAssetsByClass.Count > 0)
-        {
-            await Out.WriteLineAsync($"{Environment.NewLine}{nameof(mergedAssets)} ({portfolioName})")
-                .ConfigureAwait(false);
-            await proportionWriter.WriteAsync(mergedAssetsByClass).ConfigureAwait(false);
-        }
-#endif
     }
 
     private static AssetClass GetAssetClass(Asset asset) =>

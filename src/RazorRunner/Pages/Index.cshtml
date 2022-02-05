@@ -34,6 +34,18 @@ th.df-number-cell {
 
     WriteAssets(Model.PortfolioAssetsByClass, nameof(Model.PortfolioAssetsByClass));
     WriteProportions(Model.PortfolioAssetsByClass, nameof(Model.PortfolioAssetsByClass));
+
+    if (Model.ExecutedAssetsByClass.Count > 0)
+        WriteAssets(Model.ExecutedAssetsByClass, nameof(Model.ExecutedAssetsByClass));
+
+    if (Model.PlannedAssetsByClass.Count > 0)
+        WriteAssets(Model.PlannedAssetsByClass, nameof(Model.PlannedAssetsByClass));
+
+    if (Model.ContributionsByClass.Count > 0)
+        WriteProportions(Model.ContributionsByClass, nameof(Model.ContributionsByClass));
+
+    if (Model.ContributionsByClass.Count > 0)
+        WriteProportions(Model.MergedAssetsByClass, nameof(Model.MergedAssetsByClass));
 }
 
 @functions
