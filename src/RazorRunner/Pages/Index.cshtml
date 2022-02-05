@@ -105,6 +105,12 @@ th.df-number-cell {
             {
                 <caption class="df-table-caption">@caption</caption>
             }
+            <thead>
+            <tr>
+                <th>Class</th>
+                <th class="df-number-cell">Total</th>
+                <th class="df-number-cell">Ratio</th>
+            </tr>
             <tbody>
             @{
         var currencies = assetsByClass.SelectMany(it => it.Select(a => a.OriginalValue.Currency))
@@ -134,9 +140,11 @@ th.df-number-cell {
         {
             IReadOnlyDictionary<string, CurrencyAmount> currencyAmountByCurrency = value.CurrencyAmountByCurrency;
             CurrencyAmount assetClassTotal = currencyAmountByCurrency.Values.Aggregate(CurrencyAmountMonoid.Instance.Identity, Combine);
+            decimal ratio = CurrencyAmountMonoid.Divide(assetClassTotal, totalCurrencyAmount);
             <tr>
                 <td>@key</td>
-                <td>@assetClassTotal.Amount.ToString("F2", P)</td>
+                <td class="df-number-cell">@assetClassTotal.Amount.ToString("F2", P)</td>
+                <td class="df-number-cell">@ratio.ToString("P2", P)</td>
                 @* TODO *@
                 @* await Out.WriteLineAsync(proportionFormatter.Format(key, value)).ConfigureAwait(false); *@
             </tr>
