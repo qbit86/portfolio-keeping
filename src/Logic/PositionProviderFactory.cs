@@ -1,3 +1,5 @@
+#define DIVERSIFOLIO_TINKOFF_ENABLED
+
 using System;
 #if DIVERSIFOLIO_TINKOFF_ENABLED
 using Tinkoff.Trading.OpenApi.Models;
