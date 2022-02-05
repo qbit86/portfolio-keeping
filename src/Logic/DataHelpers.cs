@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -29,38 +30,48 @@ internal static class DataHelpers
     internal static async Task CreatePortfolioDatabaseAsync(
         string portfolioName, string directoryPath, string databasePath)
     {
-        SqliteConnectionStringBuilder connectionStringBuilder = new()
+        Lazy<SqliteConnection> connection = new(() => CreateRwcConnection(databasePath));
+        try
         {
-            DataSource = databasePath,
-            Mode = SqliteOpenMode.ReadWriteCreate
-        };
-        string connectionString = connectionStringBuilder.ToString();
-        using SqliteConnection connection = new(connectionString);
-        connection.Open();
-        await CreatePositionTableAsync(connection).ConfigureAwait(false);
-        await PopulatePositionTableAsync(connection, portfolioName, directoryPath).ConfigureAwait(false);
-    }
+            await CreateAndPopulatePositionTableAsync(connection, portfolioName, directoryPath).ConfigureAwait(false);
+        }
+        finally
+        {
+            if (connection.IsValueCreated)
+                connection.Value.Dispose();
+        }
 
-    private static async Task CreatePositionTableAsync(SqliteConnection connection)
-    {
-        var assembly = Assembly.GetExecutingAssembly();
-        using Stream stream = assembly.GetManifestResourceStream(typeof(DataHelpers), "CreatePosition.sql")!;
-        using StreamReader reader = new(stream);
-        await ExecuteReaderAsync(connection, reader).ConfigureAwait(false);
-    }
+        static SqliteConnection CreateRwcConnection(string databasePath)
+        {
+            SqliteConnectionStringBuilder connectionStringBuilder = new()
+            {
+                DataSource = databasePath,
+                Mode = SqliteOpenMode.ReadWriteCreate
+            };
+            string connectionString = connectionStringBuilder.ToString();
+            SqliteConnection connection = new(connectionString);
+            connection.Open();
+            return connection;
+        }
 
-    private static async Task PopulatePositionTableAsync(
-        SqliteConnection connection, string portfolioName, string directoryPath)
-    {
-        string scriptPath = Path.Join(directoryPath, portfolioName + ".sql");
-        using StreamReader reader = new(scriptPath);
-        await ExecuteReaderAsync(connection, reader).ConfigureAwait(false);
-    }
+        static async Task CreateAndPopulatePositionTableAsync(
+            Lazy<SqliteConnection> lazyConnection, string portfolioName, string directoryPath)
+        {
+            var assembly = Assembly.GetExecutingAssembly();
+            using Stream stream = assembly.GetManifestResourceStream(typeof(DataHelpers), "CreatePosition.sql")!;
+            using StreamReader createReader = new(stream);
+            string scriptPath = Path.Join(directoryPath, portfolioName + ".sql");
+            using StreamReader populateReader = new(scriptPath);
+            SqliteConnection connection = lazyConnection.Value;
+            await ExecuteReaderAsync(connection, createReader).ConfigureAwait(false);
+            await ExecuteReaderAsync(connection, populateReader).ConfigureAwait(false);
+        }
 
-    private static async Task ExecuteReaderAsync(SqliteConnection connection, StreamReader reader)
-    {
-        string commandText = await reader.ReadToEndAsync().ConfigureAwait(false);
-        using SqliteCommand command = new(commandText, connection);
-        command.ExecuteReader();
+        static async Task ExecuteReaderAsync(SqliteConnection connection, StreamReader reader)
+        {
+            string commandText = await reader.ReadToEndAsync().ConfigureAwait(false);
+            using SqliteCommand command = new(commandText, connection);
+            command.ExecuteReader();
+        }
     }
 }
