@@ -158,12 +158,13 @@ th.df-number-cell {
                         <td class="df-number-cell"/>
                     }
                 }
-                @* TODO *@
-                @* await Out.WriteLineAsync(proportionFormatter.Format(key, value)).ConfigureAwait(false); *@
             </tr>
         }
 
-        @* await Out.WriteLineAsync(proportionFormatter.FormatTotal(totalCurrencyAmount)).ConfigureAwait(false); *@
+        <tr style="border-top: 1px solid">
+            <td>Total</td>
+            <td class="df-number-cell">@totalCurrencyAmount.Amount.ToString("F2", P)</td>
+        </tr>
             }
             </tbody>
         </table>
