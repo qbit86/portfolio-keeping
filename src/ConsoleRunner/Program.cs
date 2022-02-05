@@ -15,7 +15,7 @@ internal static class Program
 
     private static async Task Main()
     {
-        const string portfolioName = PortfolioNames.TinkoffIis;
+        const string portfolioName = PortfolioNames.Test;
 
         using var securityProvider = SecurityProvider.Create();
         IReadOnlyDictionary<string, IReadOnlyList<Security>> securitiesByMarket =
