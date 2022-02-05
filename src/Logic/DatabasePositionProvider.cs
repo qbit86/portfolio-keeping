@@ -14,8 +14,8 @@ public sealed record DatabasePositionProvider(string PortfolioName) : PositionPr
 
         string directoryPath = Path.Join(
             Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), nameof(Diversifolio));
-        using SqliteConnection connection =
-            await DataHelpers.CreatePortfolioConnectionAsync(PortfolioName, directoryPath).ConfigureAwait(false);
+        using SqliteConnection connection = await DataHelpers.CreatePortfolioReadOnlyConnectionAsync(
+            PortfolioName, directoryPath).ConfigureAwait(false);
 
         const string commandText = "SELECT Ticker, Balance FROM Position";
         using SqliteCommand command = new(commandText, connection);

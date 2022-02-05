@@ -7,7 +7,7 @@ namespace Diversifolio;
 
 internal static class DataHelpers
 {
-    internal static async Task<SqliteConnection> CreatePortfolioConnectionAsync(
+    internal static async Task<SqliteConnection> CreatePortfolioReadOnlyConnectionAsync(
         string portfolioName, string directoryPath)
     {
         Directory.CreateDirectory(directoryPath);
