@@ -11,7 +11,7 @@ namespace Diversifolio.Pages;
 
 public sealed class IndexModel : PageModel
 {
-    internal const string PortfolioName = PortfolioNames.TinkoffIis;
+    internal const string PortfolioName = PortfolioNames.Test;
 
     private static readonly ILookup<AssetClass, Asset> s_emptyLookup = Array.Empty<Asset>().ToLookup(GetAssetClass);
 
