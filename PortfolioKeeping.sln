@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logic", "src\Logic\Logic.cs
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Formatting", "src\Formatting\Formatting.csproj", "{C33A9832-45E7-463E-98CE-C86446B72CC9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RazorRunner", "src\RazorRunner\RazorRunner.csproj", "{B66EB39F-2DA3-47DF-9A47-6F17CC1A772C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,6 +39,7 @@ Global
 		{4A9D7EE2-9D10-493A-8473-DEEFFA35B7D2} = {7837B1D9-A524-4F16-BA15-390FFDFD1F7D}
 		{0FDE3CE8-1469-4E16-A688-9DC19E2600B9} = {7837B1D9-A524-4F16-BA15-390FFDFD1F7D}
 		{C33A9832-45E7-463E-98CE-C86446B72CC9} = {7837B1D9-A524-4F16-BA15-390FFDFD1F7D}
+		{B66EB39F-2DA3-47DF-9A47-6F17CC1A772C} = {7837B1D9-A524-4F16-BA15-390FFDFD1F7D}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{5A2AD999-ED2A-48A1-9A29-941C6672E4B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -63,5 +66,9 @@ Global
 		{C33A9832-45E7-463E-98CE-C86446B72CC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C33A9832-45E7-463E-98CE-C86446B72CC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C33A9832-45E7-463E-98CE-C86446B72CC9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B66EB39F-2DA3-47DF-9A47-6F17CC1A772C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B66EB39F-2DA3-47DF-9A47-6F17CC1A772C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B66EB39F-2DA3-47DF-9A47-6F17CC1A772C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B66EB39F-2DA3-47DF-9A47-6F17CC1A772C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

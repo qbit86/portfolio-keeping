@@ -21,7 +21,7 @@ trim_trailing_whitespace = false
 [*.sql]
 ij_formatter_enabled = false
 
-[*.{cs,vb}]
+[*.{cs,cshtml,vb}]
 dotnet_code_quality_unused_parameters = non_public:suggestion
 dotnet_remove_unnecessary_suppression_exclusions = none
 dotnet_separate_import_directive_groups = false
@@ -55,7 +55,7 @@ dotnet_style_readonly_field = true:warning
 dotnet_style_require_accessibility_modifiers = for_non_interface_members:suggestion
 file_header_template = unset
 
-[*.cs]
+[*.{cs,cshtml}]
 csharp_indent_block_contents = true
 csharp_indent_braces = false
 csharp_indent_case_contents = true
@@ -138,7 +138,7 @@ resharper_xmldoc_indent_child_elements = DoNotTouch
 resharper_xmldoc_indent_text = DoNotTouch
 resharper_xmldoc_space_before_self_closing = false
 
-[*.{cs,vb}]
+[*.{cs,cshtml,vb}]
 dotnet_naming_rule.enums_should_be_pascalcase.severity = suggestion
 dotnet_naming_rule.enums_should_be_pascalcase.style = pascalcase
 dotnet_naming_rule.enums_should_be_pascalcase.symbols = enums
