@@ -63,7 +63,7 @@ internal static class Program
         Position[] plannedPositions = Array.Empty<Position>();
         IReadOnlyList<Asset> plannedAssets = assetProvider.GetAssets(plannedPositions);
         ILookup<AssetClass, Asset> plannedAssetsByClass = plannedAssets.ToLookup(GetAssetClass);
-        if (plannedAssets.Count > 0)
+        if (plannedAssetsByClass.Count > 0)
         {
             await Out.WriteLineAsync($"{Environment.NewLine}{nameof(plannedAssets)} ({portfolioName})")
                 .ConfigureAwait(false);
