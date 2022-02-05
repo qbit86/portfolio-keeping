@@ -8,12 +8,15 @@ namespace Diversifolio;
 internal static class DataHelpers
 {
     internal static async Task<SqliteConnection> CreatePortfolioReadOnlyConnectionAsync(
-        string portfolioName, string directoryPath)
+        string portfolioName, string populateScriptDirectory, string databaseDirectory)
     {
-        Directory.CreateDirectory(directoryPath);
-        string databasePath = Path.Join(directoryPath, portfolioName + ".db");
+        Directory.CreateDirectory(databaseDirectory);
+        string databasePath = Path.Join(databaseDirectory, portfolioName + ".db");
         if (!File.Exists(databasePath))
-            await CreatePortfolioDatabaseAsync(portfolioName, directoryPath, databasePath).ConfigureAwait(false);
+        {
+            await CreatePortfolioDatabaseAsync(portfolioName, populateScriptDirectory, databasePath)
+                .ConfigureAwait(false);
+        }
 
         SqliteConnectionStringBuilder connectionStringBuilder = new()
         {
@@ -27,13 +30,13 @@ internal static class DataHelpers
     }
 
     internal static async Task CreatePortfolioDatabaseAsync(
-        string portfolioName, string directoryPath, string databasePath)
+        string portfolioName, string populateScriptDirectory, string databasePath)
     {
         var assembly = Assembly.GetExecutingAssembly();
         using Stream stream = assembly.GetManifestResourceStream(typeof(DataHelpers), "CreatePosition.sql")!;
         using StreamReader createReader = new(stream);
-        string scriptPath = Path.Join(directoryPath, portfolioName + ".sql");
-        using StreamReader populateReader = new(scriptPath);
+        string populateScriptPath = Path.Join(populateScriptDirectory, portfolioName + ".sql");
+        using StreamReader populateReader = new(populateScriptPath);
 
         using SqliteConnection connection = CreateRwcConnection(databasePath);
 

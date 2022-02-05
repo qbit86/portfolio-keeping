@@ -1,6 +1,7 @@
 #define DIVERSIFOLIO_TINKOFF_ENABLED
 
 using System;
+using System.IO;
 #if DIVERSIFOLIO_TINKOFF_ENABLED
 using Tinkoff.Trading.OpenApi.Models;
 #endif
@@ -13,17 +14,23 @@ public static class PositionProviderFactory
     {
         ArgumentNullException.ThrowIfNull(portfolioName);
 
+        string databaseDirectory = Path.Join(
+            Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), nameof(Diversifolio));
+        string populateScriptDirectory = databaseDirectory;
+
 #if DIVERSIFOLIO_TINKOFF_ENABLED
         return portfolioName switch
         {
             PortfolioNames.Tinkoff =>
-                new TinkoffPositionProvider(portfolioName, BrokerAccountType.Tinkoff, "token-tinkoff.txt"),
+                new TinkoffPositionProvider(portfolioName, populateScriptDirectory, databaseDirectory,
+                    BrokerAccountType.Tinkoff, "token-tinkoff.txt"),
             PortfolioNames.TinkoffIis =>
-                new TinkoffPositionProvider(portfolioName, BrokerAccountType.TinkoffIis, "token-tinkoff.txt"),
-            _ => new DatabasePositionProvider(portfolioName)
+                new TinkoffPositionProvider(portfolioName, populateScriptDirectory, databaseDirectory,
+                    BrokerAccountType.TinkoffIis, "token-tinkoff.txt"),
+            _ => new DatabasePositionProvider(portfolioName, populateScriptDirectory, databaseDirectory)
         };
 #else
-        return new DatabasePositionProvider(portfolioName);
+        return new DatabasePositionProvider(portfolioName, populateScriptDirectory, databaseDirectory);
 #endif
     }
 }

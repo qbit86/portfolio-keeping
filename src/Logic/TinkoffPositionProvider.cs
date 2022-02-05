@@ -12,14 +12,10 @@ using Tinkoff.Trading.OpenApi.Network;
 namespace Diversifolio;
 
 public sealed record TinkoffPositionProvider(
-    string PortfolioName, BrokerAccountType BrokerAccountType, string TokenPath) :
+    string PortfolioName, string PopulateScriptDirectory, string DatabaseDirectory,
+    BrokerAccountType BrokerAccountType, string TokenPath) :
     PositionProvider(PortfolioName)
 {
-    private static string? s_directoryPath;
-
-    private static string DirectoryPath => s_directoryPath ??= Path.Join(
-        Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), nameof(Diversifolio));
-
     private static CultureInfo P => CultureInfo.InvariantCulture;
 
     private string TokenPath { get; } = TokenPath ?? throw new ArgumentNullException(nameof(TokenPath));
@@ -46,8 +42,8 @@ public sealed record TinkoffPositionProvider(
 
     private async Task<SqliteConnection> CreatePortfolioConnectionAsync()
     {
-        Directory.CreateDirectory(DirectoryPath);
-        string databasePath = Path.Join(DirectoryPath, PortfolioName + ".db");
+        Directory.CreateDirectory(DatabaseDirectory);
+        string databasePath = Path.Join(DatabaseDirectory, PortfolioName + ".db");
         if (!File.Exists(databasePath))
             await CreatePortfolioDatabaseAsync(databasePath).ConfigureAwait(false);
 
@@ -67,7 +63,7 @@ public sealed record TinkoffPositionProvider(
         List<Position> positions = new();
         await PopulatePositionsFromTinkoffAsync(positions).ConfigureAwait(false);
         await WriteInsertScriptAsync(positions).ConfigureAwait(false);
-        await DataHelpers.CreatePortfolioDatabaseAsync(PortfolioName, DirectoryPath, databasePath)
+        await DataHelpers.CreatePortfolioDatabaseAsync(PortfolioName, PopulateScriptDirectory, databasePath)
             .ConfigureAwait(false);
     }
 
@@ -96,8 +92,8 @@ public sealed record TinkoffPositionProvider(
     private async Task WriteInsertScriptAsync(List<Position> positions)
     {
         positions.Sort((left, right) => StringComparer.Ordinal.Compare(left.Ticker, right.Ticker));
-        string scriptPath = Path.Join(DirectoryPath, PortfolioName + ".sql");
-        using var fileStream = new FileStream(scriptPath, FileMode.Create, FileAccess.Write, FileShare.None);
+        string populateScriptPath = Path.Join(PopulateScriptDirectory, PortfolioName + ".sql");
+        using var fileStream = new FileStream(populateScriptPath, FileMode.Create, FileAccess.Write, FileShare.None);
         using var writer = new StreamWriter(fileStream, Encoding.UTF8);
         await writer.WriteLineAsync("INSERT INTO Position (Ticker, Balance)").ConfigureAwait(false);
         for (int i = 0; i < positions.Count; ++i)
