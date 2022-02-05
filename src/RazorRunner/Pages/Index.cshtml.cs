@@ -59,7 +59,9 @@ public sealed class IndexModel : PageModel
         SeltSecurity usd = SecuritiesByMarket[Markets.Selt].OfType<SeltSecurity>().Single();
         CurrencyConverter = RubCurrencyConverter.Create(usd);
 
-        string? populateScriptDirectory = _configuration["PopulateScriptDirectory"];
+        if (_configuration["PopulateScriptDirectory"] is not { } populateScriptDirectory)
+            throw new InvalidOperationException("Value must not be null: " + nameof(populateScriptDirectory));
+
         PositionProvider positionProvider = PositionProviderFactory.Create(PortfolioName, populateScriptDirectory);
         AssetProvider<RubCurrencyConverter> assetProvider = new(SecuritiesByMarket, CurrencyConverter);
 

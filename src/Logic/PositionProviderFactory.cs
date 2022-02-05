@@ -8,14 +8,24 @@ namespace Diversifolio;
 
 public static class PositionProviderFactory
 {
-    public static PositionProvider Create(string portfolioName, string? populateScriptDirectory = null)
+    public static PositionProvider Create(string portfolioName)
     {
         ArgumentNullException.ThrowIfNull(portfolioName);
 
         string databaseDirectory = Path.Join(
             Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), nameof(Diversifolio));
+        string populateScriptDirectory = databaseDirectory;
+        return UncheckedCreate(portfolioName, populateScriptDirectory, databaseDirectory);
+    }
 
-        return UncheckedCreate(portfolioName, populateScriptDirectory ?? databaseDirectory, databaseDirectory);
+    public static PositionProvider Create(string portfolioName, string populateScriptDirectory)
+    {
+        ArgumentNullException.ThrowIfNull(portfolioName);
+        ArgumentNullException.ThrowIfNull(populateScriptDirectory);
+
+        string databaseDirectory = Path.Join(
+            Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), nameof(Diversifolio));
+        return UncheckedCreate(portfolioName, populateScriptDirectory, databaseDirectory);
     }
 
     private static PositionProvider UncheckedCreate(
