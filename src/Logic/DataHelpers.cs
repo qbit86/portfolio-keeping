@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -30,16 +29,16 @@ internal static class DataHelpers
     internal static async Task CreatePortfolioDatabaseAsync(
         string portfolioName, string directoryPath, string databasePath)
     {
-        Lazy<SqliteConnection> connection = new(() => CreateRwcConnection(databasePath));
-        try
-        {
-            await CreateAndPopulatePositionTableAsync(connection, portfolioName, directoryPath).ConfigureAwait(false);
-        }
-        finally
-        {
-            if (connection.IsValueCreated)
-                connection.Value.Dispose();
-        }
+        var assembly = Assembly.GetExecutingAssembly();
+        using Stream stream = assembly.GetManifestResourceStream(typeof(DataHelpers), "CreatePosition.sql")!;
+        using StreamReader createReader = new(stream);
+        string scriptPath = Path.Join(directoryPath, portfolioName + ".sql");
+        using StreamReader populateReader = new(scriptPath);
+
+        using SqliteConnection connection = CreateRwcConnection(databasePath);
+
+        await ExecuteReaderAsync(connection, createReader).ConfigureAwait(false);
+        await ExecuteReaderAsync(connection, populateReader).ConfigureAwait(false);
 
         static SqliteConnection CreateRwcConnection(string databasePath)
         {
@@ -52,19 +51,6 @@ internal static class DataHelpers
             SqliteConnection connection = new(connectionString);
             connection.Open();
             return connection;
-        }
-
-        static async Task CreateAndPopulatePositionTableAsync(
-            Lazy<SqliteConnection> lazyConnection, string portfolioName, string directoryPath)
-        {
-            var assembly = Assembly.GetExecutingAssembly();
-            using Stream stream = assembly.GetManifestResourceStream(typeof(DataHelpers), "CreatePosition.sql")!;
-            using StreamReader createReader = new(stream);
-            string scriptPath = Path.Join(directoryPath, portfolioName + ".sql");
-            using StreamReader populateReader = new(scriptPath);
-            SqliteConnection connection = lazyConnection.Value;
-            await ExecuteReaderAsync(connection, createReader).ConfigureAwait(false);
-            await ExecuteReaderAsync(connection, populateReader).ConfigureAwait(false);
         }
 
         static async Task ExecuteReaderAsync(SqliteConnection connection, StreamReader reader)
