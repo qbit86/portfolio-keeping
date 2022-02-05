@@ -1,8 +1,6 @@
-#define DIVERSIFOLIO_TINKOFF_ENABLED
-
 using System;
 using System.IO;
-#if DIVERSIFOLIO_TINKOFF_ENABLED
+#if !DIVERSIFOLIO_TINKOFF_DISABLED
 using Tinkoff.Trading.OpenApi.Models;
 #endif
 
@@ -35,7 +33,7 @@ public static class PositionProviderFactory
     private static PositionProvider UncheckedCreate(
         string portfolioName, string populateScriptDirectory, string databaseDirectory)
     {
-#if DIVERSIFOLIO_TINKOFF_ENABLED
+#if !DIVERSIFOLIO_TINKOFF_DISABLED
         return portfolioName switch
         {
             PortfolioNames.Tinkoff =>
