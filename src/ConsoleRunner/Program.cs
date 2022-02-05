@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Diversifolio.Moex;
+using Microsoft.Extensions.Configuration;
 
 [assembly: CLSCompliant(true)]
 
@@ -17,6 +18,11 @@ internal static class Program
     {
         const string portfolioName = PortfolioNames.Test;
 
+        IConfiguration config = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.json", true)
+            .AddJsonFile("appsettings.Development.json", true)
+            .Build();
+
         using var securityProvider = SecurityProvider.Create();
         IReadOnlyDictionary<string, IReadOnlyList<Security>> securitiesByMarket =
             await securityProvider.GetSecuritiesByMarketDictionaryAsync().ConfigureAwait(false);
@@ -24,7 +30,10 @@ internal static class Program
         SeltSecurity usd = securitiesByMarket[Markets.Selt].OfType<SeltSecurity>().Single();
         var currencyConverter = RubCurrencyConverter.Create(usd);
 
-        PositionProvider positionProvider = PositionProviderFactory.Create(portfolioName);
+        if (config["PopulateScriptDirectory"] is not { } populateScriptDirectory)
+            throw new InvalidOperationException("Value must not be null: " + nameof(populateScriptDirectory));
+
+        PositionProvider positionProvider = PositionProviderFactory.Create(portfolioName, populateScriptDirectory);
         AssetProvider<RubCurrencyConverter> assetProvider = new(securitiesByMarket, currencyConverter);
 
         AssetWriter assetWriter = new(Out);

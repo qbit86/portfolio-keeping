@@ -1,2 +1,5 @@
+[*.json]
+indent_size = 2
+
 [*.cs]
 resharper_arrange_trailing_comma_in_multiline_lists_highlighting = none
