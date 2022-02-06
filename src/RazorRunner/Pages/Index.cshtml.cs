@@ -12,7 +12,7 @@ namespace Diversifolio.Pages;
 
 public sealed class IndexModel : PageModel
 {
-    internal const string PortfolioName = PortfolioNames.Test;
+    internal const string PortfolioName = PortfolioNames.Tinkoff;
 
     private static readonly ILookup<AssetClass, Asset> s_emptyLookup = Array.Empty<Asset>().ToLookup(GetAssetClass);
     private readonly IConfiguration _configuration;
@@ -80,7 +80,14 @@ public sealed class IndexModel : PageModel
         IReadOnlyList<Asset> executedAssets = assetProvider.GetAssets(executedPositions);
         ExecutedAssetsByClass = executedAssets.ToLookup(GetAssetClass);
 
-        Position[] plannedPositions = Array.Empty<Position>();
+        Position[] plannedPositions =
+        {
+            new("FXIP", 90m),
+            new("TBIO", 10819m),
+            new("TRAI", 6200m),
+            new("TSOX", 5500m),
+            new("TSPX", 4500m)
+        };
         IReadOnlyList<Asset> plannedAssets = assetProvider.GetAssets(plannedPositions);
         PlannedAssetsByClass = plannedAssets.ToLookup(GetAssetClass);
 
