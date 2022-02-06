@@ -82,10 +82,10 @@ public sealed class IndexModel : PageModel
 
         Position[] plannedPositions =
         {
-            new("FXIP", 1m),
-            new("FXMM", 1m),
-            new("VTBI", 1m),
-            new("VTBM", 1m)
+            new("FXIP", 468m),
+            new("FXMM", 29m),
+            new("VTBI", 511m),
+            new("VTBM", 45195m)
         };
         IReadOnlyList<Asset> plannedAssets = assetProvider.GetAssets(plannedPositions);
         PlannedAssetsByClass = plannedAssets.ToLookup(GetAssetClass);
