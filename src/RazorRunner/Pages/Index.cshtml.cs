@@ -80,7 +80,10 @@ public sealed class IndexModel : PageModel
         IReadOnlyList<Asset> executedAssets = assetProvider.GetAssets(executedPositions);
         ExecutedAssetsByClass = executedAssets.ToLookup(GetAssetClass);
 
-        Position[] plannedPositions = Array.Empty<Position>();
+        Position[] plannedPositions =
+        {
+            new("FXMM", 46m)
+        };
         IReadOnlyList<Asset> plannedAssets = assetProvider.GetAssets(plannedPositions);
         PlannedAssetsByClass = plannedAssets.ToLookup(GetAssetClass);
 
