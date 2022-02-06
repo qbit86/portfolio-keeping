@@ -82,6 +82,8 @@ public sealed class IndexModel : PageModel
 
         Position[] plannedPositions =
         {
+            new("TMOS", 1m),
+            new("FXEM", 1m),
             new("FXMM", 46m)
         };
         IReadOnlyList<Asset> plannedAssets = assetProvider.GetAssets(plannedPositions);
