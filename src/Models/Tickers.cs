@@ -73,6 +73,8 @@ public static class Tickers
         ("VTBB", AssetClass.Bond, Boards.Tqtf),
         ("VTBE", AssetClass.Stock, Boards.Tqtf),
         ("VTBH", AssetClass.Bond, Boards.Tqtf),
+        ("VTBI", AssetClass.Bond, Boards.Tqtf),
+        ("VTBM", AssetClass.Bond, Boards.Tqtf),
         ("VTBU", AssetClass.Bond, Boards.Tqtf),
         ("VTBX", AssetClass.Stock, Boards.Tqtf),
         ("VTBY", AssetClass.Bond, Boards.Tqtf),
