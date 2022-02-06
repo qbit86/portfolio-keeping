@@ -23,6 +23,10 @@ td.df-number-cell {
 th.df-number-cell {
     text-align: right;
 }
+
+tr.df-alternating-row:nth-child(odd) {
+    background: #f5f5f5;
+}
 </style>
 
 <div class="text-center">
@@ -97,7 +101,7 @@ th.df-number-cell {
                     _ => formattedPrice
                     };
 
-                <tr style="@rowStyle">
+                <tr class="df-alternating-row" style="@rowStyle">
                     <td>@asset.Ticker</td>
                     <td class="df-number-cell">@asset.Value.Amount.ToString("F2", P)</td>
                     <td class="df-number-cell">@ratio.ToString("P2", P)</td>
