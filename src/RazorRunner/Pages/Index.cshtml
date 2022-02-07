@@ -34,7 +34,7 @@ tr.df-alternating-row:nth-child(odd) {
 </div>
 
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = IndexModel.PortfolioName;
 
     WriteAssets(Model.PortfolioAssetsByClass, nameof(Model.PortfolioAssetsByClass));
     WriteProportions(Model.PortfolioAssetsByClass, nameof(Model.PortfolioAssetsByClass));
