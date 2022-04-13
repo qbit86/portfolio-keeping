@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Tinkoff.Trading.OpenApi.Models;
 using Tinkoff.Trading.OpenApi.Network;
@@ -12,7 +13,7 @@ namespace Diversifolio;
 
 internal static class Program
 {
-    private static CultureInfo F => CultureInfo.InvariantCulture;
+    private static CultureInfo P => CultureInfo.InvariantCulture;
 
     private static async Task Main() => await RunActualCheckAsync().ConfigureAwait(false);
 
@@ -35,15 +36,14 @@ internal static class Program
         PortfolioCurrencies portfolioCurrencies = await context.PortfolioCurrenciesAsync().ConfigureAwait(false);
         Console.WriteLine("PortfolioCurrencies:");
         foreach (PortfolioCurrencies.PortfolioCurrency currency in portfolioCurrencies.Currencies)
-            Console.WriteLine($"    - {currency.Currency}, {currency.Balance.ToString(F)}");
+            WriteLine(P, $"    - {currency.Currency}, {currency.Balance}");
 
         Portfolio portfolio = await context.PortfolioAsync().ConfigureAwait(false);
         Console.WriteLine("Portfolio:");
         foreach (Portfolio.Position position in portfolio.Positions)
         {
             MoneyAmount price = position.AveragePositionPrice;
-            Console.WriteLine(
-                $"    - {position.Ticker}, {position.Balance.ToString(F)}, {price.Value.ToString(F)} {price.Currency}");
+            WriteLine(P, $"    - {position.Ticker}, {position.Balance}, {price.Value} {price.Currency}");
         }
 
         MarketInstrumentList instrumentList = await context.MarketStocksAsync().ConfigureAwait(false);
@@ -78,16 +78,19 @@ internal static class Program
                 await context.PortfolioCurrenciesAsync(brokerAccountId).ConfigureAwait(false);
             Console.WriteLine($"\t\t- PortfolioCurrencies ({brokerAccountType}):");
             foreach (PortfolioCurrencies.PortfolioCurrency currency in portfolioCurrencies.Currencies)
-                Console.WriteLine($"\t\t\t- {currency.Currency},\t{currency.Balance.ToString(F)}");
+                WriteLine(P, $"\t\t\t- {currency.Currency},\t{currency.Balance}");
 
             Portfolio portfolio = await context.PortfolioAsync(brokerAccountId).ConfigureAwait(false);
             Console.WriteLine($"\t\t- Portfolio ({brokerAccountType}):");
             foreach (Portfolio.Position position in portfolio.Positions)
             {
                 MoneyAmount price = position.AveragePositionPrice;
-                Console.WriteLine(
-                    $"\t\t\t- {position.Ticker},\t{position.Balance.ToString(F)},\t{price.Value.ToString(F)}\t{price.Currency}");
+                WriteLine(P, $"\t\t\t- {position.Ticker},\t{position.Balance},\t{price.Value}\t{price.Currency}");
             }
         }
     }
+
+    private static void WriteLine(IFormatProvider provider,
+        [InterpolatedStringHandlerArgument("provider")] ref DefaultInterpolatedStringHandler handler) =>
+        Console.WriteLine(handler.ToStringAndClear());
 }
