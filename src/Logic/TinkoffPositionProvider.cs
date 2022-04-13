@@ -104,7 +104,7 @@ public sealed record TinkoffPositionProvider(
             bool isConsequent = i > 0;
             string delimiter = isConsequent ? ",\r\n       " : "VALUES ";
             await writer.WriteAsync(delimiter).ConfigureAwait(false);
-            string value = $"('{position.Ticker}', {Convert.ToInt32(Math.Floor(position.Balance)).ToString(P)})";
+            string value = string.Create(P, $"('{position.Ticker}', {Convert.ToInt32(Math.Floor(position.Balance))})");
             await writer.WriteAsync(value).ConfigureAwait(false);
         }
 
