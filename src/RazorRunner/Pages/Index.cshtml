@@ -3,7 +3,7 @@
 @using System.Runtime.CompilerServices
 @using Diversifolio
 @using Diversifolio.Pages
-@model IndexModel
+@model Diversifolio.Pages.IndexModel
 
 @functions
 {
@@ -72,44 +72,44 @@ tr.df-alternating-row:nth-child(odd) {
             </thead>
             <tbody>
             @{
-        const char figureSpace = '\u2007'; // https://en.wikipedia.org/wiki/Figure_space
+                const char figureSpace = '\u2007'; // https://en.wikipedia.org/wiki/Figure_space
 
-        decimal portfolioTotal = assetsByClass
-            .SelectMany(it => it).Sum(it => it.Value.Amount);
-        IOrderedEnumerable<IGrouping<AssetClass, Asset>> ordered = assetsByClass
-            .OrderBy(it => it.Key, AssetClassComparer.Instance);
+                decimal portfolioTotal = assetsByClass
+                    .SelectMany(it => it).Sum(it => it.Value.Amount);
+                IOrderedEnumerable<IGrouping<AssetClass, Asset>> ordered = assetsByClass
+                    .OrderBy(it => it.Key, AssetClassComparer.Instance);
 
-        int groupIndex = 0;
-        foreach (IGrouping<AssetClass, Asset> grouping in ordered)
-        {
-            bool needsBorder = groupIndex++ > 0;
-            IOrderedEnumerable<Asset> orderedAssets = grouping.OrderByDescending(it => it.Value.Amount);
-            foreach (Asset asset in orderedAssets)
-            {
-                string? rowStyle = needsBorder ? "border-top: 1px solid" : null;
-                needsBorder = false;
-                decimal ratio = asset.Value.Amount / portfolioTotal;
-                int decimalCount = asset.DecimalCount;
-                string f = IndexModel.GetPriceFormat(decimalCount);
-                decimal price = asset.OriginalPrice.Amount;
-                string formattedPrice = price.ToString(f, P);
-
-                string paddedPrice = decimalCount switch
+                int groupIndex = 0;
+                foreach (IGrouping<AssetClass, Asset> grouping in ordered)
                 {
-                    <= 0 => formattedPrice + ".\u2007\u2007\u2007\u2007",
-                    < 4 => formattedPrice.PadRight(formattedPrice.Length + 4 - decimalCount, figureSpace),
-                    _ => formattedPrice
-                    };
+                    bool needsBorder = groupIndex++ > 0;
+                    IOrderedEnumerable<Asset> orderedAssets = grouping.OrderByDescending(it => it.Value.Amount);
+                    foreach (Asset asset in orderedAssets)
+                    {
+                        string? rowStyle = needsBorder ? "border-top: 1px solid" : null;
+                        needsBorder = false;
+                        decimal ratio = asset.Value.Amount / portfolioTotal;
+                        int decimalCount = asset.DecimalCount;
+                        string f = IndexModel.GetPriceFormat(decimalCount);
+                        decimal price = asset.OriginalPrice.Amount;
+                        string formattedPrice = price.ToString(f, P);
 
-                <tr class="df-alternating-row" style="@rowStyle">
-                    <td>@asset.Ticker</td>
-                    <td class="df-number-cell">@asset.Value.Amount.ToString("F2", P)</td>
-                    <td class="df-number-cell">@ratio.ToString("P2", P)</td>
-                    <td class="df-number-cell">@asset.Balance.ToString("D", P)</td>
-                    <td class="df-number-cell">@paddedPrice</td>
-                </tr>
-            }
-        }
+                        string paddedPrice = decimalCount switch
+                        {
+                            <= 0 => formattedPrice + ".\u2007\u2007\u2007\u2007",
+                            < 4 => formattedPrice.PadRight(formattedPrice.Length + 4 - decimalCount, figureSpace),
+                            _ => formattedPrice
+                            };
+
+                        <tr class="df-alternating-row" style="@rowStyle">
+                            <td>@asset.Ticker</td>
+                            <td class="df-number-cell">@asset.Value.Amount.ToString("F2", P)</td>
+                            <td class="df-number-cell">@ratio.ToString("P2", P)</td>
+                            <td class="df-number-cell">@asset.Balance.ToString("D", P)</td>
+                            <td class="df-number-cell">@paddedPrice</td>
+                        </tr>
+                    }
+                }
             }
             </tbody>
         </table>
@@ -130,57 +130,57 @@ tr.df-alternating-row:nth-child(odd) {
             </tr>
             <tbody>
             @{
-        var currencies = assetsByClass.SelectMany(it => it.Select(a => a.OriginalValue.Currency))
-            .Distinct(StringComparer.Ordinal).OrderBy(it => it, StringComparer.Ordinal).ToList();
+                var currencies = assetsByClass.SelectMany(it => it.Select(a => a.OriginalValue.Currency))
+                    .Distinct(StringComparer.Ordinal).OrderBy(it => it, StringComparer.Ordinal).ToList();
 
-        var totalMulticurrencyAmount = MulticurrencyAmount.Create();
+                var totalMulticurrencyAmount = MulticurrencyAmount.Create();
 
-        Dictionary<AssetClass, MulticurrencyAmount> multicurrencyAmountByAssetClass = new();
-        foreach (IGrouping<AssetClass, Asset> grouping in assetsByClass)
-        {
-            var assetClassMulticurrencyAmount = MulticurrencyAmount.Create();
-            multicurrencyAmountByAssetClass[grouping.Key] = assetClassMulticurrencyAmount;
-            foreach (Asset asset in grouping)
-            {
-                totalMulticurrencyAmount.Add(asset.OriginalValue);
-                assetClassMulticurrencyAmount.Add(asset.OriginalValue);
-            }
-        }
-
-        CurrencyAmount totalCurrencyAmount = totalMulticurrencyAmount.CurrencyAmountByCurrency.Values.Aggregate(
-            CurrencyAmountMonoid.Instance.Identity, Combine);
-
-        IOrderedEnumerable<KeyValuePair<AssetClass, MulticurrencyAmount>> ordered =
-            multicurrencyAmountByAssetClass.OrderBy(it => it.Key, AssetClassComparer.Instance);
-
-        foreach ((AssetClass key, MulticurrencyAmount value) in ordered)
-        {
-            IReadOnlyDictionary<string, CurrencyAmount> currencyAmountByCurrency = value.CurrencyAmountByCurrency;
-            CurrencyAmount assetClassTotal = currencyAmountByCurrency.Values.Aggregate(CurrencyAmountMonoid.Instance.Identity, Combine);
-            decimal ratio = CurrencyAmountMonoid.Divide(assetClassTotal, totalCurrencyAmount);
-            <tr>
-                <td>@key</td>
-                <td class="df-number-cell">@assetClassTotal.Amount.ToString("F2", P)</td>
-                <td class="df-number-cell">@ratio.ToString("P2", P)</td>
-                @foreach (string currency in currencies)
+                Dictionary<AssetClass, MulticurrencyAmount> multicurrencyAmountByAssetClass = new();
+                foreach (IGrouping<AssetClass, Asset> grouping in assetsByClass)
                 {
-                    if (currencyAmountByCurrency.TryGetValue(currency, out CurrencyAmount currencyAmount))
+                    var assetClassMulticurrencyAmount = MulticurrencyAmount.Create();
+                    multicurrencyAmountByAssetClass[grouping.Key] = assetClassMulticurrencyAmount;
+                    foreach (Asset asset in grouping)
                     {
-                        DefaultInterpolatedStringHandler interpolatedAmountAndCurrency = $"{currencyAmount.Amount:F2} {currencyAmount.Currency}";
-                        <td class="df-number-cell">@string.Create(P, ref interpolatedAmountAndCurrency)</td>
-                    }
-                    else
-                    {
-                        <td class="df-number-cell"/>
+                        totalMulticurrencyAmount.Add(asset.OriginalValue);
+                        assetClassMulticurrencyAmount.Add(asset.OriginalValue);
                     }
                 }
-            </tr>
-        }
 
-        <tr style="border-top: 1px solid">
-            <td>Total</td>
-            <td class="df-number-cell">@totalCurrencyAmount.Amount.ToString("F2", P)</td>
-        </tr>
+                CurrencyAmount totalCurrencyAmount = totalMulticurrencyAmount.CurrencyAmountByCurrency.Values.Aggregate(
+                    CurrencyAmountMonoid.Instance.Identity, Combine);
+
+                IOrderedEnumerable<KeyValuePair<AssetClass, MulticurrencyAmount>> ordered =
+                    multicurrencyAmountByAssetClass.OrderBy(it => it.Key, AssetClassComparer.Instance);
+
+                foreach ((AssetClass key, MulticurrencyAmount value) in ordered)
+                {
+                    IReadOnlyDictionary<string, CurrencyAmount> currencyAmountByCurrency = value.CurrencyAmountByCurrency;
+                    CurrencyAmount assetClassTotal = currencyAmountByCurrency.Values.Aggregate(CurrencyAmountMonoid.Instance.Identity, Combine);
+                    decimal ratio = CurrencyAmountMonoid.Divide(assetClassTotal, totalCurrencyAmount);
+                    <tr>
+                        <td>@key</td>
+                        <td class="df-number-cell">@assetClassTotal.Amount.ToString("F2", P)</td>
+                        <td class="df-number-cell">@ratio.ToString("P2", P)</td>
+                        @foreach (string currency in currencies)
+                        {
+                            if (currencyAmountByCurrency.TryGetValue(currency, out CurrencyAmount currencyAmount))
+                            {
+                                DefaultInterpolatedStringHandler interpolatedAmountAndCurrency = $"{currencyAmount.Amount:F2} {currencyAmount.Currency}";
+                                <td class="df-number-cell">@string.Create(P, ref interpolatedAmountAndCurrency)</td>
+                            }
+                            else
+                            {
+                                <td class="df-number-cell"/>
+                            }
+                        }
+                    </tr>
+                }
+
+                <tr style="border-top: 1px solid">
+                    <td>Total</td>
+                    <td class="df-number-cell">@totalCurrencyAmount.Amount.ToString("F2", P)</td>
+                </tr>
             }
             </tbody>
         </table>
