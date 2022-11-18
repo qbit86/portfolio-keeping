@@ -3,9 +3,10 @@
 /workspace.xml
 # Rider ignored files
 /.idea.PortfolioKeeping.iml
-/modules.xml
 /contentModel.xml
+/modules.xml
 /projectSettingsUpdater.xml
+/riderMarkupCache.xml
 # Datasource local storage ignored files
 /dataSources/
 /dataSources.local.xml
