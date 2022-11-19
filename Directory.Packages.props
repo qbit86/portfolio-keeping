@@ -1,0 +1,10 @@
+<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageVersion Include="Microsoft.Data.Sqlite" Version="6.0.1" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
+    <PackageVersion Include="Tinkoff.Trading.OpenApi" Version="1.7.5" />
+  </ItemGroup>
+</Project>
