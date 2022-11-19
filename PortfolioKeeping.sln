@@ -9,6 +9,7 @@ ProjectSection(SolutionItems) = preProject
 	.gitignore = .gitignore
 	.globalconfig = .globalconfig
 	Directory.Build.props = Directory.Build.props
+	README.md = README.md
 EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{7837B1D9-A524-4F16-BA15-390FFDFD1F7D}"
